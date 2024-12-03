@@ -19,6 +19,8 @@ bool playing = true;
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
+GameData game_data = {};
+
 
 // handles game application initialisation
 static void init(void) {
@@ -36,7 +38,7 @@ static void init(void) {
 
     // initialize audio
     AudioDevice* audio_device = audio_device_init(32000, AUDIO_S16, 1, 4096);
-    //AudioData audio1 = audio_load_wav(audio_device, "FILE MANE");
+    // AudioData audio1 = audio_load_wav(audio_device, "FILE MANE");
 }
 
 // handles game application updating
@@ -54,9 +56,9 @@ static void update(void) {
     }
 
     // preform updates
-    game_update((GameData){}, SDL_GetKeyboardState(NULL));
+    game_update(&game_data, SDL_GetKeyboardState(NULL));
     renderer_update(&(RenderData){
-        window, renderer});
+        window, renderer, &game_data});
 }
 
 // handles game application quitting
