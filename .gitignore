@@ -1,4 +1,7 @@
+.cache
 .vscode/*
 !.vscode/tasks.json
 !.vscode/launch.json
-build
+bin
+obj
+compile_commands.json
