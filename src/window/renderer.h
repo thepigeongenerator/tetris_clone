@@ -6,7 +6,7 @@
 #define SCREEN_WIDTH 256
 #define SCREEN_HEIGHT (SCREEN_WIDTH * 2)
 #define BLOCK_WIDTH (SCREEN_WIDTH / COLUMNS)
-#define BLOCK_HEIGHT (SCREEN_HEIGHT / (BLOCK_WIDTH * 2))
+#define BLOCK_HEIGHT (SCREEN_HEIGHT / ROWS)
 
 // fits colours in a 3 bit length
 // 4th bit is unused
