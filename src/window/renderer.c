@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "../errors.h"
-#include "../main.h"
+#include "SDL_render.h"
 
 
 int renderer_init(SDL_Window** window, SDL_Renderer** renderer) {
@@ -26,6 +26,16 @@ int renderer_init(SDL_Window** window, SDL_Renderer** renderer) {
     return 0;
 }
 
+static inline int set_block(SDL_Renderer* renderer, const Row row, const uint8_t block, const uint8_t filter, const uint8_t x, const uint8_t y) {
+    uint8_t colour = block & filter;
+    return SDL_SetRenderDrawColor(renderer,
+                                  0xFF * (0 != (colour & (RED | RED << 3))),
+                                  0xFF * (0 != (colour & (GREEN | GREEN << 3))),
+                                  0xFF * (0 != (colour & (BLUE | BLUE << 3))),
+                                  0xFF) |
+           SDL_RenderFillRect(renderer, &(SDL_Rect){x * BLOCK_WIDTH + 1, y * BLOCK_HEIGHT + 1, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1});
+}
+
 void renderer_update(const RenderData* render_data) {
     SDL_Renderer* renderer = render_data->renderer;
     GameData* data = render_data->game_data;
@@ -36,14 +46,17 @@ void renderer_update(const RenderData* render_data) {
     success |= SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0x50);
     success |= SDL_RenderClear(renderer);
 
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    for (int y = 0; y < ROWS; y++) {
-        Uint16 row = data->row[y];
+    for (uint8_t y = 0; y < ROWS; y++) {
+        Row row = data->row[y];
 
-        for (int x = 16; x >= 0; x--) {
-            if ((row & (1 << x)) != 0) {
-                success |= SDL_RenderFillRect(renderer, &(SDL_Rect){x * BLOCK_WIDTH + 1, y * BLOCK_HEIGHT + 1, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1});
-            }
+        for (uint8_t x = 0; x < COLUMNS; x += 2) {
+            uint8_t block = row >> (x * 3); // get the two blocks stored at this column
+
+            if ((block & 0x0F) != 0)
+                success |= set_block(renderer, row, block, 0x0F, x + 1, y);
+
+            if ((block & 0xF0) != 0)
+                success |= set_block(renderer, row, block, 0xF0, x, y);
         }
     }
 

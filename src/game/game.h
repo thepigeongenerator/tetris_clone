@@ -1,7 +1,8 @@
 #pragma once
 #include <SDL2/SDL.h>
 
-typedef Uint16 Shape;
+typedef uint16_t Shape;
+typedef uint16_t Row;
 
 //                                                         0    1    2    3
 #define TETROMINO_I     ((Shape)0b1000100010001000)     // 1000 1000 1000 1000      the I tetromino with no rotation
@@ -26,8 +27,9 @@ typedef Uint16 Shape;
 
 // stores the data used in the game
 #define ROWS 32
+#define COLUMNS (sizeof(Row) * 8 / 3)
 typedef struct {
-    Uint16 row[ROWS];
+    Row row[ROWS];
 } GameData;
 
 // updates the game's state
