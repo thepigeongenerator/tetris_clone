@@ -8,9 +8,12 @@ LDFLAGS = $(shell pkg-config --libs sdl2) -lm
 # file locations
 DIR_BIN := bin
 DIR_OBJ := obj
-SRC = $(wildcard src/*.c) $(wildcard src/**/*.c) $(wildcard src/**/**/*.c) $(wildcard src/**/**/**/*.c) $(wildcard src/**/**/**/**/*.c)
-OBJ = $(patsubst src/%,$(DIR_OBJ)/$(ARCH)/%,$(SRC:.c=.o))
-TARGET = $(DIR_BIN)/$(ARCH)/$(NAME)$(EXT)
+DIR := $(DIR_BIN)/$(ARCH) $(DIR_OBJ)/$(ARCH)
+
+SRC := $(wildcard src/*.c) $(wildcard src/**/*.c) $(wildcard src/**/**/*.c) $(wildcard src/**/**/**/*.c) $(wildcard src/**/**/**/**/*.c)
+OBJ := $(patsubst src/%,$(DIR_OBJ)/$(ARCH)/%,$(SRC:.c=.o))
+DEP := $(OBJ:.o=.d)
+TARGET := $(DIR_BIN)/$(ARCH)/$(NAME)$(EXT)
 
 # sets the variables for the different targets
 linux-x86_64:
@@ -21,21 +24,26 @@ web:
 	$(MAKE) build ARCH=web CC=emcc EXT=".html"
 
 all: linux-x86_64 win-x86_64 web
-
+build: $(DIR) $(TARGET) compile_commands.json
 clean:
 	rm -rf $(DIR_BIN) $(DIR_OBJ)
 
-build: dirs binary
-
 # creates the binary
-binary: $(OBJ)
+$(TARGET): $(OBJ)
 	$(CC) -o $(TARGET) $^ $(CFLAGS) $(LDFLAGS)
 
-# creates the object files, include a flag for no unused command line arguments, because in this context it's unneeded
+# creates .o and .d files, include a flag for no unused command line arguments, because in this context it's unneeded
 $(DIR_OBJ)/$(ARCH)/%.o: src/%.c
 	mkdir -p $(dir $@)
-	$(CC) -o $@ -c $< $(CFLAGS) $(LDFLAGS) -Wno-unused-command-line-argument
+	$(CC) -o $@ -MD -MP -c $< $(CFLAGS) -Wno-unused-command-line-argument
 
-dirs:
-	mkdir -p $(DIR_BIN)/$(ARCH)
-	mkdir -p $(DIR_OBJ)/$(ARCH)
+$(DIR):
+	mkdir -p $@
+
+# update compile commands if the makefile has been updated (for linting)
+compile_commands.json: makefile
+	touch compile_commands.json
+	$(MAKE) clean
+	bear -- make
+
+-include $(DEP)

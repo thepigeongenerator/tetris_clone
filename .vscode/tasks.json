@@ -48,14 +48,6 @@
                 "isDefault": false
             },
             "detail": "builds the program for web using emscripten"
-        },
-        {
-            "label": "create compile_commands.json",
-            "type": "shell",
-            "command": "bear -- make",
-            "runOptions": {
-                "runOn": "folderOpen"
-            }
         }
     ]
 }
