@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #include "../errors.h"
-#include "SDL_render.h"
+#include "renderer.h"
 
 
 int renderer_init(SDL_Window** window, SDL_Renderer** renderer) {
