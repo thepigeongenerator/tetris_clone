@@ -12,14 +12,28 @@ typedef union {
     };
 } Colour;
 
-#define COLOUR_RED ((Colour){0b11000011})
-#define COLOUR_YELLOW ((Colour){0b11110011})
-#define COLOUR_ORANGE ((Colour){0b11100011})
-#define COLOUR_GREEN ((Colour){0b00110011})
-#define COLOUR_CYAN ((Colour){0b00111111})
-#define COLOUR_BLUE ((Colour){0b00001111})
-#define COLOUR_MAGENTA ((Colour){0b11001111})
 
-#define COLOUR_NONE ((Colour){0})
-#define COLOUR_BLACK ((Colour){3})
-#define COLOUR_WHITE ((Colour){0xFF})
+#define RED ((uint8_t)0b11000011)
+#define YELLOW ((uint8_t)0b11110011)
+#define ORANGE ((uint8_t)0b11100011)
+#define GREEN ((uint8_t)0b00110011)
+#define CYAN ((uint8_t)0b00111111)
+#define BLUE ((uint8_t)0b00001111)
+#define MAGENTA ((uint8_t)0b11001111)
+
+#define NONE ((uint8_t)0)
+#define BLACK ((uint8_t)3)
+#define WHITE ((uint8_t)0xFF)
+
+
+#define COLOUR_RED ((Colour){RED})
+#define COLOUR_YELLOW ((Colour){YELLOW})
+#define COLOUR_ORANGE ((Colour){ORANGE})
+#define COLOUR_GREEN ((Colour){GREEN})
+#define COLOUR_CYAN ((Colour){CYAN})
+#define COLOUR_BLUE ((Colour){BLUE})
+#define COLOUR_MAGENTA ((Colour){MAGENTA})
+
+#define COLOUR_NONE ((Colour){NONE})
+#define COLOUR_BLACK ((Colour){BLACK})
+#define COLOUR_WHITE ((Colour){WHITE})
