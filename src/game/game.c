@@ -1,10 +1,41 @@
 #include "game.h"
 
 #include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
 
 #include "../main.h"
 #include "shapes.h"
 
+
+static void clear_row(Row* row, uint8_t y) {
+    // move the rows down from the specified height
+    for (; y > 0; y--)
+        memcpy(row[y].columns, row[y - 1].columns, COLUMNS * sizeof(Colour));
+
+    memset(row[0].columns, NONE, sizeof(Colour));
+}
+
+static void clear_rows(Row* row) {
+    // start at the lowest row
+    // integer will wrap
+    for (uint8_t y = ROWS - 1; y < ROWS; y--) {
+        Row* crow = &row[y];  // the current row
+        bool nfilled = false; // whether this row is filled
+
+        // loop through all the columns or till nfilled is true
+        for (uint8_t x = 0; x < COLUMNS; x++) {
+            if (crow->columns[x].packed == NONE) {
+                nfilled = true;
+                break;
+            }
+        }
+
+        // continue if the row isn;t filled
+        if (!nfilled)
+            clear_row(crow, y);
+    }
+}
 
 // sets a shape to the screen
 static void _set_shape(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x) {
