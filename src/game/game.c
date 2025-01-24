@@ -6,7 +6,8 @@
 #include "shapes.h"
 
 
-static void _add_shape(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x) {
+// sets a shape to the screen
+static void _set_shape(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x) {
     for (uint8_t y = 0; y < SHAPE_HEIGHT; y++) {
         ShapeRow shape_row = shape_get_row(shape, y);
 
@@ -19,8 +20,8 @@ static void _add_shape(Row* row, const Shape shape, const Colour colour, const u
     }
 }
 
-static inline void add_shape(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x, const uint8_t pos_y) {
-    _add_shape(&row[pos_y], shape, colour, pos_x);
+static inline void set_shape(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x, const uint8_t pos_y) {
+    _set_shape(&row[pos_y], shape, colour, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
 }
 
 // called every time the game's state is updated
@@ -29,14 +30,14 @@ void game_update(GameData* game_data, const Uint8* keys) {
         stop();
     }
 
-    add_shape(game_data->row, TETROMINO_I, COLOUR_CYAN, 1, 0);
-    add_shape(game_data->row, TETROMINO_O, COLOUR_YELLOW, 5, 4);
+    set_shape(game_data->row, TETROMINO_I, COLOUR_CYAN, 1, 0);
+    set_shape(game_data->row, TETROMINO_O, COLOUR_YELLOW, 5, 4);
 
-    add_shape(game_data->row, TETROMINO_Z, COLOUR_GREEN, 1, 8);
-    add_shape(game_data->row, TETROMINO_S, COLOUR_RED, 5, 8);
+    set_shape(game_data->row, TETROMINO_Z, COLOUR_GREEN, 1, 8);
+    set_shape(game_data->row, TETROMINO_S, COLOUR_RED, 5, 8);
 
-    add_shape(game_data->row, TETROMINO_J, COLOUR_BLUE, 1, 12);
-    add_shape(game_data->row, TETROMINO_L, COLOUR_ORANGE, 5, 12);
+    set_shape(game_data->row, TETROMINO_J, COLOUR_BLUE, 1, 12);
+    set_shape(game_data->row, TETROMINO_L, COLOUR_ORANGE, 5, 12);
 
-    add_shape(game_data->row, TETROMINO_T, COLOUR_MAGENTA, 5, 16);
+    set_shape(game_data->row, TETROMINO_T, COLOUR_MAGENTA, 5, 16);
 }
