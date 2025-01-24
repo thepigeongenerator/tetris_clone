@@ -1,18 +1,16 @@
 #pragma once
 #include <SDL2/SDL.h>
 
+#include "../window/colour.h"
+
 typedef uint32_t PackedRow;
 
 // stores the data used in the game
 #define COLUMNS ((uint8_t)(sizeof(PackedRow) * 8 / 3))
 #define ROWS ((uint8_t)(COLUMNS * 2))
 
-typedef union {
-    // NOTE: this has packing issues
-    struct {
-        uint8_t block : 3;
-    } columns[COLUMNS];
-    PackedRow val;
+typedef struct {
+    Colour columns[COLUMNS];
 } Row;
 
 typedef struct {
