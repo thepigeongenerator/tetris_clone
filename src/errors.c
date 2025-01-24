@@ -1,8 +1,9 @@
 #include "errors.h"
 
-#include <SDL2/SDL.h>
+#include <SDL_messagebox.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define MAX_STR_LEN 128
 

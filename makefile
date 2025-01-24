@@ -4,7 +4,7 @@ NAME = sdl_template
 CC := clang
 STD := c17
 LANG = c
-CFLAGS := $(shell pkg-config --cflags sdl2) -Wall -g
+CFLAGS := $(shell pkg-config --cflags sdl2) -Wall -g -pedantic
 LDFLAGS := $(shell pkg-config --libs sdl2) -lm
 
 # file locations

@@ -1,10 +1,15 @@
 // initializes the window and renderer
 #include "renderer.h"
 
-#include <SDL2/SDL.h>
+#include <SDL_error.h>
+#include <SDL_rect.h>
+#include <SDL_render.h>
+#include <SDL_video.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #include "../errors.h"
+#include "../game/game.h"
 #include "colour.h"
 #include "renderer.h"
 
