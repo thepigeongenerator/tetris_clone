@@ -1,13 +1,14 @@
 #pragma once
-#include <SDL2/SDL.h>
+#include <SDL_render.h>
+#include <SDL_video.h>
 #include <stdint.h>
 
 #include "../game/game.h"
 
-#define SCREEN_WIDTH 256
+#define SCREEN_WIDTH  256
 #define SCREEN_HEIGHT (SCREEN_WIDTH * 2)
-#define BLOCK_WIDTH (SCREEN_WIDTH / COLUMNS)
-#define BLOCK_HEIGHT (SCREEN_HEIGHT / ROWS)
+#define BLOCK_WIDTH   (SCREEN_WIDTH / COLUMNS)
+#define BLOCK_HEIGHT  (SCREEN_HEIGHT / ROWS)
 
 typedef struct {
     SDL_Window* window;

@@ -1,10 +1,12 @@
 #include "game.h"
 
+#include <SDL_scancode.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
 
 #include "../main.h"
+#include "../window/colour.h"
 #include "shapes.h"
 
 
@@ -38,7 +40,7 @@ static void clear_rows(Row* row) {
 }
 
 // sets a shape to the screen
-static void _set_shape(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x) {
+static void set_shape_i(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x) {
     for (uint8_t y = 0; y < SHAPE_HEIGHT; y++) {
         ShapeRow shape_row = shape_get_row(shape, y);
 
@@ -52,11 +54,11 @@ static void _set_shape(Row* row, const Shape shape, const Colour colour, const u
 }
 
 static inline void set_shape(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x, const uint8_t pos_y) {
-    _set_shape(&row[pos_y], shape, colour, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
+    set_shape_i(&row[pos_y], shape, colour, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
 }
 
 // called every time the game's state is updated
-void game_update(GameData* game_data, const Uint8* keys) {
+void game_update(GameData* game_data, const uint8_t* keys) {
     if (keys[SDL_SCANCODE_ESCAPE]) {
         stop();
     }
