@@ -2,8 +2,10 @@ NAME = sdl_template
 
 # compiler settings
 CC := clang
-CFLAGS = $(shell pkg-config --cflags sdl2) -Wall -g
-LDFLAGS = $(shell pkg-config --libs sdl2) -lm
+STD := c17
+LANG = c
+CFLAGS := $(shell pkg-config --cflags sdl2) -Wall -g
+LDFLAGS := $(shell pkg-config --libs sdl2) -lm
 
 # file locations
 DIR_BIN := bin
@@ -35,7 +37,7 @@ $(TARGET): $(OBJ)
 # creates .o and .d files, include a flag for no unused command line arguments, because in this context it's unneeded
 $(DIR_OBJ)/$(ARCH)/%.o: src/%.c
 	mkdir -p $(dir $@)
-	$(CC) -o $@ -MD -MP -c $< $(CFLAGS) -Wno-unused-command-line-argument
+	$(CC) -o $@ -MD -MP -c $< $(CFLAGS) -std=$(STD) -x $(LANG) -Wno-unused-command-line-argument
 
 $(DIR):
 	mkdir -p $@
