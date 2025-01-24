@@ -19,3 +19,7 @@ typedef union {
 #define COLOUR_CYAN ((Colour){0b00111111})
 #define COLOUR_BLUE ((Colour){0b00001111})
 #define COLOUR_MAGENTA ((Colour){0b11001111})
+
+#define COLOUR_NONE ((Colour){0})
+#define COLOUR_BLACK ((Colour){3})
+#define COLOUR_WHITE ((Colour){0xFF})
