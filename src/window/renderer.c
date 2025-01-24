@@ -5,6 +5,7 @@
 #include <stdio.h>
 
 #include "../errors.h"
+#include "colour.h"
 #include "renderer.h"
 
 
@@ -40,12 +41,12 @@ void renderer_update(const RenderData* render_data) {
         Row row = data->row[y];
 
         for (uint8_t x = 0; x < COLUMNS; x++) {
-            if (row.columns[x].block != 0) {
+            if (row.columns[x].packed != 0) {
                 success |= SDL_SetRenderDrawColor(renderer,
-                                                  0xFF * !!(row.columns[x].block & RED),
-                                                  0xFF * !!(row.columns[x].block & GREEN),
-                                                  0xFF * !!(row.columns[x].block & BLUE),
-                                                  0xFF);
+                                                  0x55 * row.columns[x].r, // repeat the 2 bits by multiplying by 0x55
+                                                  0x55 * row.columns[x].g,
+                                                  0x55 * row.columns[x].b,
+                                                  0x55 * row.columns[x].a);
                 success |= SDL_RenderFillRect(renderer, &(SDL_Rect){x * BLOCK_WIDTH + 1, y * BLOCK_HEIGHT + 1, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1});
             }
         }
