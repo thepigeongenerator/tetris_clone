@@ -1,13 +1,12 @@
 #pragma once
 #include <stdint.h>
 
-#include "../util/typed_enums.h"
-
 #define SHAPE_WIDTH  4
 #define SHAPE_HEIGHT 4
 
 
-typedef enum_t(uint16_t){
+typedef uint16_t Shape;
+enum {
     // clang-format off
     /*                              0    1    2    3         */
     TETROMINO_I     = 0x8888,    // 1000 1000 1000 1000      the I tetromino with no rotation
@@ -30,7 +29,7 @@ typedef enum_t(uint16_t){
     TETROMINO_Z     = 0xC600,    // 1100 0110 0000 0000      the Z tetromino with no rotation
     TETROMINO_Z_90  = 0x4C80,    // 0100 1100 1000 0000      the Z tetromino with a no rotation
     // clang-format on
-} Shape;
+};
 typedef uint8_t ShapeRow;
 
 static inline ShapeRow shape_get_row(Shape shape, uint8_t index) {
