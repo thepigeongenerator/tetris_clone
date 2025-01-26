@@ -1,4 +1,4 @@
-NAME = sdl_template
+NAME := tetris_clone
 
 # compiler settings
 CC := clang
