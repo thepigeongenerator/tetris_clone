@@ -2,20 +2,30 @@
     "version": "2.0.0",
     "configurations": [
         {
-            "name": "(lldb) C Launch",
+            "name": "(lldb) debug project",
             "type": "lldb",
             "request": "launch",
             "program": "",
             "linux": {
-                "program": "${workspaceFolder}/bin/linux-x86_64/tetris_clone",
-                "preLaunchTask": "build linux-x86_64"
+                "program": "make",
+                "args": [
+                    "run"
+                ],
+                "env": {
+                    "ARCH": "linux-x86_64",
+                    "DEBUG": "1",
+                },
             },
             "windows": {
-                "program": "${workspaceFolder}/bin/win-x86_64/sdl_template",
-                "preLaunchTask": "build win-x86_64"
+                "program": "make",
+                "args": [
+                    "run"
+                ],
+                "env": {
+                    "ARCH": "win-x86_64",
+                    "DEBUG": "1",
+                },
             },
-            "args": [],
-            "cwd": "${workspaceFolder}",
         }
     ]
 }
