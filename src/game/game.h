@@ -4,10 +4,8 @@
 
 #include "../window/colour.h"
 
-typedef uint32_t PackedRow;
-
 // stores the data used in the game
-#define COLUMNS ((uint8_t)(sizeof(PackedRow) * 8 / 3))
+#define COLUMNS ((uint8_t)10)
 #define ROWS    ((uint8_t)(COLUMNS * 2))
 
 typedef struct {
