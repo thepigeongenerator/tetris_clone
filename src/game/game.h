@@ -5,7 +5,7 @@
 #include "../window/colour.h"
 
 // stores the data used in the game
-#define COLUMNS ((uint8_t)10)
+#define COLUMNS ((uint8_t)16)
 #define ROWS    ((uint8_t)(COLUMNS * 2))
 
 typedef struct {
