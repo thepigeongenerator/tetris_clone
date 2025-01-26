@@ -7,7 +7,7 @@
 
 #include "../main.h"
 #include "../window/colour.h"
-#include "shapes.h"
+#include "./tetromino/shapes.h"
 
 
 static void clear_row(Row* row, uint8_t y) {
