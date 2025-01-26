@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "",
             "linux": {
-                "program": "${workspaceFolder}/bin/linux-x86_64/sdl_template",
+                "program": "${workspaceFolder}/bin/linux-x86_64/tetris_clone",
                 "preLaunchTask": "build linux-x86_64"
             },
             "windows": {
