@@ -1,5 +1,7 @@
 #include "shapes.h"
 
+#include "../../window/colour.h"
+
 /*                                          0    1    2    3         */
 #define TET_SHAPE_O     ((Shape)0xCC00) // 1100 1100 0000 0000      the O tetromino with no rotation
 #define TET_SHAPE_I     ((Shape)0x8888) // 1000 1000 1000 1000      the I tetromino with no rotation
@@ -37,4 +39,17 @@ Shape shape_from_id(ShapeId id) {
 
     // first 3 bits is the shape type, the rest is rotation data
     return shapes[id & 7][id >> 3];
+}
+
+Colour colour_from_id(ShapeId id) {
+    switch (id & 7) {
+    case TETROMINO_O: return COLOUR_YELLOW;
+    case TETROMINO_I: return COLOUR_CYAN;
+    case TETROMINO_S: return COLOUR_RED;
+    case TETROMINO_Z: return COLOUR_GREEN;
+    case TETROMINO_T: return COLOUR_MAGENTA;
+    case TETROMINO_L: return COLOUR_ORANGE;
+    case TETROMINO_J: return COLOUR_BLUE;
+    default: return COLOUR_NONE;
+    }
 }

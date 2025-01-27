@@ -39,7 +39,12 @@ void tmp_set_all(GameData* game_data) {
 }
 
 void tmp_set_random(GameData* game_data) {
-    uint32_t x = rand() % TETROMINO_COUNT;
+    ShapeId id = rand() % TETROMINO_COUNT;
 
-    //set_shape(game_data->row, shape, colour, 1, 1);
+    static int finished = 0;
+    if (finished)
+        return;
+
+    finished = 1;
+    set_shape(game_data->row, shape_from_id(id), colour_from_id(id), 1, 1);
 }
