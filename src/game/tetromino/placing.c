@@ -39,12 +39,15 @@ void tmp_set_all(GameData* game_data) {
 }
 
 void tmp_set_random(GameData* game_data) {
-    ShapeId id = rand() % TETROMINO_COUNT;
-
     static int finished = 0;
     if (finished)
         return;
 
     finished = 1;
-    set_shape(game_data->row, shape_from_id(id), colour_from_id(id), 1, 1);
+    for (uint8_t y = 0; y <= ROWS - SHAPE_HEIGHT; y += SHAPE_HEIGHT) {
+        for (uint8_t x = 0; x <= COLUMNS - SHAPE_WIDTH; x += SHAPE_WIDTH) {
+            const ShapeId id = (rand() % TETROMINO_COUNT) ;
+            set_shape(game_data->row, shape_from_id(id), colour_from_id(id), x, y);
+        }
+    }
 }
