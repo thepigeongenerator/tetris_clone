@@ -1,4 +1,5 @@
 #pragma once
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "../../window/colour.h"
@@ -27,10 +28,10 @@ enum {
 
 
 static inline ShapeRow shape_get_row(Shape shape, uint8_t index) {
-    return shape >> (((SHAPE_HEIGHT - 1) - index) * 4) & 0xF;
+    return shape >> (((SHAPE_HEIGHT - 1) - index) * SHAPE_WIDTH) & 0xF;
 }
 
-static inline _Bool is_set(ShapeRow row, uint8_t index) {
+static inline bool is_set(ShapeRow row, uint8_t index) {
     return (row >> ((SHAPE_WIDTH - 1) - index) & 1) != 0;
 }
 
