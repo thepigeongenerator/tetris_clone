@@ -40,38 +40,6 @@ void tmp_set_all(GameData* game_data) {
 
 void tmp_set_random(GameData* game_data) {
     uint32_t x = rand() % TETROMINO_COUNT;
-    Shape shape = 0;
-    Colour colour = {0};
-    switch (x) {
-    case 0:
-        shape = TETROMINO_I;
-        colour = COLOUR_CYAN;
-        break;
-    case 1:
-        shape = TETROMINO_J;
-        colour = COLOUR_BLUE;
-        break;
-    case 2:
-        shape = TETROMINO_L;
-        colour = COLOUR_ORANGE;
-        break;
-    case 3:
-        shape = TETROMINO_O;
-        colour = COLOUR_YELLOW;
-        break;
-    case 4:
-        shape = TETROMINO_S;
-        colour = COLOUR_RED;
-        break;
-    case 5:
-        shape = TETROMINO_T;
-        colour = COLOUR_MAGENTA;
-        break;
-    case 6:
-        shape = TETROMINO_Z;
-        colour = COLOUR_GREEN;
-        break;
-    }
 
-    set_shape(game_data->row, shape, colour, 1, 1);
+    //set_shape(game_data->row, shape, colour, 1, 1);
 }
