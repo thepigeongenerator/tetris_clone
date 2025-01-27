@@ -8,7 +8,7 @@ CFLAGS := $(shell pkg-config --cflags sdl2) -Wall -Wextra -Wpedantic -Wno-pointe
 LDFLAGS := $(shell pkg-config --libs sdl2) -lm
 
 ifeq ($(DEBUG),1)
-CFLAGS += -Og -g
+CFLAGS += -DDEBUG -Og -g
 else
 REL_FLAGS += -O3
 endif
@@ -69,8 +69,12 @@ $(DIR):
 # update compile commands if the makefile has been updated (for linting)
 ifeq ($(DEBUG),1)
 compile_commands.json: makefile
+	@touch compile_commands.json
+	$(MAKE) clean
+	@echo "compiling in non-debug mode"
 else
 compile_commands.json: makefile
+	@echo "compiling in debug mode"
 	@touch compile_commands.json
 	$(MAKE) clean
 	bear -- make
