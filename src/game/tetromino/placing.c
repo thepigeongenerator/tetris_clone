@@ -46,7 +46,7 @@ void tmp_set_random(GameData* game_data) {
     finished = 1;
     for (uint8_t y = 0; y <= ROWS - SHAPE_HEIGHT; y += SHAPE_HEIGHT) {
         for (uint8_t x = 0; x <= COLUMNS - SHAPE_WIDTH; x += SHAPE_WIDTH) {
-            const ShapeId id = (rand() % TETROMINO_COUNT) ;
+            const ShapeId id = (rand() % TETROMINO_COUNT) | ((rand() % 4) << 3);
             set_shape(game_data->row, shape_from_id(id), colour_from_id(id), x, y);
         }
     }
