@@ -4,7 +4,7 @@
 #define SHAPE_WIDTH  4
 #define SHAPE_HEIGHT 4
 
-
+#define TETROMINO_COUNT 7
 typedef uint16_t Shape;
 enum {
     // clang-format off

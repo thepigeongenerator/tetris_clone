@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "errors.h"
 #include "game/game.h"
@@ -41,6 +42,9 @@ static void init(void) {
         error(ERROR_SDL_RENDERER_INIT, SDL_GetError());
         return;
     }
+
+    // set a random seed using the system clock
+    srand(time(NULL));
 
     // initialize audio
     // AudioDevice* audio_device = audio_device_init(32000, AUDIO_S16, 1, 4096);
