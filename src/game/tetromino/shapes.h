@@ -21,8 +21,8 @@ enum {
     TETROMINO_ROTATED_270 = 24,
 };
 
-#define SHAPE_WIDTH     ((uint8_t)(sizeof(Shape) * 8 / 2))
-#define SHAPE_HEIGHT    ((uint8_t)(sizeof(Shape) * 8 / 2))
+#define SHAPE_WIDTH     4
+#define SHAPE_HEIGHT    4
 #define TETROMINO_COUNT 7
 
 
