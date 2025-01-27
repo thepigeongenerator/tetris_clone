@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 
+#include "../../window/colour.h"
+
 typedef uint16_t Shape;
 typedef uint8_t ShapeRow;
 
@@ -33,3 +35,4 @@ static inline _Bool is_set(ShapeRow row, uint8_t index) {
 }
 
 Shape shape_from_id(ShapeId id);
+Colour colour_from_id(ShapeId id);
