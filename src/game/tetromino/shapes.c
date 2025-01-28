@@ -14,12 +14,10 @@
 #define SHAPE_T_90  ((Shape)0x4C40) // 0100 1100 0100 0000      the T tetromino with a 90° rotation
 #define SHAPE_T_180 ((Shape)0x4E00) // 0100 1110 0000 0000      the T tetromino with a 180° rotation
 #define SHAPE_T_270 ((Shape)0x4640) // 0100 0110 0100 0000      the T tetromino with a 270° rotation
-
 #define SHAPE_L     ((Shape)0x4460) // 0100 0100 0110 0000      the L tetromino with no rotation
 #define SHAPE_L_90  ((Shape)0x0E80) // 0000 1110 1000 0000      the L tetromino with a 90° rotation
 #define SHAPE_L_180 ((Shape)0xC440) // 1100 0100 0100 0000      the L tetromino with a 180° rotation
 #define SHAPE_L_270 ((Shape)0x2E00) // 0010 1110 0000 0000      the L tetromino with a 270° rotation
-
 #define SHAPE_J     ((Shape)0x44C0) // 0100 0100 1100 0000      the J tetromino with no rotation
 #define SHAPE_J_90  ((Shape)0x0E20) // 0000 1110 0010 0000      the J tetromino with a 90° rotation
 #define SHAPE_J_180 ((Shape)0x6440) // 0110 0100 0100 0000      the J tetromino with a 180° rotation
