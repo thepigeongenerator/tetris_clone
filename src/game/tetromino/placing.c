@@ -8,7 +8,9 @@
 #include "shapes.h"
 
 // sets a shape to the screen
-static void set_shape_i(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x) {
+static void set_shape_i(Row* row, const ShapeId id, const uint8_t pos_x) {
+    const Shape shape = shape_from_id(id);
+    const Colour colour = colour_from_id(id);
     for (uint8_t y = 0; y < SHAPE_HEIGHT; y++) {
         ShapeRow shape_row = shape_get_row(shape, y);
 
@@ -21,21 +23,14 @@ static void set_shape_i(Row* row, const Shape shape, const Colour colour, const 
     }
 }
 
-static inline void set_shape(Row* row, const Shape shape, const Colour colour, const uint8_t pos_x, const uint8_t pos_y) {
-    set_shape_i(&row[pos_y], shape, colour, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
+static inline void set_shape(Row* row, const ShapeId id, const uint8_t pos_x, const uint8_t pos_y) {
+    set_shape_i(&row[pos_y], id, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
 }
 
 void tmp_set_all(GameData* game_data) {
-    set_shape(game_data->row, TETROMINO_I, COLOUR_CYAN, 1, 0);
-    set_shape(game_data->row, TETROMINO_O, COLOUR_YELLOW, 5, 4);
-
-    set_shape(game_data->row, TETROMINO_Z, COLOUR_GREEN, 1, 8);
-    set_shape(game_data->row, TETROMINO_S, COLOUR_RED, 5, 8);
-
-    set_shape(game_data->row, TETROMINO_J, COLOUR_BLUE, 1, 12);
-    set_shape(game_data->row, TETROMINO_L, COLOUR_ORANGE, 5, 12);
-
-    set_shape(game_data->row, TETROMINO_T, COLOUR_MAGENTA, 5, 16);
+    for (uint8_t i = 0; i < TETROMINO_COUNT; i++)
+        for (uint8_t r = 0; r < 4; r++)
+            set_shape(game_data->row, i | (r << 3), r * 4, i * 4);
 }
 
 void tmp_set_random(GameData* game_data) {
@@ -47,7 +42,7 @@ void tmp_set_random(GameData* game_data) {
     for (uint8_t y = 0; y <= ROWS - SHAPE_HEIGHT; y += SHAPE_HEIGHT) {
         for (uint8_t x = 0; x <= COLUMNS - SHAPE_WIDTH; x += SHAPE_WIDTH) {
             const ShapeId id = (rand() % TETROMINO_COUNT) | ((rand() % 4) << 3);
-            set_shape(game_data->row, shape_from_id(id), colour_from_id(id), x, y);
+            set_shape(game_data->row, id, x, y);
         }
     }
 }
