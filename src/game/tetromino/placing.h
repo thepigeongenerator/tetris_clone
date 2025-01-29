@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 #include "../game.h"
-#include "shapes.h"
 
 typedef uint8_t InputData;
 enum {
