@@ -102,6 +102,8 @@ void place_update(GameData* const game_data, const InputData move) {
         if (shape_intersects(game_data->row, selected->id, selected->x, y)) {
             set_shape(game_data->row, selected->id, selected->x, selected->y); // if the shape intersects vertically, write the shape at the current position and return
             clear_rows(game_data->row);                                        // clear the rows that have been completed
+            game_data->selected = (SelectedShape){game_data->next_shape, 0, 0};
+            set_next_shape(game_data);
             return;
         }
 

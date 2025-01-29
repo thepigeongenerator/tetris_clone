@@ -12,6 +12,11 @@
 #include "tetromino/placing.h"
 
 
+void set_next_shape(GameData* const game_data) {
+    ShapeId id = (rand() % TETROMINO_COUNT) | (rand() % 4 << 3);
+    game_data->next_shape = id;
+}
+
 void game_init(GameData* const game_data) {
     // zero-initialize the game data
     *game_data = (GameData){0};
@@ -20,7 +25,9 @@ void game_init(GameData* const game_data) {
     for (uint8_t i = 0; i < ROWS; i++)
         game_data->row[i] = game_data->row_raw[i];
 
-    game_data->selected = (SelectedShape){TETROMINO_L, 0, 0};
+    set_next_shape(game_data);
+    game_data->selected = (SelectedShape){game_data->next_shape, 0, 0};
+    set_next_shape(game_data);
 
     // set a random seed using the system clock
     srand(time(NULL));
