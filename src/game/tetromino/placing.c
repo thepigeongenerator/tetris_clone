@@ -17,36 +17,26 @@ static bool is_filled(CRow row) {
     return true;
 }
 
-static inline void set_row(Row* rows, const uint8_t y, Row row) {
-    rows[(ROWS - 1) - y] = row;
-}
-
 static void clear_rows(Row* row) {
-    uint8_t filled_rows = 0;
+    uint8_t filled = 0;
 
-    // loop through each row
-    for (uint8_t y = 0; y < ROWS; y++) {
-        // zero out the row instead if we've reached the top rows
-        if ((ROWS - y) <= filled_rows) {
-            for (uint8_t x = 0; x < COLUMNS; x++)
-                row[filled_rows--][x].packed = 0; // use filled_rows as the y index and decrease them as we go.
-            continue;
-        }
+    // loop through each row (excluding the empty rows at the top when clearing a line)
+    for (uint8_t y = 0; y < (ROWS - filled); y++) {
+        const uint8_t i = (ROWS - 1) - y; // get the index starting from the bottom
 
-        // get the row we currently need to check
-        Row crow = filled_rows > 0
-                       ? row[y + filled_rows]
-                       : row[y];
+        Row row_cache = row[i];   // cache this row address in case the row is filled
+        row[i] = row[i - filled]; // set the row to the new or same address
 
-        // set the current y to the current row
-        Row row_cache = row[y];
-        set_row(row, y, crow);
+        if (!is_filled(row[i])) continue;
 
-        if (!is_filled(crow)) continue;
+        // zero out the cache
+        for (uint8_t x = 0; x < COLUMNS; x++)
+            row_cache[x].packed = 0;
 
-        // write the cached row to the top if we know that the current row pointer will be lost
-        row[filled_rows] = row_cache;
-        filled_rows++;
+        // write the cached address to a row starting from the top
+        row[filled] = row_cache;
+        filled++;
+        row[i] = row[i - filled];
     }
 }
 
@@ -102,6 +92,7 @@ void place_update(GameData* const game_data, const InputData move) {
         if (shape_intersects(game_data->row, selected->id, selected->x, y)) {
             set_shape(game_data->row, selected->id, selected->x, selected->y); // if the shape intersects vertically, write the shape at the current position and return
             clear_rows(game_data->row);                                        // clear the rows that have been completed
+
             game_data->selected = (SelectedShape){game_data->next_shape, 0, 0};
             set_next_shape(game_data);
             return;
