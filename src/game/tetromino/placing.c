@@ -27,11 +27,13 @@ static inline void set_shape(Row* row, const ShapeId id, const uint8_t pos_x, co
     set_shape_i(&row[pos_y], id, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
 }
 
-void tmp_set_all(GameData* game_data) {
+#ifdef DEBUG
+void dbg_set_all(GameData* game_data) {
     for (uint8_t i = 0; i < TETROMINO_COUNT; i++)
         for (uint8_t r = 0; r < 4; r++)
             set_shape(game_data->row, i | (r << 3), r * 4, i * 4);
 }
+#endif
 
 void tmp_set_random(GameData* game_data) {
     static int finished = 0;
