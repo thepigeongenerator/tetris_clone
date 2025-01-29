@@ -12,6 +12,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "SDL_timer.h"
 #include "errors.h"
 #include "game/game.h"
 // #include "window/audio.h"
@@ -83,8 +84,10 @@ int main(int argc, char** argv) {
 
     init();
 
-    while (playing)
+    while (playing) {
         update();
+        SDL_Delay(50);
+    }
 
     // cleanup of resources
     SDL_Quit();
