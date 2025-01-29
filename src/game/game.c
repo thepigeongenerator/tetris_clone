@@ -25,12 +25,12 @@ void game_init(GameData* const game_data) {
     for (uint8_t i = 0; i < ROWS; i++)
         game_data->row[i] = game_data->row_raw[i];
 
+    // set a random seed using the system clock
+    srand(time(NULL));
+
     set_next_shape(game_data);
     game_data->selected = (SelectedShape){game_data->next_shape, 0, 0};
     set_next_shape(game_data);
-
-    // set a random seed using the system clock
-    srand(time(NULL));
 }
 
 // called every time the game's state is updated
