@@ -19,9 +19,9 @@ typedef const Colour* CRow;
 typedef Colour* Row;
 
 typedef struct {
-    SelectedShape selected;
     Colour* row[ROWS];             // stores how to interpert the raw level data
     Colour row_raw[ROWS][COLUMNS]; // stores the raw level data
+    SelectedShape selected;
 } GameData;
 
 void game_init(GameData* game_data);                        // initializes the game
