@@ -48,39 +48,39 @@ static bool shape_intersects(const Row* rows, const ShapeId id, const uint8_t x,
     return false;
 }
 
-void place_update(GameData* const game_data, const uint8_t* const keys) {
-    int8_t move = 0;
+static inline ShapeId rotate_id(const ShapeId id, const int dir) {
+    return (id + dir) & 31;
+}
 
-    if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A])
-        move |= 1;
-
-    if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D])
-        move |= 2;
-
-    if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_SPACE])
-        move |= 4;
-
-    // set the shape if we moved vertically and collided
-    if (!!(move & 4)) {
-        const uint8_t y = game_data->selected.y + 1;
-        if (shape_intersects(game_data->row, game_data->selected.id, game_data->selected.x, y)) {
-            set_shape(game_data->row, game_data->selected.id, game_data->selected.x, y);
+void place_update(GameData* const game_data, const InputData move) {
+    SelectedShape* const selected = &game_data->selected;
+    // set the shape if we moved vertically and intersected
+    if (move & 4) {
+        const uint8_t y = selected->y + 1;
+        if (shape_intersects(game_data->row, selected->id, selected->x, y)) {
+            set_shape(game_data->row, selected->id, selected->x, selected->y); // if the shape intersects vertically, write the shape at the current position and return
             return;
         }
 
-        game_data->selected.y = y;
+        // otherwise, just set Y
+        selected->y = y;
     }
 
-    // ignore if the movement cancles itself out
-    if ((move & 3) == 0 || (move & 3) == 3)
-        return;
+    // update shape's X coordinate movement
+    if ((move & 3) != 3 && (move & 3)) {
+        const uint8_t x = selected->x + ((move & 3) == 1 ? -1 : 1); // either move along -x or +x
+        if (shape_intersects(game_data->row, selected->id, x, selected->y) == false) {
+            selected->x = x; // set X if the shape does not intersect
+        }
+    }
 
-    const uint8_t x = game_data->selected.x + ((move & 3) == 1 ? -1 : 1);
-    if (shape_intersects(game_data->row, game_data->selected.id, x, game_data->selected.y))
-        return;
-
-    game_data->selected.x = x;
-    printf("%i\n", x);
+    // update the shape's rotation
+    if (move & 8 || move & 16) {
+        const ShapeId id = move & 8 ? rotate_id(selected->id, -8) : rotate_id(selected->id, 8);
+        if (shape_intersects(game_data->row, id, selected->x, selected->y) == false) {
+            selected->id = id;
+        }
+    }
 }
 
 #ifdef DEBUG

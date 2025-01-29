@@ -77,6 +77,13 @@ void game_update(GameData* game_data, const uint8_t* keys) {
     if (keys[SDL_SCANCODE_ESCAPE])
         stop();
 
-    place_update(game_data, keys);
+    InputData move = MOVE_NONE;
+    if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) move |= MOVE_LEFT;
+    if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) move |= MOVE_RIGHT;
+    if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_SPACE]) move |= MOVE_DOWN;
+    if (keys[SDL_SCANCODE_Q]) move |= MOVE_ROTLEFT;
+    if (keys[SDL_SCANCODE_E]) move |= MOVE_ROTRIGHT;
+    place_update(game_data, move);
+
     // dbg_set_all(game_data);
 }
