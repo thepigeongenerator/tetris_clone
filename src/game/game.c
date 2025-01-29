@@ -40,12 +40,31 @@ static void clear_rows(Row* row) {
     }
 }
 
+static void update_input(GameData* game_data, const uint8_t* keys) {
+    if (keys[SDL_SCANCODE_ESCAPE])
+        stop();
+
+    if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_SPACE])
+        game_data->selected.y++;
+
+    if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A])
+        game_data->selected.x--;
+
+    if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D])
+        game_data->selected.y++;
+}
+
+
 // called every time the game's state is updated
 void game_update(GameData* game_data, const uint8_t* keys) {
-    if (keys[SDL_SCANCODE_ESCAPE]) {
-        stop();
+    static int x = 0;
+    if (!x) {
+        x = 1;
+        game_data->selected = (SelectedShape){TETROMINO_L, 0, 0};
     }
 
+    update_input(game_data, keys);
+
     // tmp_set_random(game_data);
-    tmp_set_all(game_data);
+    // tmp_set_all(game_data);
 }
