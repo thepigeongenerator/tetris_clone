@@ -21,6 +21,8 @@ void game_init(GameData* const game_data) {
     for (uint8_t i = 0; i < ROWS; i++)
         game_data->row[i] = game_data->row_raw[i];
 
+    game_data->selected = (SelectedShape){TETROMINO_L, 0, 0};
+
     // set a random seed using the system clock
     srand(time(NULL));
 }
@@ -68,31 +70,13 @@ static void clear_rows(Row* row) {
     }
 }
 
-static void update_input(GameData* game_data, const uint8_t* keys) {
-    if (keys[SDL_SCANCODE_ESCAPE])
-        stop();
-
-    if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_SPACE])
-        game_data->selected.y++;
-
-    if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A])
-        game_data->selected.x--;
-
-    if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D])
-        game_data->selected.x++;
-}
 
 
 // called every time the game's state is updated
 void game_update(GameData* game_data, const uint8_t* keys) {
-    static int x = 0;
-    if (!x) {
-        x = 1;
-        game_data->selected = (SelectedShape){TETROMINO_L, 0, 0};
-    }
+    if (keys[SDL_SCANCODE_ESCAPE])
+        stop();
 
-    update_input(game_data, keys);
-
-    // tmp_set_random(game_data);
-    dbg_set_all(game_data);
+    place_update(game_data, keys);
+    // dbg_set_all(game_data);
 }

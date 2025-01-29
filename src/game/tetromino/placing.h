@@ -1,7 +1,13 @@
 #pragma once
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "../game.h"
+#include "shapes.h"
 
+void place_update(GameData* game_data, const uint8_t* keys);
 
-void tmp_set_random(GameData* game_data);
+#ifdef DEBUG
 void dbg_set_all(GameData* game_data);
+#endif
