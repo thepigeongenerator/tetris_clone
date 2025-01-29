@@ -34,7 +34,7 @@ int renderer_init(SDL_Window** window, SDL_Renderer** renderer) {
 }
 
 // draws a block at the specified position
-static inline int draw_block(SDL_Renderer* renderer, uint8_t x, uint8_t y) {
+static inline int draw_block(SDL_Renderer* renderer, int8_t x, int8_t y) {
     return SDL_RenderFillRect(renderer, &(SDL_Rect){x * BLOCK_WIDTH + 1, y * BLOCK_HEIGHT + 1, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1});
 }
 
@@ -48,13 +48,13 @@ static void render_selected(SDL_Renderer* renderer, SelectedShape selected) {
     Shape selected_shape = shape_from_id(selected.id);
     set_colour(renderer, colour_from_id(selected.id));
 
-    for (uint8_t y = 0; y < SHAPE_HEIGHT; y++) {
+    for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
         ShapeRow shape_row = shape_get_row(selected_shape, y);
 
         if (shape_row == 0)
             continue;
 
-        for (uint8_t x = 0; x < SHAPE_WIDTH; x++)
+        for (int8_t x = 0; x < SHAPE_WIDTH; x++)
             if (is_set(shape_row, x))
                 draw_block(renderer, selected.x + x, selected.y + y);
     }
@@ -62,10 +62,10 @@ static void render_selected(SDL_Renderer* renderer, SelectedShape selected) {
 
 // draw the block data in the level
 static void render_level(SDL_Renderer* renderer, GameData* data) {
-    for (uint8_t y = 0; y < ROWS; y++) {
+    for (int8_t y = 0; y < ROWS; y++) {
         Row row = data->row[y];
 
-        for (uint8_t x = 0; x < COLUMNS; x++) {
+        for (int8_t x = 0; x < COLUMNS; x++) {
             if (row[x].packed != 0) {
                 set_colour(renderer, row[x]);
                 draw_block(renderer, x, y);

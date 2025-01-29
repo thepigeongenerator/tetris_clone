@@ -6,13 +6,13 @@
 #include "tetromino/shapes.h"
 
 // stores the data used in the game
-#define COLUMNS ((uint8_t)16)
-#define ROWS    ((uint8_t)(COLUMNS * 2))
+#define COLUMNS ((int8_t)16)
+#define ROWS    ((int8_t)(COLUMNS * 2))
 
 typedef struct {
     ShapeId id;
-    uint8_t x;
-    uint8_t y;
+    int8_t x;
+    int8_t y;
 } SelectedShape;
 
 typedef const Colour* CRow;

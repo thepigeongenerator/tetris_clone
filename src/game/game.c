@@ -22,7 +22,7 @@ void game_init(GameData* const game_data) {
     *game_data = (GameData){0};
 
     // write the pointer information for the rows
-    for (uint8_t i = 0; i < ROWS; i++)
+    for (int8_t i = 0; i < ROWS; i++)
         game_data->row[i] = game_data->row_raw[i];
 
     // set a random seed using the system clock
