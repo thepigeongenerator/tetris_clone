@@ -94,5 +94,5 @@ void game_update(GameData* game_data, const uint8_t* keys) {
     update_input(game_data, keys);
 
     // tmp_set_random(game_data);
-    tmp_set_all(game_data);
+    dbg_set_all(game_data);
 }
