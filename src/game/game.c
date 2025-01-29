@@ -29,7 +29,7 @@ void game_init(GameData* const game_data) {
     srand(time(NULL));
 
     set_next_shape(game_data);
-    game_data->selected = (SelectedShape){game_data->next_shape, 0, 0};
+    game_data->selected = (SelectedShape){game_data->next_shape, COLUMNS / 2 - SHAPE_WIDTH / 2, 0};
     set_next_shape(game_data);
 }
 
