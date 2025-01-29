@@ -1,6 +1,7 @@
 #include "placing.h"
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include "../../window/colour.h"
 #include "../game.h"
@@ -31,13 +32,16 @@ static void clear_rows(Row* row) {
 
         // zero out the cache
         for (int8_t x = 0; x < COLUMNS; x++)
-            row_cache[x].packed = 0;
+            row[i][x].packed = 0;
 
         // write the cached address to a row starting from the top
-        row[filled] = row_cache;
-        filled++;
+        row[filled++] = row_cache;
         row[i] = row[i - filled];
+        y--;
     }
+
+    if (filled > 0)
+        printf("filled: %i\n", filled);
 }
 
 // sets a shape to the screen
