@@ -43,8 +43,8 @@ static void init(void) {
         return;
     }
 
-    // set a random seed using the system clock
-    srand(time(NULL));
+    // initialize the game
+    game_init(&game_data);
 
     // initialize audio
     // AudioDevice* audio_device = audio_device_init(32000, AUDIO_S16, 1, 4096);

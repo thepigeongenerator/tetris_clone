@@ -19,7 +19,7 @@ static void set_shape_i(Row* row, const ShapeId id, const uint8_t pos_x) {
 
         for (uint8_t x = 0; x < SHAPE_WIDTH; x++)
             if (is_set(shape_row, x))
-                row[y].columns[x + pos_x] = colour;
+                row[y][x + pos_x] = colour;
     }
 }
 
