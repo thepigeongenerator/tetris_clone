@@ -74,8 +74,8 @@ void renderer_update(const RenderData* render_data) {
         Row row = data->row[y];
 
         for (uint8_t x = 0; x < COLUMNS; x++) {
-            if (row.columns[x].packed != 0) {
-                set_colour(renderer, row.columns[x]);
+            if (row[x].packed != 0) {
+                set_colour(renderer, row[x]);
                 success |= draw_block(renderer, x, y);
             }
         }

@@ -15,15 +15,14 @@ typedef struct {
     uint8_t y;
 } SelectedShape;
 
-typedef struct {
-    Colour columns[COLUMNS];
-} Row;
-
+typedef const Colour* CRow;
+typedef Colour* Row;
 
 typedef struct {
     SelectedShape selected;
-    Row row[ROWS];
+    Colour* row[ROWS];             // stores how to interpert the raw level data
+    Colour row_raw[ROWS][COLUMNS]; // stores the raw level data
 } GameData;
 
-// updates the game's state
-void game_update(GameData* game_data, const uint8_t* keys);
+void game_init(GameData* game_data);                        // initializes the game
+void game_update(GameData* game_data, const uint8_t* keys); // updates the game's state
