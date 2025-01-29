@@ -51,7 +51,7 @@ static void update_input(GameData* game_data, const uint8_t* keys) {
         game_data->selected.x--;
 
     if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D])
-        game_data->selected.y++;
+        game_data->selected.x++;
 }
 
 
