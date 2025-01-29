@@ -34,3 +34,28 @@ typedef union {
 #define COLOUR_BLUE    ((Colour){BLUE})
 #define COLOUR_MAGENTA ((Colour){MAGENTA})
 #define COLOUR_WHITE   ((Colour){WHITE})
+
+// gets the red channel in 32 bit colour space
+static inline uint8_t colour_red32(Colour colour) {
+    return colour.r * 0x55;
+}
+
+// gets the green channel in 32 bit colour space
+static inline uint8_t colour_green32(Colour colour) {
+    return colour.g * 0x55;
+}
+
+// gets the blue channel in 32 bit colour space
+static inline uint8_t colour_blue32(Colour colour) {
+    return colour.b * 0x55;
+}
+
+// gets the alpha channel in 32 bit colour space
+static inline uint8_t colour_alpha32(Colour colour) {
+    return colour.a * 0x55;
+}
+
+// gets the packed colour in 32 bit colour space
+static inline uint32_t colour_packed32(Colour colour) {
+    return colour.packed * 0x55;
+}
