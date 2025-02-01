@@ -8,6 +8,7 @@
 #include <time.h>
 
 #include "../main.h"
+#include "../window/colour.h"
 #include "./tetromino/shapes.h"
 #include "tetromino/placing.h"
 
@@ -21,9 +22,9 @@ void game_init(GameData* const game_data) {
     // zero-initialize the game data
     *game_data = (GameData){0};
 
-    // write the pointer information for the rows
+    // allocate size for each row
     for (int8_t i = 0; i < ROWS; i++)
-        game_data->row[i] = game_data->row_raw[i];
+        game_data->rows[i] = calloc(COLUMNS, sizeof(Colour));
 
     // set a random seed using the system clock
     srand(time(NULL));
@@ -47,4 +48,12 @@ void game_update(GameData* game_data, const uint8_t* keys) {
     place_update(game_data, move);
 
     // dbg_set_all(game_data);
+}
+
+void game_free(GameData* const game_data) {
+    // clear each row
+    for (int8_t i = 0; i < ROWS; i++) {
+        free(game_data->rows[i]);
+        game_data->rows[i] = NULL;
+    }
 }

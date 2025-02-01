@@ -19,8 +19,7 @@ typedef const Colour* CRow;
 typedef Colour* Row;
 
 typedef struct {
-    Colour* row[ROWS];             // stores how to interpert the raw level data
-    Colour row_raw[ROWS][COLUMNS]; // stores the raw level data
+    Row rows[ROWS];
     SelectedShape selected;
     ShapeId next_shape;
 } GameData;
@@ -28,3 +27,4 @@ typedef struct {
 void set_next_shape(GameData* game_data);
 void game_init(GameData* game_data);                        // initializes the game
 void game_update(GameData* game_data, const uint8_t* keys); // updates the game's state
+void game_free(GameData* game_data);                        // free all data stored with the game

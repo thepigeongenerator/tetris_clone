@@ -90,6 +90,7 @@ int main(int argc, char** argv) {
     }
 
     // cleanup of resources
+    game_free(&game_data);
     SDL_Quit();
 
     return 0;
