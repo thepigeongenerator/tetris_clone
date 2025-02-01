@@ -1,7 +1,6 @@
 #include "placing.h"
 
 #include <stdint.h>
-#include <stdio.h>
 
 #include "../../window/colour.h"
 #include "../game.h"
@@ -18,30 +17,39 @@ static bool is_filled(CRow row) {
     return true;
 }
 
-static void clear_rows(Row* row) {
-    int8_t filled = 0;
+static void clear_rows(Row* rows) {
+    Row cache[4] = {0}; // you can only clear four rows at a time
+    struct {
+        uint8_t filled  : 3; // values will only ever be 0..4 (use extra bit for carry)
+        uint8_t checked : 3; // values will only ever be 0..4 (use extra bit for carry)
+    } dat = {0};
 
     // loop through each row (excluding the empty rows at the top when clearing a line)
-    for (int8_t y = 0; y < (ROWS - filled); y++) {
+    for (int8_t y = 0; y < (ROWS - dat.filled); y++) {
         const int8_t i = (ROWS - 1) - y; // get the index starting from the bottom
 
-        Row row_cache = row[i];   // cache this row address in case the row is filled
-        row[i] = row[i - filled]; // set the row to the new or same address
+        rows[i] = rows[i - dat.filled]; // set the row to the new or same address
 
-        if (!is_filled(row[i])) continue;
+        // continue if the line isn't filled or the max amount has been reached
+        if (dat.checked >= 4 || !is_filled(rows[i])) {
+            if (dat.filled > 0 && dat.checked < 4) dat.checked++;
+            continue; // continue to the next line
+        }
 
-        // zero out the cache
-        for (int8_t x = 0; x < COLUMNS; x++)
-            row[i][x].packed = 0;
-
-        // write the cached address to a row starting from the top
-        row[filled++] = row_cache;
-        row[i] = row[i - filled];
-        y--;
+        cache[dat.filled] = rows[i]; // cache the current row address
+        dat.filled++;                // increase filled, and keep the row in the cache
+        dat.checked++;               // increase the checked count
+        y--;                         // decrease y to check this line again
     }
 
-    if (filled > 0)
-        printf("filled: %i\n", filled);
+    while (dat.filled > 0) {
+        dat.filled--;
+        rows[dat.filled] = cache[dat.filled];
+
+        // zero out the filled row
+        for (int8_t x = 0; x < COLUMNS; x++)
+            cache[dat.filled][x].packed = 0;
+    }
 }
 
 // sets a shape to the screen
