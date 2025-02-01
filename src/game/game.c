@@ -23,8 +23,10 @@ void game_init(GameData* const game_data) {
     *game_data = (GameData){0};
 
     // allocate size for each row
-    for (int8_t i = 0; i < ROWS; i++)
+    for (int8_t i = 0; i < ROWS; i++) {
         game_data->rows[i] = calloc(COLUMNS, sizeof(Colour));
+        //game_data->rows[i][0] = (Colour){(uint8_t)((((i + 1) ^ ((i + 1) >> 3)) * 0x27) & 0xFF)}; // for debugging
+    }
 
     // set a random seed using the system clock
     srand(time(NULL));
