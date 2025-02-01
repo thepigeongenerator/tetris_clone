@@ -63,7 +63,7 @@ static void render_selected(SDL_Renderer* renderer, SelectedShape selected) {
 // draw the block data in the level
 static void render_level(SDL_Renderer* renderer, GameData* data) {
     for (int8_t y = 0; y < ROWS; y++) {
-        Row row = data->row[y];
+        Row row = data->rows[y];
 
         for (int8_t x = 0; x < COLUMNS; x++) {
             if (row[x].packed != 0) {

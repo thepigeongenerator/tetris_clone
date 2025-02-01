@@ -93,9 +93,9 @@ void place_update(GameData* const game_data, const InputData move) {
     // set the shape if we moved vertically and intersected
     if (move & 4) {
         const int8_t y = selected->y + 1;
-        if (shape_intersects(game_data->row, selected->id, selected->x, y)) {
-            set_shape(game_data->row, selected->id, selected->x, selected->y); // if the shape intersects vertically, write the shape at the current position and return
-            clear_rows(game_data->row);                                        // clear the rows that have been completed
+        if (shape_intersects(game_data->rows, selected->id, selected->x, y)) {
+            set_shape(game_data->rows, selected->id, selected->x, selected->y); // if the shape intersects vertically, write the shape at the current position and return
+            clear_rows(game_data->rows);                                        // clear the rows that have been completed
 
             game_data->selected = (SelectedShape){game_data->next_shape, COLUMNS / 2 - SHAPE_WIDTH / 2, 0};
             set_next_shape(game_data);
@@ -109,7 +109,7 @@ void place_update(GameData* const game_data, const InputData move) {
     // update shape's X coordinate movement
     if ((move & 3) != 3 && (move & 3)) {
         const int8_t x = selected->x + ((move & 3) == 1 ? -1 : 1); // either move along -x or +x
-        if (shape_intersects(game_data->row, selected->id, x, selected->y) == false) {
+        if (shape_intersects(game_data->rows, selected->id, x, selected->y) == false) {
             selected->x = x; // set X if the shape does not intersect
         }
     }
@@ -117,7 +117,7 @@ void place_update(GameData* const game_data, const InputData move) {
     // update the shape's rotation
     if (move & 8 || move & 16) {
         const ShapeId id = move & 8 ? rotate_id(selected->id, -8) : rotate_id(selected->id, 8);
-        if (shape_intersects(game_data->row, id, selected->x, selected->y) == false) {
+        if (shape_intersects(game_data->rows, id, selected->x, selected->y) == false) {
             selected->id = id;
         }
     }
@@ -127,6 +127,6 @@ void place_update(GameData* const game_data, const InputData move) {
 void dbg_set_all(GameData* game_data) {
     for (uint8_t i = 0; i < TETROMINO_COUNT; i++)
         for (uint8_t r = 0; r < 4; r++)
-            set_shape(game_data->row, i | (r << 3), r * 4, i * 4);
+            set_shape(game_data->rows, i | (r << 3), r * 4, i * 4);
 }
 #endif
