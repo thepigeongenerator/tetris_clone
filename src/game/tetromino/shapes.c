@@ -10,15 +10,15 @@
 #define SHAPE_I_180 ((Shape)0x00F0) // 0000 0000 1111 0000      the I tetromino with a 180° rotation
 #define SHAPE_I_270 ((Shape)0x4444) // 0100 0100 0100 0100      the I tetromino with a 270° rotation
 
-#define SHAPE_S     ((Shape)0x6C00) // 0110 1100 0000 0000      the S tetromino with no rotation
-#define SHAPE_S_90  ((Shape)0x4620) // 0100 0110 0010 0000      the S tetromino with a 90° rotation
-#define SHAPE_S_180 ((Shape)0x06C0) // 0000 0110 1100 0000      the S tetromino with a 180° rotation
-#define SHAPE_S_270 ((Shape)0x8C40) // 1000 1100 0100 0000      the S tetromino with a 270° rotation
+#define SHAPE_S     ((Shape)0xC600) // 1100 0110 0000 0000      the Z tetromino with no rotation
+#define SHAPE_S_90  ((Shape)0x2640) // 0010 0110 0100 0000      the Z tetromino with a 90° rotation
+#define SHAPE_S_180 ((Shape)0x0C60) // 0000 1100 0110 0000      the Z tetromino with a 180° rotation
+#define SHAPE_S_270 ((Shape)0x4C80) // 0100 1100 1000 0000      the Z tetromino with a 270° rotation
 
-#define SHAPE_Z     ((Shape)0xC600) // 1100 0110 0000 0000      the Z tetromino with no rotation
-#define SHAPE_Z_90  ((Shape)0x2640) // 0010 0110 0100 0000      the Z tetromino with a 90° rotation
-#define SHAPE_Z_180 ((Shape)0x0C60) // 0000 1100 0110 0000      the Z tetromino with a 180° rotation
-#define SHAPE_Z_270 ((Shape)0x4C80) // 0100 1100 1000 0000      the Z tetromino with a 270° rotation
+#define SHAPE_Z     ((Shape)0x6C00) // 0110 1100 0000 0000      the S tetromino with no rotation
+#define SHAPE_Z_90  ((Shape)0x4620) // 0100 0110 0010 0000      the S tetromino with a 90° rotation
+#define SHAPE_Z_180 ((Shape)0x06C0) // 0000 0110 1100 0000      the S tetromino with a 180° rotation
+#define SHAPE_Z_270 ((Shape)0x8C40) // 1000 1100 0100 0000      the S tetromino with a 270° rotation
 
 #define SHAPE_T     ((Shape)0x0E40) // 0000 1110 0100 0000      the T tetromino with no rotation
 #define SHAPE_T_90  ((Shape)0x4C40) // 0100 1100 0100 0000      the T tetromino with a 90° rotation
