@@ -24,6 +24,7 @@ void next_shape(GameData* const game_data) {
 
     game_data->curr_idx = 0;
 
+    // BUG: seventh element is overritten (but when starting the seventh element will always be J if we just exclude the last one from sorting)
     // shuffle the next shapes using a Fisher–Yates shuffle
     for (uint8_t i = 0; i < (TETROMINO_COUNT - 1); i++) {
         const uint8_t j = i + rand() % (TETROMINO_COUNT - i);
