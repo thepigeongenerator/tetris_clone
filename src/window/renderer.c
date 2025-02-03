@@ -35,7 +35,7 @@ int renderer_init(SDL_Window** window, SDL_Renderer** renderer) {
 
 // draws a block at the specified position
 static inline int draw_block(SDL_Renderer* renderer, int8_t x, int8_t y) {
-    return SDL_RenderFillRect(renderer, &(SDL_Rect){x * BLOCK_WIDTH + 1, y * BLOCK_HEIGHT + 1, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1});
+    return SDL_RenderFillRect(renderer, &(SDL_Rect){x * BLOCK_WIDTH + 1 + TET_PADDING, y * BLOCK_HEIGHT + 1 + TET_PADDING, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1});
 }
 
 // sets the colour32 from the colour8
@@ -83,6 +83,9 @@ void renderer_update(const RenderData* render_data) {
     // clear render
     set_colour(renderer, COLOUR_BLACK);
     success |= SDL_RenderClear(renderer);
+
+    set_colour(renderer, COLOUR_WHITE);
+    SDL_RenderDrawRect(renderer, &(SDL_Rect){TET_PADDING, TET_PADDING, TET_WIDTH + 1, TET_HEIGHT + 1});
 
     render_level(renderer, render_data->game_data);
     render_selected(renderer, render_data->game_data);
