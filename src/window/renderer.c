@@ -43,9 +43,8 @@ static inline void set_colour(SDL_Renderer* renderer, Colour8 c) {
     (void)SDL_SetRenderDrawColor(renderer, colour8_red32(c), colour8_green32(c), colour8_blue32(c), 0xFF);
 }
 
-// draw the selected block
-static void render_selected(SDL_Renderer* renderer, GameData* const game_data) {
-    const ShapeId id = game_data->nxt[game_data->curr_idx];
+// draws a shape at the specified position
+static void draw_shape(SDL_Renderer* const renderer, const ShapeId id, const int8_t pos_x, const int8_t pos_y) {
     const Shape shape = shape_from_id(id);
     set_colour(renderer, colour_from_id(id));
 
@@ -57,7 +56,7 @@ static void render_selected(SDL_Renderer* renderer, GameData* const game_data) {
 
         for (int8_t x = 0; x < SHAPE_WIDTH; x++)
             if (is_set(shape_row, x))
-                draw_block(renderer, game_data->sel_x + x, game_data->sel_y + y);
+                draw_block(renderer, pos_x + x, pos_y + y);
     }
 }
 
@@ -76,7 +75,9 @@ static void render_level(SDL_Renderer* renderer, GameData* data) {
 }
 
 void renderer_update(const RenderData* render_data) {
-    SDL_Renderer* renderer = render_data->renderer;
+    SDL_Renderer* const renderer = render_data->renderer;
+    const GameData* game_data = render_data->game_data;
+
 
     int success = 0; // if an error occurs, this value is <0
 
@@ -86,9 +87,10 @@ void renderer_update(const RenderData* render_data) {
 
     set_colour(renderer, COLOUR_WHITE);
     SDL_RenderDrawRect(renderer, &(SDL_Rect){TET_PADDING, TET_PADDING, TET_WIDTH + 1, TET_HEIGHT + 1});
+    draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS, 2);
 
     render_level(renderer, render_data->game_data);
-    render_selected(renderer, render_data->game_data);
+    draw_shape(renderer, game_data->nxt[game_data->curr_idx], game_data->sel_x, game_data->sel_y);
 
     if (success < 0) {
         warn("something went wrong whilst renderering! SDL Error: %s\n", SDL_GetError());
