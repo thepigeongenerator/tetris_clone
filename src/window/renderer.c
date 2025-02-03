@@ -70,6 +70,9 @@ static void render_level(SDL_Renderer* renderer, GameData* data) {
             if (row[x].packed != 0) {
                 set_colour(renderer, row[x]);
                 draw_block(renderer, x, y);
+            } else {
+                set_colour(renderer, (Colour){0});
+                draw_block(renderer, x, y);
             }
         }
     }
@@ -84,8 +87,8 @@ void renderer_update(const RenderData* render_data) {
     success |= SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     success |= SDL_RenderClear(renderer);
 
-    render_selected(renderer, render_data->game_data);
     render_level(renderer, render_data->game_data);
+    render_selected(renderer, render_data->game_data);
 
     if (success < 0) {
         warn("something went wrong whilst renderering! SDL Error: %s\n", SDL_GetError());
