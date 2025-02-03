@@ -13,9 +13,24 @@
 #include "tetromino/placing.h"
 
 
-void set_next_shape(GameData* const game_data) {
-    ShapeId id = (rand() % TETROMINO_COUNT) | (rand() % 4 << 3);
-    game_data->next_shape = id;
+void next_shape(GameData* const game_data) {
+    game_data->curr_idx++;                            // increase the current shape index
+    game_data->sel_x = COLUMNS / 2 - SHAPE_WIDTH / 2; // move the shape position to the centre
+    game_data->sel_y = 0;
+
+    // return if know which shape is next
+    if (game_data->curr_idx < (TETROMINO_COUNT - 1))
+        return;
+
+    game_data->curr_idx = 0;
+
+    // shuffle the next shapes using a Fisher–Yates shuffle
+    for (uint8_t i = 0; i < (TETROMINO_COUNT - 1); i++) {
+        const uint8_t j = i + rand() % (TETROMINO_COUNT - i);
+        const ShapeId cache = game_data->nxt[i];
+        game_data->nxt[i] = game_data->nxt[j];
+        game_data->nxt[j] = cache;
+    }
 }
 
 void game_init(GameData* const game_data) {
@@ -25,15 +40,18 @@ void game_init(GameData* const game_data) {
     // allocate size for each row
     for (int8_t i = 0; i < ROWS; i++) {
         game_data->rows[i] = calloc(COLUMNS, sizeof(Colour));
-        //game_data->rows[i][0] = (Colour){(uint8_t)((((i + 1) ^ ((i + 1) >> 3)) * 0x27) & 0xFF)}; // for debugging
+        // game_data->rows[i][0] = (Colour){(uint8_t)((((i + 1) ^ ((i + 1) >> 3)) * 0x27) & 0xFF)}; // for debugging
     }
 
     // set a random seed using the system clock
     srand(time(NULL));
 
-    set_next_shape(game_data);
-    game_data->selected = (SelectedShape){game_data->next_shape, COLUMNS / 2 - SHAPE_WIDTH / 2, 0};
-    set_next_shape(game_data);
+    // set the shape data in each slot to it's corrsponding ID
+    for (ShapeId i = 0; i < TETROMINO_COUNT; i++)
+        game_data->nxt[i] = i;
+
+    game_data->curr_idx = ~1; // set the current index to the max (well, so it becomes the max after increment)
+    next_shape(game_data);    // select the next shape (a refresh is triggered due to the current index being too high)
 }
 
 // called every time the game's state is updated

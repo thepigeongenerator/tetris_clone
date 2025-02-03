@@ -97,36 +97,39 @@ static inline ShapeId rotate_id(const ShapeId id, const int dir) {
 }
 
 void place_update(GameData* const game_data, const InputData move) {
-    SelectedShape* const selected = &game_data->selected;
+    // store the current index, only changes when placed (which yields no movement) and rotation (which occurs last)
+    ShapeId const curr_idx = game_data->curr_idx;
+
     // set the shape if we moved vertically and intersected
     if (move & 4) {
-        const int8_t y = selected->y + 1;
-        if (shape_intersects(game_data->rows, selected->id, selected->x, y)) {
-            set_shape(game_data->rows, selected->id, selected->x, selected->y); // if the shape intersects vertically, write the shape at the current position and return
-            clear_rows(game_data->rows);                                        // clear the rows that have been completed
+        const int8_t y = game_data->sel_y + 1;
+        if (shape_intersects(game_data->rows, game_data->nxt[curr_idx], game_data->sel_x, y)) {
+            set_shape(game_data->rows, game_data->nxt[curr_idx], game_data->sel_x, game_data->sel_y); // if the shape intersects vertically, write the shape at the current position and return
+            clear_rows(game_data->rows);                                                              // clear the rows that have been completed
 
-            game_data->selected = (SelectedShape){game_data->next_shape, COLUMNS / 2 - SHAPE_WIDTH / 2, 0};
-            set_next_shape(game_data);
+            next_shape(game_data);
             return;
         }
 
         // otherwise, just set Y
-        selected->y = y;
+        game_data->sel_y = y;
     }
 
     // update shape's X coordinate movement
     if ((move & 3) != 3 && (move & 3)) {
-        const int8_t x = selected->x + ((move & 3) == 1 ? -1 : 1); // either move along -x or +x
-        if (shape_intersects(game_data->rows, selected->id, x, selected->y) == false) {
-            selected->x = x; // set X if the shape does not intersect
+        const int8_t x = game_data->sel_x + ((move & 3) == 1 ? -1 : 1); // either move along -x or +x
+        if (shape_intersects(game_data->rows, game_data->nxt[curr_idx], x, game_data->sel_y) == false) {
+            game_data->sel_x = x; // set X if the shape does not intersect
         }
     }
 
     // update the shape's rotation
     if (move & 8 || move & 16) {
-        const ShapeId id = move & 8 ? rotate_id(selected->id, -8) : rotate_id(selected->id, 8);
-        if (shape_intersects(game_data->rows, id, selected->x, selected->y) == false) {
-            selected->id = id;
+        const ShapeId id = move & 8 // check which direction we should move
+                               ? rotate_id(game_data->nxt[curr_idx], -8)
+                               : rotate_id(game_data->nxt[curr_idx], 8);
+        if (shape_intersects(game_data->rows, id, game_data->sel_x, game_data->sel_y) == false) {
+            game_data->nxt[curr_idx] = id;
         }
     }
 }
