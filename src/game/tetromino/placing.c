@@ -2,14 +2,14 @@
 
 #include <stdint.h>
 
-#include "../../window/colour.h"
+#include "../../window/colour8.h"
 #include "../game.h"
 #include "shapes.h"
 
 
 static bool is_filled(CRow row) {
     for (int8_t x = 0; x < COLUMNS; x++) {
-        if (row[x].packed == NONE) {
+        if (row[x].packed == 0) {
             return false;
         }
     }
@@ -55,7 +55,7 @@ static void clear_rows(Row* rows) {
 // sets a shape to the screen
 static void set_shape_i(Row* row, const ShapeId id, const int8_t pos_x) {
     const Shape shape = shape_from_id(id);
-    const Colour colour = colour_from_id(id);
+    const Colour8 colour = colour_from_id(id);
     for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
         ShapeRow shape_row = shape_get_row(shape, y);
 

@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../../window/colour.h"
+#include "../../window/colour8.h"
 
 typedef uint16_t Shape;
 typedef uint8_t ShapeRow;
@@ -36,4 +36,4 @@ static inline bool is_set(ShapeRow row, uint8_t index) {
 }
 
 Shape shape_from_id(ShapeId id);
-Colour colour_from_id(ShapeId id);
+Colour8 colour_from_id(ShapeId id);

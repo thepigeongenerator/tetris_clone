@@ -11,7 +11,7 @@
 #include "../errors.h"
 #include "../game/game.h"
 #include "../game/tetromino/shapes.h"
-#include "colour.h"
+#include "colour8.h"
 #include "renderer.h"
 
 
@@ -39,8 +39,8 @@ static inline int draw_block(SDL_Renderer* renderer, int8_t x, int8_t y) {
 }
 
 // sets the colour32 from the colour8
-static inline void set_colour(SDL_Renderer* renderer, Colour c) {
-    (void)SDL_SetRenderDrawColor(renderer, colour_red32(c), colour_green32(c), colour_blue32(c), colour_alpha32(c));
+static inline void set_colour(SDL_Renderer* renderer, Colour8 c) {
+    (void)SDL_SetRenderDrawColor(renderer, colour8_red32(c), colour8_green32(c), colour8_blue32(c), 0xFF);
 }
 
 // draw the selected block
@@ -71,7 +71,7 @@ static void render_level(SDL_Renderer* renderer, GameData* data) {
                 set_colour(renderer, row[x]);
                 draw_block(renderer, x, y);
             } else {
-                set_colour(renderer, (Colour){0});
+                set_colour(renderer, (Colour8){0});
                 draw_block(renderer, x, y);
             }
         }
