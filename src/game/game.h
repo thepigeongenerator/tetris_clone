@@ -6,7 +6,7 @@
 #include "tetromino/shapes.h"
 
 // stores the data used in the game
-#define COLUMNS ((int8_t)16)
+#define COLUMNS ((int8_t)10)
 #define ROWS    ((int8_t)(COLUMNS * 2))
 
 typedef struct {
