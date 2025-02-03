@@ -5,8 +5,8 @@
 
 #include "../game/game.h"
 
-#define SCREEN_WIDTH  256
-#define SCREEN_HEIGHT (SCREEN_WIDTH * 2)
+#define SCREEN_WIDTH  (COLUMNS * 25)
+#define SCREEN_HEIGHT (SCREEN_WIDTH / COLUMNS * ROWS)
 #define BLOCK_WIDTH   (SCREEN_WIDTH / COLUMNS)
 #define BLOCK_HEIGHT  (SCREEN_HEIGHT / ROWS)
 
