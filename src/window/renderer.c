@@ -44,19 +44,20 @@ static inline void set_colour(SDL_Renderer* renderer, Colour c) {
 }
 
 // draw the selected block
-static void render_selected(SDL_Renderer* renderer, SelectedShape selected) {
-    Shape selected_shape = shape_from_id(selected.id);
-    set_colour(renderer, colour_from_id(selected.id));
+static void render_selected(SDL_Renderer* renderer, GameData* const game_data) {
+    const ShapeId id = game_data->nxt[game_data->curr_idx];
+    const Shape shape = shape_from_id(id);
+    set_colour(renderer, colour_from_id(id));
 
     for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
-        ShapeRow shape_row = shape_get_row(selected_shape, y);
+        const ShapeRow shape_row = shape_get_row(shape, y);
 
         if (shape_row == 0)
             continue;
 
         for (int8_t x = 0; x < SHAPE_WIDTH; x++)
             if (is_set(shape_row, x))
-                draw_block(renderer, selected.x + x, selected.y + y);
+                draw_block(renderer, game_data->sel_x + x, game_data->sel_y + y);
     }
 }
 
@@ -83,7 +84,7 @@ void renderer_update(const RenderData* render_data) {
     success |= SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     success |= SDL_RenderClear(renderer);
 
-    render_selected(renderer, render_data->game_data->selected);
+    render_selected(renderer, render_data->game_data);
     render_level(renderer, render_data->game_data);
 
     if (success < 0) {
