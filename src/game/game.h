@@ -2,15 +2,15 @@
 
 #include <stdint.h>
 
-#include "../window/colour.h"
+#include "../window/colour8.h"
 #include "tetromino/shapes.h"
 
 // stores the data used in the game
 #define COLUMNS ((int8_t)10)
 #define ROWS    ((int8_t)(COLUMNS * 2))
 
-typedef const Colour* CRow;
-typedef Colour* Row;
+typedef const Colour8* CRow;
+typedef Colour8* Row;
 
 typedef struct {
     Row rows[ROWS];

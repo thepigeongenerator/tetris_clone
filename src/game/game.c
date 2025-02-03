@@ -8,7 +8,7 @@
 #include <time.h>
 
 #include "../main.h"
-#include "../window/colour.h"
+#include "../window/colour8.h"
 #include "./tetromino/shapes.h"
 #include "tetromino/placing.h"
 
@@ -39,7 +39,7 @@ void game_init(GameData* const game_data) {
 
     // allocate size for each row
     for (int8_t i = 0; i < ROWS; i++) {
-        game_data->rows[i] = calloc(COLUMNS, sizeof(Colour));
+        game_data->rows[i] = calloc(COLUMNS, sizeof(Colour8));
         // game_data->rows[i][0] = (Colour){(uint8_t)((((i + 1) ^ ((i + 1) >> 3)) * 0x27) & 0xFF)}; // for debugging
     }
 

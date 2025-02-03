@@ -1,6 +1,6 @@
 #include "shapes.h"
 
-#include "../../window/colour.h"
+#include "../../window/colour8.h"
 
 /*                                     0    1    2    3         */
 #define SHAPE_O     ((Shape)0x0660) // 0000 0110 0110 0000      the O tetromino with no rotation
@@ -53,7 +53,7 @@ Shape shape_from_id(ShapeId id) {
     return shapes[id & 7][id >> 3];
 }
 
-Colour colour_from_id(ShapeId id) {
+Colour8 colour_from_id(ShapeId id) {
     switch (id & 7) {
     case TETROMINO_O: return COLOUR_YELLOW;
     case TETROMINO_I: return COLOUR_CYAN;
@@ -62,6 +62,6 @@ Colour colour_from_id(ShapeId id) {
     case TETROMINO_T: return COLOUR_MAGENTA;
     case TETROMINO_L: return COLOUR_ORANGE;
     case TETROMINO_J: return COLOUR_BLUE;
-    default: return COLOUR_NONE;
+    default: return COLOUR_BLACK;
     }
 }
