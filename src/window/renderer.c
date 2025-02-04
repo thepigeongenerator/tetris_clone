@@ -36,7 +36,8 @@ void renderer_init(RenderData* const render_data, GameData const* const game_dat
 
 // draws a block at the specified position
 static inline int draw_block(SDL_Renderer* const renderer, int8_t const x, int8_t const y) {
-    return SDL_RenderFillRect(renderer, &(SDL_Rect){x * BLOCK_WIDTH + 1 + TET_PADDING, y * BLOCK_HEIGHT + 1 + TET_PADDING, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1});
+    SDL_Rect const block = {x * BLOCK_WIDTH + 1 + TET_PADDING, y * BLOCK_HEIGHT + 1 + TET_PADDING, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1};
+    return SDL_RenderFillRect(renderer, &block);
 }
 
 // sets the colour32 from the colour8
@@ -87,7 +88,9 @@ void renderer_update(RenderData const* const render_data) {
     success |= SDL_RenderClear(renderer);
 
     set_colour(renderer, COLOUR_WHITE);
-    SDL_RenderDrawRect(renderer, &(SDL_Rect){TET_PADDING, TET_PADDING, TET_WIDTH + 1, TET_HEIGHT + 1});
+
+    static SDL_Rect const field_size = {TET_PADDING, TET_PADDING, TET_WIDTH + 1, TET_HEIGHT + 1};
+    SDL_RenderDrawRect(renderer, &field_size);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS + 1, 3); // draw the next shape
 
     render_level(renderer, render_data->game_data);
