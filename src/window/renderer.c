@@ -47,7 +47,9 @@ static inline int32_t get_row_pos(uint8_t row) {
 
 static void draw_score_text(SDL_Renderer* const renderer, TTF_Font* const font, uint16_t const score) {
     char score_text[5]; // max digits of a uint16
-    sprintf(score_text, "%hu", score);
+
+    if (!score) sprintf(score_text, "0");
+    else sprintf(score_text, "%hu0", score);
 
     SDL_Surface* const txt_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){colour8_red32(COLOUR_SCORE), colour8_green32(COLOUR_SCORE), colour8_blue32(COLOUR_SCORE), 0xFF});
     SDL_Texture* const txt_texture = SDL_CreateTextureFromSurface(renderer, txt_surface);

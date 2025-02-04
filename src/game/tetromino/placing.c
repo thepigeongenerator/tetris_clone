@@ -17,11 +17,11 @@ static bool is_filled(CRow const row) {
     return true;
 }
 
-static void clear_rows(Row* const rows) {
+static void clear_rows(Row* const rows, uint16_t* const score) {
     Row cache[4] = {0}; // you can only clear four rows at a time
     struct {
-        uint8_t filled  : 3; // values will only ever be 0..4 (use extra bit for carry)
-        uint8_t checked : 3; // values will only ever be 0..4 (use extra bit for carry)
+        uint8_t filled  : 3; // values will only ever be 0..4
+        uint8_t checked : 3; // values will only ever be 0..4
     } dat = {0};
 
     // loop through each row (excluding the empty rows at the top when clearing a line)
@@ -42,14 +42,18 @@ static void clear_rows(Row* const rows) {
         y--;                         // decrease y to check this line again
     }
 
-    while (dat.filled > 0) {
+    if (dat.filled == 0) return;
+    *score += 8 << dat.filled;
+
+    // do while, as we already know that entering the loop that filled is non-zero
+    do {
         dat.filled--;
         rows[dat.filled] = cache[dat.filled];
 
         // zero out the filled row
         for (int8_t x = 0; x < COLUMNS; x++)
             cache[dat.filled][x].packed = 0;
-    }
+    } while (dat.filled > 0);
 }
 
 // sets a shape to the screen
@@ -107,7 +111,7 @@ void place_update(GameData* const game_data, InputData const move) {
         int8_t const y = game_data->sel_y + 1;
         if (shape_intersects(game_data->rows, curr_id, game_data->sel_x, y)) {
             set_shape(game_data->rows, curr_id, game_data->sel_x, game_data->sel_y); // if the shape intersects vertically, write the shape at the current position and return
-            clear_rows(game_data->rows);                                             // clear the rows that have been completed
+            clear_rows(game_data->rows, &game_data->score);                          // clear the rows that have been completed
 
             next_shape(game_data);
             return;
