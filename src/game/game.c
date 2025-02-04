@@ -14,10 +14,10 @@
 
 
 // shuffle the array using a Fisher–Yates shuffle
-static inline void shuffle(uint8_t size, ShapeId* elmnts) {
+static inline void shuffle(uint8_t const size, ShapeId* const elmnts) {
     for (uint8_t i = 0; i < (size - 1); i++) {
-        const uint8_t j = i + rand() % (size - i);
-        const ShapeId cache = elmnts[i];
+        uint8_t const j = i + rand() % (size - i);
+        ShapeId const cache = elmnts[i];
         elmnts[i] = elmnts[j];
         elmnts[j] = cache;
     }
@@ -63,7 +63,7 @@ void game_init(GameData* const game_data) {
 }
 
 // called every time the game's state is updated
-void game_update(GameData* game_data, const uint8_t* keys) {
+void game_update(GameData* const game_data, uint8_t const* const keys) {
     if (keys[SDL_SCANCODE_ESCAPE])
         stop();
 
@@ -74,8 +74,6 @@ void game_update(GameData* game_data, const uint8_t* keys) {
     if (keys[SDL_SCANCODE_Q]) move |= MOVE_ROTLEFT;
     if (keys[SDL_SCANCODE_E]) move |= MOVE_ROTRIGHT;
     place_update(game_data, move);
-
-    // dbg_set_all(game_data);
 }
 
 void game_free(GameData* const game_data) {

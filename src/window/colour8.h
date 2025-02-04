@@ -23,16 +23,16 @@ typedef union {
 #define COLOUR_WHITE   ((Colour8){0xFF}) // 1111 1111
 
 // gets the red channel in 32 bit colour space
-static inline uint8_t colour8_red32(Colour8 colour) {
+static inline uint8_t colour8_red32(Colour8 const colour) {
     return colour.r * (255 / 7);
 }
 
 // gets the green channel in 32 bit colour space
-static inline uint8_t colour8_green32(Colour8 colour) {
+static inline uint8_t colour8_green32(Colour8 const colour) {
     return colour.g * (255 / 7);
 }
 
 // gets the blue channel in 32 bit colour space
-static inline uint8_t colour8_blue32(Colour8 colour) {
+static inline uint8_t colour8_blue32(Colour8 const colour) {
     return colour.b * (255 / 3);
 }

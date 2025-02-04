@@ -21,5 +21,5 @@ enum {
 };
 
 // call when a fatal error has occurred, the program will immediately terminate when called
-void error(const ErrorCode error_code, const char* format, ...);
-void warn(const char* format, ...);
+void error(ErrorCode error_code, char const* format, ...);
+void warn(char const* format, ...);

@@ -18,6 +18,6 @@ typedef struct {
 } AudioDevice;
 
 
-AudioData audio_load_wav(const AudioDevice* audio_device, const char* file_path);
-AudioDevice* audio_device_init(const int freq, const SDL_AudioFormat format, const uint8_t channels, const uint16_t samples);
-void audio_play(const AudioDevice* audio_device, const AudioData audio);
+AudioData audio_load_wav(AudioDevice const* audio_device, char const* file_path);
+AudioDevice const* audio_device_init(int freq, SDL_AudioFormat format, uint8_t channels, uint16_t samples);
+void audio_play(AudioDevice const* audio_device, AudioData const audio);

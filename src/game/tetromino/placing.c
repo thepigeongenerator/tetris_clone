@@ -7,7 +7,7 @@
 #include "shapes.h"
 
 
-static bool is_filled(CRow row) {
+static bool is_filled(CRow const row) {
     for (int8_t x = 0; x < COLUMNS; x++) {
         if (row[x].packed == 0) {
             return false;
@@ -17,7 +17,7 @@ static bool is_filled(CRow row) {
     return true;
 }
 
-static void clear_rows(Row* rows) {
+static void clear_rows(Row* const rows) {
     Row cache[4] = {0}; // you can only clear four rows at a time
     struct {
         uint8_t filled  : 3; // values will only ever be 0..4 (use extra bit for carry)
@@ -26,7 +26,7 @@ static void clear_rows(Row* rows) {
 
     // loop through each row (excluding the empty rows at the top when clearing a line)
     for (int8_t y = 0; y < (ROWS - dat.filled); y++) {
-        const int8_t i = (ROWS - 1) - y; // get the index starting from the bottom
+        int8_t const i = (ROWS - 1) - y; // get the index starting from the bottom
 
         rows[i] = rows[i - dat.filled]; // set the row to the new or same address
 
@@ -53,11 +53,11 @@ static void clear_rows(Row* rows) {
 }
 
 // sets a shape to the screen
-static void set_shape_i(Row* row, const ShapeId id, const int8_t pos_x) {
-    const Shape shape = shape_from_id(id);
-    const Colour8 colour = colour_from_id(id);
+static void set_shape_i(Row const* const row, ShapeId const id, int8_t const pos_x) {
+    Shape const shape = shape_from_id(id);
+    Colour8 const colour = colour_from_id(id);
     for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
-        ShapeRow shape_row = shape_get_row(shape, y);
+        ShapeRow const shape_row = shape_get_row(shape, y);
 
         if (shape_row == 0)
             continue;
@@ -68,21 +68,21 @@ static void set_shape_i(Row* row, const ShapeId id, const int8_t pos_x) {
     }
 }
 
-static inline void set_shape(Row* row, const ShapeId id, const int8_t pos_x, const int8_t pos_y) {
+static inline void set_shape(Row const* const row, ShapeId const id, int8_t const pos_x, int8_t const pos_y) {
     set_shape_i(&row[pos_y], id, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
 }
 
-static bool shape_intersects(const Row* rows, const ShapeId id, const int8_t x, const int8_t y) {
-    const Shape shape = shape_from_id(id);
+static bool shape_intersects(Row const* const rows, ShapeId const id, int8_t const x, int8_t const y) {
+    Shape const shape = shape_from_id(id);
 
     for (int8_t y0 = 0; y0 < SHAPE_HEIGHT; y0++) {
-        const ShapeRow shape_row = shape_get_row(shape, y0); // get the shape row
+        ShapeRow const shape_row = shape_get_row(shape, y0); // get the shape row
         if (shape_row == 0) continue;                        // if the row doesn't contain data; continue
 
         for (int8_t x0 = 0; x0 < SHAPE_WIDTH; x0++) {
             if (is_set(shape_row, x0) == false) continue; // if the bit isn't set at this index; continue
-            const int8_t x1 = x + x0;
-            const int8_t y1 = y + y0;
+            int8_t const x1 = x + x0;
+            int8_t const y1 = y + y0;
 
             if (x1 < 0 || x1 >= COLUMNS) return true;  // if X is out of bounds
             if (y1 < 0 || y1 >= ROWS) return true;     // if Y is out of bounds
@@ -92,20 +92,22 @@ static bool shape_intersects(const Row* rows, const ShapeId id, const int8_t x, 
     return false;
 }
 
-static inline ShapeId rotate_id(const ShapeId id, const int dir) {
+static inline ShapeId rotate_id(ShapeId const id, int const dir) {
     return (id + dir) & 31;
 }
 
-void place_update(GameData* const game_data, const InputData move) {
-    // store the current index, only changes when placed (which yields no movement) and rotation (which occurs last)
-    ShapeId const curr_idx = game_data->curr_idx;
+void place_update(GameData* const game_data, InputData const move) {
+    // store the current index and ID, only changes when placed (which yields no movement) and rotation (which occurs last)
+    uint8_t const curr_idx = game_data->curr_idx;
+    ShapeId const curr_id = game_data->nxt[curr_idx];
+
 
     // set the shape if we moved vertically and intersected
     if (move & 4) {
-        const int8_t y = game_data->sel_y + 1;
-        if (shape_intersects(game_data->rows, game_data->nxt[curr_idx], game_data->sel_x, y)) {
-            set_shape(game_data->rows, game_data->nxt[curr_idx], game_data->sel_x, game_data->sel_y); // if the shape intersects vertically, write the shape at the current position and return
-            clear_rows(game_data->rows);                                                              // clear the rows that have been completed
+        int8_t const y = game_data->sel_y + 1;
+        if (shape_intersects(game_data->rows, curr_id, game_data->sel_x, y)) {
+            set_shape(game_data->rows, curr_id, game_data->sel_x, game_data->sel_y); // if the shape intersects vertically, write the shape at the current position and return
+            clear_rows(game_data->rows);                                             // clear the rows that have been completed
 
             next_shape(game_data);
             return;
@@ -117,27 +119,19 @@ void place_update(GameData* const game_data, const InputData move) {
 
     // update shape's X coordinate movement
     if ((move & 3) != 3 && (move & 3)) {
-        const int8_t x = game_data->sel_x + ((move & 3) == 1 ? -1 : 1); // either move along -x or +x
-        if (shape_intersects(game_data->rows, game_data->nxt[curr_idx], x, game_data->sel_y) == false) {
+        int8_t const x = game_data->sel_x + ((move & 3) == 1 ? -1 : 1); // either move along -x or +x
+        if (shape_intersects(game_data->rows, curr_id, x, game_data->sel_y) == false) {
             game_data->sel_x = x; // set X if the shape does not intersect
         }
     }
 
     // update the shape's rotation
     if (move & 8 || move & 16) {
-        const ShapeId id = move & 8 // check which direction we should move
-                               ? rotate_id(game_data->nxt[curr_idx], -8)
-                               : rotate_id(game_data->nxt[curr_idx], 8);
+        ShapeId const id = move & 8 // check which direction we should move
+                               ? rotate_id(curr_id, -8)
+                               : rotate_id(curr_id, 8);
         if (shape_intersects(game_data->rows, id, game_data->sel_x, game_data->sel_y) == false) {
             game_data->nxt[curr_idx] = id;
         }
     }
 }
-
-#ifdef DEBUG
-void dbg_set_all(GameData* game_data) {
-    for (uint8_t i = 0; i < TETROMINO_COUNT; i++)
-        for (uint8_t r = 0; r < 4; r++)
-            set_shape(game_data->rows, i | (r << 3), r * 4, i * 4);
-}
-#endif
