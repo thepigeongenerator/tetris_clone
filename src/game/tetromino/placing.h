@@ -15,7 +15,7 @@ enum {
     MOVE_ROTRIGHT = 16,
 };
 
-void place_update(GameData* game_data, const InputData move);
+void place_update(GameData* game_data, InputData move);
 
 #ifdef DEBUG
 void dbg_set_all(GameData* game_data);

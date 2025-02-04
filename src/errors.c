@@ -7,7 +7,7 @@
 
 #define MAX_STR_LEN 128
 
-void error(const ErrorCode error_code, const char* format, ...) {
+void error(ErrorCode const error_code, char const* const format, ...) {
     char buffer[MAX_STR_LEN] = {0}; // contains the buffer of the final string
 
     va_list args = {0};
@@ -21,7 +21,7 @@ void error(const ErrorCode error_code, const char* format, ...) {
     exit(error_code);
 }
 
-void warn(const char* format, ...) {
+void warn(char const* const format, ...) {
     char buffer[MAX_STR_LEN] = {0}; // contains the buffer of the final string
 
     va_list args = {0};

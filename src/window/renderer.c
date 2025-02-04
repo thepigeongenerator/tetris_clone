@@ -15,7 +15,7 @@
 #include "renderer.h"
 
 
-int renderer_init(SDL_Window** window, SDL_Renderer** renderer) {
+int renderer_init(SDL_Window** const window, SDL_Renderer** const renderer) {
     // create a new window
     *window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (*window == NULL) {
@@ -34,22 +34,22 @@ int renderer_init(SDL_Window** window, SDL_Renderer** renderer) {
 }
 
 // draws a block at the specified position
-static inline int draw_block(SDL_Renderer* renderer, int8_t x, int8_t y) {
+static inline int draw_block(SDL_Renderer* const renderer, int8_t const x, int8_t const y) {
     return SDL_RenderFillRect(renderer, &(SDL_Rect){x * BLOCK_WIDTH + 1 + TET_PADDING, y * BLOCK_HEIGHT + 1 + TET_PADDING, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1});
 }
 
 // sets the colour32 from the colour8
-static inline void set_colour(SDL_Renderer* renderer, Colour8 c) {
+static inline void set_colour(SDL_Renderer* const renderer, Colour8 const c) {
     (void)SDL_SetRenderDrawColor(renderer, colour8_red32(c), colour8_green32(c), colour8_blue32(c), 0xFF);
 }
 
 // draws a shape at the specified position
-static void draw_shape(SDL_Renderer* const renderer, const ShapeId id, const int8_t pos_x, const int8_t pos_y) {
-    const Shape shape = shape_from_id(id);
+static void draw_shape(SDL_Renderer* const renderer, ShapeId const id, int8_t const pos_x, int8_t const pos_y) {
+    Shape const shape = shape_from_id(id);
     set_colour(renderer, colour_from_id(id));
 
     for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
-        const ShapeRow shape_row = shape_get_row(shape, y);
+        ShapeRow const shape_row = shape_get_row(shape, y);
 
         if (shape_row == 0)
             continue;
@@ -61,9 +61,9 @@ static void draw_shape(SDL_Renderer* const renderer, const ShapeId id, const int
 }
 
 // draw the block data in the level
-static void render_level(SDL_Renderer* renderer, GameData* data) {
+static void render_level(SDL_Renderer* const renderer, GameData const* const data) {
     for (int8_t y = 0; y < ROWS; y++) {
-        Row row = data->rows[y];
+        CRow const row = data->rows[y];
 
         for (int8_t x = 0; x < COLUMNS; x++) {
             if (row[x].packed != 0) {
@@ -74,9 +74,9 @@ static void render_level(SDL_Renderer* renderer, GameData* data) {
     }
 }
 
-void renderer_update(const RenderData* render_data) {
+void renderer_update(const RenderData* const render_data) {
     SDL_Renderer* const renderer = render_data->renderer;
-    const GameData* game_data = render_data->game_data;
+    GameData const* const game_data = render_data->game_data;
 
 
     int success = 0; // if an error occurs, this value is <0

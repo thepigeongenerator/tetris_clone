@@ -78,7 +78,7 @@ void stop(void) {
 }
 
 // entry point of the application
-int main(int argc, char** argv) {
+int main(int const argc, char const* const* const argv) {
     (void)argc;
     (void)argv;
 

@@ -27,11 +27,11 @@ enum {
 
 
 
-static inline ShapeRow shape_get_row(Shape shape, uint8_t index) {
+static inline ShapeRow shape_get_row(Shape const shape, uint8_t const index) {
     return shape >> (((SHAPE_HEIGHT - 1) - index) * SHAPE_WIDTH) & 0xF;
 }
 
-static inline bool is_set(ShapeRow row, uint8_t index) {
+static inline bool is_set(ShapeRow const row, uint8_t const index) {
     return (row >> ((SHAPE_WIDTH - 1) - index) & 1) != 0;
 }
 
