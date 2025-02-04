@@ -13,6 +13,16 @@
 #include "tetromino/placing.h"
 
 
+static inline void shuffle(size_t size, ShapeId* elmnts) {
+    // shuffle the array using a Fisher–Yates shuffle
+    for (uint8_t i = 0; i < (size - 1); i++) {
+        const uint8_t j = i + rand() % (size - i);
+        const ShapeId cache = elmnts[i];
+        elmnts[i] = elmnts[j];
+        elmnts[j] = cache;
+    }
+}
+
 void next_shape(GameData* const game_data) {
     game_data->curr_idx++;                            // increase the current shape index
     game_data->sel_x = COLUMNS / 2 - SHAPE_WIDTH / 2; // move the shape position to the centre
@@ -24,14 +34,7 @@ void next_shape(GameData* const game_data) {
 
     game_data->curr_idx = 0;
 
-    // BUG: seventh element is overritten (but when starting the seventh element will always be J if we just exclude the last one from sorting)
-    // shuffle the next shapes using a Fisher–Yates shuffle
-    for (uint8_t i = 0; i < (TETROMINO_COUNT - 1); i++) {
-        const uint8_t j = i + rand() % (TETROMINO_COUNT - i);
-        const ShapeId cache = game_data->nxt[i];
-        game_data->nxt[i] = game_data->nxt[j];
-        game_data->nxt[j] = cache;
-    }
+    shuffle(TETROMINO_COUNT - 1, game_data->nxt);
 }
 
 void game_init(GameData* const game_data) {
@@ -41,7 +44,7 @@ void game_init(GameData* const game_data) {
     // allocate size for each row
     for (int8_t i = 0; i < ROWS; i++) {
         game_data->rows[i] = calloc(COLUMNS, sizeof(Colour8));
-        // game_data->rows[i][0] = (Colour){(uint8_t)((((i + 1) ^ ((i + 1) >> 3)) * 0x27) & 0xFF)}; // for debugging
+        // game_data->rows[i][0] = (colour8){(uint8_t)((((i + 1) ^ ((i + 1) >> 3)) * 0x27) & 0xFF)}; // for debugging rows
     }
 
     // set a random seed using the system clock
@@ -51,8 +54,9 @@ void game_init(GameData* const game_data) {
     for (ShapeId i = 0; i < TETROMINO_COUNT; i++)
         game_data->nxt[i] = i;
 
-    game_data->curr_idx = ~1; // set the current index to the max (well, so it becomes the max after increment)
-    next_shape(game_data);    // select the next shape (a refresh is triggered due to the current index being too high)
+    game_data->curr_idx = -1;                 // set the current index to the max so it becomes zero after increasement
+    next_shape(game_data);                    // select the next shape (shuffle should not be triggered)
+    shuffle(TETROMINO_COUNT, game_data->nxt); // manually trigger a shuffle
 }
 
 // called every time the game's state is updated
