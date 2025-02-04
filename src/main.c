@@ -4,8 +4,6 @@
 #include <SDL_error.h>
 #include <SDL_events.h>
 #include <SDL_keyboard.h>
-#include <SDL_render.h>
-#include <SDL_video.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +11,7 @@
 #include <time.h>
 
 #include "SDL_timer.h"
+#include "SDL_ttf.h"
 #include "errors.h"
 #include "game/game.h"
 // #include "window/audio.h"
@@ -25,27 +24,21 @@
 
 bool playing = true;
 
-SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
+RenderData render_data = {0};
 GameData game_data = {0};
 
 
 // handles game application initialisation
 static void init(void) {
     // initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
         error(ERROR_SDL_INIT, "SDL could not initialize! SDL Error: %s", SDL_GetError());
-        return;
-    }
+    if (TTF_Init() != 0)
+        error(ERROR_SDL_FONT_INIT, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
 
-    // initialize the renderer
-    if (renderer_init(&window, &renderer) < 0) {
-        error(ERROR_SDL_RENDERER_INIT, SDL_GetError());
-        return;
-    }
-
-    // initialize the game
+    // initialize units
     game_init(&game_data);
+    renderer_init(&render_data, &game_data);
 
     // initialize audio
     // AudioDevice* audio_device = audio_device_init(32000, AUDIO_S16, 1, 4096);
@@ -68,8 +61,7 @@ static void update(void) {
 
     // preform updates
     game_update(&game_data, SDL_GetKeyboardState(NULL));
-    renderer_update(&(RenderData){
-        window, renderer, &game_data});
+    renderer_update(&render_data);
 }
 
 // handles game application quitting
