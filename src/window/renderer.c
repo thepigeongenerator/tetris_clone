@@ -2,8 +2,10 @@
 #include "renderer.h"
 
 #include <SDL_error.h>
+#include <SDL_pixels.h>
 #include <SDL_rect.h>
 #include <SDL_render.h>
+#include <SDL_ttf.h>
 #include <SDL_video.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -11,7 +13,7 @@
 #include "../errors.h"
 #include "../game/game.h"
 #include "../game/tetromino/shapes.h"
-#include "SDL_ttf.h"
+#include "SDL_surface.h"
 #include "colour8.h"
 #include "renderer.h"
 
@@ -23,7 +25,7 @@ void renderer_init(RenderData* const render_data, GameData const* const game_dat
     SDL_Renderer* const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL) error(ERROR_SDL_RENDERER_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
 
-    TTF_Font* const font = TTF_OpenFont("/usr/share/fonts/TTF/JetBrainsMono-Regular.ttf", 5);
+    TTF_Font* const font = TTF_OpenFont("/usr/share/fonts/TTF/JetBrainsMono-Regular.ttf", PX_DENS);
     if (font == NULL) error(ERROR_SDL_FONT_INIT, "Failed to open font! TTF Error: %s", TTF_GetError());
 
     // initialize the render data
@@ -92,6 +94,11 @@ void renderer_update(RenderData const* const render_data) {
     static SDL_Rect const field_size = {TET_PADDING, TET_PADDING, TET_WIDTH + 1, TET_HEIGHT + 1};
     SDL_RenderDrawRect(renderer, &field_size);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS + 1, 3); // draw the next shape
+    SDL_Surface* const surface = TTF_RenderText_Solid(render_data->font, "Hello, World!", (SDL_Colour){0xFF, 0xFF, 0xFF, 0xFF});
+    SDL_Texture* const texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_RenderCopy(renderer, texture, NULL, &(SDL_Rect){10, 10, surface->w, surface->h});
+    SDL_FreeSurface(surface);
+    SDL_DestroyTexture(texture);
 
     render_level(renderer, render_data->game_data);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx], game_data->sel_x, game_data->sel_y); // draw the current shape
