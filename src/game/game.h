@@ -14,6 +14,7 @@ typedef Colour8* Row;
 
 typedef struct {
     Row rows[ROWS];
+    uint16_t score;
     ShapeId nxt[7];   // the order of the shape ids that they should appear in
     uint8_t curr_idx; // current shape index
     int8_t sel_x;     // selected shape x position
