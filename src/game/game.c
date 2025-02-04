@@ -13,8 +13,8 @@
 #include "tetromino/placing.h"
 
 
-static inline void shuffle(size_t size, ShapeId* elmnts) {
-    // shuffle the array using a Fisher–Yates shuffle
+// shuffle the array using a Fisher–Yates shuffle
+static inline void shuffle(uint8_t size, ShapeId* elmnts) {
     for (uint8_t i = 0; i < (size - 1); i++) {
         const uint8_t j = i + rand() % (size - i);
         const ShapeId cache = elmnts[i];
@@ -35,6 +35,9 @@ void next_shape(GameData* const game_data) {
     game_data->curr_idx = 0;
 
     shuffle(TETROMINO_COUNT - 1, game_data->nxt);
+    ShapeId cache = game_data->nxt[0];
+    game_data->nxt[0] = game_data->nxt[TETROMINO_COUNT - 1];
+    game_data->nxt[TETROMINO_COUNT - 1] = cache;
 }
 
 void game_init(GameData* const game_data) {
