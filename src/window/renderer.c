@@ -17,6 +17,7 @@
 #include "colour8.h"
 #include "renderer.h"
 
+#define COLOUR_SCORE COLOUR_YELLOW
 
 void renderer_init(RenderData* const render_data, GameData const* const game_data) {
     SDL_Window* const window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
@@ -36,9 +37,32 @@ void renderer_init(RenderData* const render_data, GameData const* const game_dat
         font};
 }
 
+static inline int32_t get_column_pos(uint8_t column) {
+    return column * BLOCK_WIDTH + 1 + TET_PADDING;
+}
+
+static inline int32_t get_row_pos(uint8_t row) {
+    return row * BLOCK_HEIGHT + 1 + TET_PADDING;
+}
+
+static void draw_score_text(SDL_Renderer* const renderer, TTF_Font* const font, uint16_t const score) {
+    char score_text[5]; // max digits of a uint16
+    sprintf(score_text, "%hu", score);
+
+    SDL_Surface* const txt_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){colour8_red32(COLOUR_SCORE), colour8_green32(COLOUR_SCORE), colour8_blue32(COLOUR_SCORE), 0xFF});
+    SDL_Texture* const txt_texture = SDL_CreateTextureFromSurface(renderer, txt_surface);
+
+    SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), txt_surface->w, txt_surface->h};
+    SDL_RenderCopy(renderer, txt_texture, NULL, &text_rect);
+
+    // free data
+    SDL_FreeSurface(txt_surface);
+    SDL_DestroyTexture(txt_texture);
+}
+
 // draws a block at the specified position
 static inline int draw_block(SDL_Renderer* const renderer, int8_t const x, int8_t const y) {
-    SDL_Rect const block = {x * BLOCK_WIDTH + 1 + TET_PADDING, y * BLOCK_HEIGHT + 1 + TET_PADDING, BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1};
+    SDL_Rect const block = {get_column_pos(x), get_row_pos(y), BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1};
     return SDL_RenderFillRect(renderer, &block);
 }
 
@@ -94,11 +118,8 @@ void renderer_update(RenderData const* const render_data) {
     static SDL_Rect const field_size = {TET_PADDING, TET_PADDING, TET_WIDTH + 1, TET_HEIGHT + 1};
     SDL_RenderDrawRect(renderer, &field_size);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS + 1, 3); // draw the next shape
-    SDL_Surface* const surface = TTF_RenderText_Solid(render_data->font, "Hello, World!", (SDL_Colour){0xFF, 0xFF, 0xFF, 0xFF});
-    SDL_Texture* const texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_RenderCopy(renderer, texture, NULL, &(SDL_Rect){10, 10, surface->w, surface->h});
-    SDL_FreeSurface(surface);
-    SDL_DestroyTexture(texture);
+
+    draw_score_text(renderer, render_data->font, render_data->game_data->score);
 
     render_level(renderer, render_data->game_data);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx], game_data->sel_x, game_data->sel_y); // draw the current shape
