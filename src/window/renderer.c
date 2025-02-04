@@ -87,7 +87,7 @@ void renderer_update(const RenderData* render_data) {
 
     set_colour(renderer, COLOUR_WHITE);
     SDL_RenderDrawRect(renderer, &(SDL_Rect){TET_PADDING, TET_PADDING, TET_WIDTH + 1, TET_HEIGHT + 1});
-    draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS + 1, 2); // draw the next shape
+    draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS + 1, 3); // draw the next shape
 
     render_level(renderer, render_data->game_data);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx], game_data->sel_x, game_data->sel_y); // draw the current shape

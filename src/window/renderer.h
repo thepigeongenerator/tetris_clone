@@ -10,7 +10,7 @@
 #define TET_WIDTH     (COLUMNS * PX_DENS - TET_PADDING)          // tetris playing field width
 #define TET_HEIGHT    (TET_WIDTH / COLUMNS * ROWS)               // tetris playing field height
 #define SCREEN_WIDTH  ((COLUMNS + 6) * PX_DENS)                  // window width
-#define SCREEN_HEIGHT ((COLUMNS + 1) * PX_DENS / COLUMNS * ROWS) // window height
+#define SCREEN_HEIGHT ((COLUMNS ) * PX_DENS / COLUMNS * ROWS) // window height
 #define BLOCK_WIDTH   (TET_WIDTH / COLUMNS)                      // width of a block
 #define BLOCK_HEIGHT  (TET_HEIGHT / ROWS)                        // height of a block
 
