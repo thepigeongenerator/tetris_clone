@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL_render.h>
+#include <SDL_ttf.h>
 #include <SDL_video.h>
 #include <stdint.h>
 
@@ -15,10 +16,12 @@
 #define BLOCK_HEIGHT  (TET_HEIGHT / ROWS)                    // height of a block
 
 typedef struct {
+    GameData const* game_data;
     SDL_Window* window;
     SDL_Renderer* renderer;
-    GameData* game_data;
+    TTF_Font* font;
 } RenderData;
 
-int renderer_init(SDL_Window** window, SDL_Renderer** renderer);
+void renderer_init(RenderData* render_data, GameData const* game_data);
 void renderer_update(RenderData const* render_data);
+void renderer_free(RenderData* render_data);

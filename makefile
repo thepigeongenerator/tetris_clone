@@ -4,8 +4,8 @@ NAME := tetris_clone
 CC := clang
 STD := c17
 LANG = c
-CFLAGS := $(shell pkg-config --cflags sdl2) -Wall -Wextra -Wpedantic -Wno-pointer-arith
-LDFLAGS := $(shell pkg-config --libs sdl2) -lm
+CFLAGS := $(shell pkg-config --cflags sdl2 SDL2_ttf) -Wall -Wextra -Wpedantic -Wno-pointer-arith
+LDFLAGS := $(shell pkg-config --libs sdl2 SDL2_ttf) -lm
 
 ifeq ($(DEBUG),1)
 CFLAGS += -DDEBUG -Og -g

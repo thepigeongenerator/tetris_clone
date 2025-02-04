@@ -11,26 +11,27 @@
 #include "../errors.h"
 #include "../game/game.h"
 #include "../game/tetromino/shapes.h"
+#include "SDL_ttf.h"
 #include "colour8.h"
 #include "renderer.h"
 
 
-int renderer_init(SDL_Window** const window, SDL_Renderer** const renderer) {
-    // create a new window
-    *window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (*window == NULL) {
-        error(ERROR_SDL_RENDERER_INIT, "Window failed to be created! SDL Error: %s", SDL_GetError());
-        return -1;
-    }
+void renderer_init(RenderData* const render_data, GameData const* const game_data) {
+    SDL_Window* const window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (window == NULL) error(ERROR_SDL_RENDERER_INIT, "Window failed to be created! SDL Error: %s", SDL_GetError());
 
-    // create a renderer
-    *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_PRESENTVSYNC);
-    if (*renderer == NULL) {
-        error(ERROR_SDL_RENDERER_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
-        return -1;
-    }
+    SDL_Renderer* const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    if (renderer == NULL) error(ERROR_SDL_RENDERER_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
 
-    return 0;
+    TTF_Font* const font = TTF_OpenFont("/usr/share/fonts/TTF/JetBrainsMono-Regular.ttf", 5);
+    if (font == NULL) error(ERROR_SDL_FONT_INIT, "Failed to open font! TTF Error: %s", TTF_GetError());
+
+    // initialize the render data
+    *render_data = (RenderData){
+        game_data,
+        window,
+        renderer,
+        font};
 }
 
 // draws a block at the specified position
@@ -74,7 +75,7 @@ static void render_level(SDL_Renderer* const renderer, GameData const* const dat
     }
 }
 
-void renderer_update(const RenderData* const render_data) {
+void renderer_update(RenderData const* const render_data) {
     SDL_Renderer* const renderer = render_data->renderer;
     GameData const* const game_data = render_data->game_data;
 
@@ -98,4 +99,13 @@ void renderer_update(const RenderData* const render_data) {
     }
 
     SDL_RenderPresent(renderer);
+}
+
+void renderer_free(RenderData* const render_data) {
+    SDL_DestroyRenderer(render_data->renderer);
+    SDL_DestroyWindow(render_data->window);
+    TTF_CloseFont(render_data->font);
+    render_data->renderer = NULL;
+    render_data->window = NULL;
+    render_data->font = NULL;
 }

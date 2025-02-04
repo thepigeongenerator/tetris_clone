@@ -15,7 +15,7 @@ void error(ErrorCode const error_code, char const* const format, ...) {
     vsnprintf(buffer, MAX_STR_LEN, format, args);
     va_end(args);
 
-    printf("\033[91mE\033[0m: %s\n", buffer);
+    fprintf(stderr, "\033[91mE\033[0m: %s\n", buffer);
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "something went wrong! :O", buffer, NULL);
 
     exit(error_code);
@@ -29,5 +29,5 @@ void warn(char const* const format, ...) {
     vsnprintf(buffer, MAX_STR_LEN, format, args);
     va_end(args);
 
-    printf("\033[93mW\033[0m: %s\n", buffer);
+    fprintf(stderr, "\033[93mW\033[0m: %s\n", buffer);
 }
