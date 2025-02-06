@@ -8,8 +8,10 @@
 #include <time.h>
 
 #include "../main.h"
+#include "../window/audio.h"
 #include "../window/colour8.h"
 #include "./tetromino/shapes.h"
+#include "SDL_audio.h"
 #include "tetromino/placing.h"
 
 
@@ -60,6 +62,11 @@ void game_init(GameData* const game_data) {
     game_data->curr_idx = -1;                 // set the current index to the max so it becomes zero after increasement
     next_shape(game_data);                    // select the next shape (shuffle should not be triggered)
     shuffle(TETROMINO_COUNT, game_data->nxt); // manually trigger a shuffle
+
+    // initialize audio
+    game_data->audio_device = audio_device_init(32000, AUDIO_S16, 1, 4096);
+    game_data->music = audio_load_wav(game_data->audio_device, "korobeiniki.wav");
+    audio_play(game_data->audio_device, game_data->music);
 }
 
 // called every time the game's state is updated
