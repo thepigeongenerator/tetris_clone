@@ -26,7 +26,7 @@ void renderer_init(RenderData* const render_data, GameData const* const game_dat
     SDL_Renderer* const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL) error(ERROR_SDL_RENDERER_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
 
-    TTF_Font* const font = TTF_OpenFont("/usr/share/fonts/TTF/JetBrainsMono-Regular.ttf", PX_DENS);
+    TTF_Font* const font = TTF_OpenFont("pixeldroid_botic-regular.ttf", PX_DENS);
     if (font == NULL) error(ERROR_SDL_FONT_INIT, "Failed to open font! TTF Error: %s", TTF_GetError());
 
     // initialize the render data
