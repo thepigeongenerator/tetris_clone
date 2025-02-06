@@ -14,7 +14,6 @@
 #include "SDL_ttf.h"
 #include "errors.h"
 #include "game/game.h"
-// #include "window/audio.h"
 #include "window/renderer.h"
 
 #ifdef __EMSCRIPTEN__ // for web builds
@@ -39,10 +38,6 @@ static void init(void) {
     // initialize units
     game_init(&game_data);
     renderer_init(&render_data, &game_data);
-
-    // initialize audio
-    // AudioDevice* audio_device = audio_device_init(32000, AUDIO_S16, 1, 4096);
-    // AudioData audio1 = audio_load_wav(audio_device, "FILE MANE");
 }
 
 // handles game application updating
