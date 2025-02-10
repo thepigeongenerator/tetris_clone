@@ -69,7 +69,7 @@ static inline int draw_block(SDL_Renderer* const renderer, int8_t const x, int8_
 }
 
 // sets the colour32 from the colour8
-static inline void set_colour(SDL_Renderer* const renderer, Colour8 const c) {
+static inline void set_colour(SDL_Renderer* const renderer, colour8 const c) {
     (void)SDL_SetRenderDrawColor(renderer, colour8_red32(c), colour8_green32(c), colour8_blue32(c), 0xFF);
 }
 

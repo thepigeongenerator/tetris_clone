@@ -59,7 +59,7 @@ static void clear_rows(Row* const rows, uint16_t* const score) {
 // sets a shape to the screen
 static void set_shape_i(Row const* const row, ShapeId const id, int8_t const pos_x) {
     Shape const shape = shape_from_id(id);
-    Colour8 const colour = colour_from_id(id);
+    colour8 const colour = colour_from_id(id);
     for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
         ShapeRow const shape_row = shape_get_row(shape, y);
 

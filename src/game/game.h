@@ -10,8 +10,8 @@
 #define COLUMNS ((int8_t)10)
 #define ROWS    ((int8_t)24)
 
-typedef const Colour8* const CRow;
-typedef Colour8* Row;
+typedef const colour8* const CRow;
+typedef colour8* Row;
 
 typedef struct {
     Row rows[ROWS];

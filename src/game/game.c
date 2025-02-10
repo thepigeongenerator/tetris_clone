@@ -48,7 +48,7 @@ void game_init(GameData* const game_data) {
 
     // allocate size for each row
     for (int8_t i = 0; i < ROWS; i++) {
-        game_data->rows[i] = calloc(COLUMNS, sizeof(Colour8));
+        game_data->rows[i] = calloc(COLUMNS, sizeof(colour8));
         // game_data->rows[i][0] = (colour8){(uint8_t)((((i + 1) ^ ((i + 1) >> 3)) * 0x27) & 0xFF)}; // for debugging rows
     }
 
