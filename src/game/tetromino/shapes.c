@@ -53,7 +53,7 @@ Shape shape_from_id(ShapeId const id) {
     return shapes[id & 7][id >> 3];
 }
 
-Colour8 colour_from_id(ShapeId const id) {
+colour8 colour_from_id(ShapeId const id) {
     switch (id & 7) {
     case TETROMINO_O: return COLOUR_YELLOW;
     case TETROMINO_I: return COLOUR_CYAN;

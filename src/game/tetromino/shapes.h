@@ -36,4 +36,4 @@ static inline bool is_set(ShapeRow const row, uint8_t const index) {
 }
 
 Shape shape_from_id(ShapeId id);
-Colour8 colour_from_id(ShapeId id);
+colour8 colour_from_id(ShapeId id);
