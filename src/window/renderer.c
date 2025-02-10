@@ -19,7 +19,7 @@
 
 #define COLOUR_SCORE COLOUR_YELLOW
 
-void renderer_init(RenderData* const render_data, GameData const* const game_data) {
+void renderer_init(RenderData* const render_dat, game_data const* const game_dat) {
     SDL_Window* const window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL) error(ERROR_SDL_RENDERER_INIT, "Window failed to be created! SDL Error: %s", SDL_GetError());
 
@@ -30,8 +30,8 @@ void renderer_init(RenderData* const render_data, GameData const* const game_dat
     if (font == NULL) error(ERROR_SDL_FONT_INIT, "Failed to open font! TTF Error: %s", TTF_GetError());
 
     // initialize the render data
-    *render_data = (RenderData){
-        game_data,
+    *render_dat = (RenderData){
+        game_dat,
         window,
         renderer,
         font};
@@ -74,7 +74,7 @@ static inline void set_colour(SDL_Renderer* const renderer, colour8 const c) {
 }
 
 // draws a shape at the specified position
-static void draw_shape(SDL_Renderer* const renderer, ShapeId const id, int8_t const pos_x, int8_t const pos_y) {
+static void draw_shape(SDL_Renderer* const renderer, shape_id const id, int8_t const pos_x, int8_t const pos_y) {
     Shape const shape = shape_from_id(id);
     set_colour(renderer, colour_from_id(id));
 
@@ -91,9 +91,9 @@ static void draw_shape(SDL_Renderer* const renderer, ShapeId const id, int8_t co
 }
 
 // draw the block data in the level
-static void render_level(SDL_Renderer* const renderer, GameData const* const data) {
+static void render_level(SDL_Renderer* const renderer, game_data const* const data) {
     for (int8_t y = 0; y < ROWS; y++) {
-        CRow const row = data->rows[y];
+        row_const const row = data->rows[y];
 
         for (int8_t x = 0; x < COLUMNS; x++) {
             if (row[x].packed != 0) {
@@ -104,9 +104,9 @@ static void render_level(SDL_Renderer* const renderer, GameData const* const dat
     }
 }
 
-void renderer_update(RenderData const* const render_data) {
-    SDL_Renderer* const renderer = render_data->renderer;
-    GameData const* const game_data = render_data->game_data;
+void renderer_update(RenderData const* const dat) {
+    SDL_Renderer* const renderer = dat->renderer;
+    game_data const* const game_data = dat->game_dat;
 
 
     int success = 0; // if an error occurs, this value is <0
@@ -121,9 +121,9 @@ void renderer_update(RenderData const* const render_data) {
     SDL_RenderDrawRect(renderer, &field_size);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS + 1, 3); // draw the next shape
 
-    draw_score_text(renderer, render_data->font, render_data->game_data->score);
+    draw_score_text(renderer, dat->font, dat->game_dat->score);
 
-    render_level(renderer, render_data->game_data);
+    render_level(renderer, dat->game_dat);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx], game_data->sel_x, game_data->sel_y); // draw the current shape
 
     if (success < 0) {

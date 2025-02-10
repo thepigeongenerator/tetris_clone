@@ -7,7 +7,7 @@
 typedef uint16_t Shape;
 typedef uint8_t ShapeRow;
 
-typedef uint8_t ShapeId;
+typedef uint8_t shape_id;
 enum {
     TETROMINO_O = 0,
     TETROMINO_I = 1,
@@ -35,5 +35,5 @@ static inline bool is_set(ShapeRow const row, uint8_t const index) {
     return (row >> ((SHAPE_WIDTH - 1) - index) & 1) != 0;
 }
 
-Shape shape_from_id(ShapeId id);
-colour8 colour_from_id(ShapeId id);
+Shape shape_from_id(shape_id id);
+colour8 colour_from_id(shape_id id);

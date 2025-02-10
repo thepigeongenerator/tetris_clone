@@ -1,6 +1,6 @@
 #pragma once
 
-typedef unsigned char ErrorCode;
+typedef unsigned char error_code;
 enum {
     ERROR_MISC = -1,
 
@@ -26,5 +26,5 @@ enum {
 };
 
 // call when a fatal error has occurred, the program will immediately terminate when called
-void error(ErrorCode error_code, char const* format, ...);
+void error(error_code error_code, char const* format, ...);
 void warn(char const* format, ...);
