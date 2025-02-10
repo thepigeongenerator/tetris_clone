@@ -23,8 +23,8 @@
 
 bool playing = true;
 
-RenderData render_data = {0};
-GameData game_data = {0};
+RenderData render_dat = {0};
+game_data game_dat = {0};
 
 
 // handles game application initialisation
@@ -36,8 +36,8 @@ static void init(void) {
         error(ERROR_SDL_FONT_INIT, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
 
     // initialize units
-    game_init(&game_data);
-    renderer_init(&render_data, &game_data);
+    game_init(&game_dat);
+    renderer_init(&render_dat, &game_dat);
 }
 
 // handles game application updating
@@ -55,8 +55,8 @@ static void update(void) {
     }
 
     // preform updates
-    game_update(&game_data, SDL_GetKeyboardState(NULL));
-    renderer_update(&render_data);
+    game_update(&game_dat, SDL_GetKeyboardState(NULL));
+    renderer_update(&render_dat);
 }
 
 // handles game application quitting
@@ -77,7 +77,7 @@ int main(int const argc, char const* const* const argv) {
     }
 
     // cleanup of resources
-    game_free(&game_data);
+    game_free(&game_dat);
     SDL_Quit();
 
     return 0;

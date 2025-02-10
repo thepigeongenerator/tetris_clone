@@ -35,7 +35,7 @@
 #define SHAPE_J_180 ((Shape)0x6440) // 0110 0100 0100 0000      the J tetromino with a 180° rotation
 #define SHAPE_J_270 ((Shape)0x0E20) // 0000 1110 0010 0000      the J tetromino with a 270° rotation
 
-Shape shape_from_id(ShapeId const id) {
+Shape shape_from_id(shape_id const id) {
     // clang-format off
     static Shape const shapes[TETROMINO_COUNT][4] = {
         // 0°       90°         180°         170°
@@ -53,7 +53,7 @@ Shape shape_from_id(ShapeId const id) {
     return shapes[id & 7][id >> 3];
 }
 
-colour8 colour_from_id(ShapeId const id) {
+colour8 colour_from_id(shape_id const id) {
     switch (id & 7) {
     case TETROMINO_O: return COLOUR_YELLOW;
     case TETROMINO_I: return COLOUR_CYAN;

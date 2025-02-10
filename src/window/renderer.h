@@ -16,12 +16,12 @@
 #define BLOCK_HEIGHT  (TET_HEIGHT / ROWS)                    // height of a block
 
 typedef struct {
-    GameData const* game_data;
+    game_data const* game_dat;
     SDL_Window* window;
     SDL_Renderer* renderer;
     TTF_Font* font;
 } RenderData;
 
-void renderer_init(RenderData* render_data, GameData const* game_data);
-void renderer_update(RenderData const* render_data);
-void renderer_free(RenderData* render_data);
+void renderer_init(RenderData* render_dat, game_data const* game_dat);
+void renderer_update(RenderData const* dat);
+void renderer_free(RenderData* dat);

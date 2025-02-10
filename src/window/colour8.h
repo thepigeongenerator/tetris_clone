@@ -10,6 +10,7 @@ typedef union {
         uint8_t r : 3;
     };
 } colour8;
+#define color8 colour8
 
 /*                                          rrrg ggbb */
 #define COLOUR_BLACK   ((colour8){0x00}) // 0000 0000
