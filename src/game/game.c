@@ -65,8 +65,8 @@ void game_init(game_data* const dat) {
 
     // initialize audio
     dat->audio_device = audio_device_init(32000, AUDIO_S16, 1, 4096);
-    dat->music = audio_load_wav(dat->audio_device, "korobeiniki.wav");
-    audio_play(dat->audio_device, dat->music);
+    dat->music = audio_wav_load(dat->audio_device, "korobeiniki.wav");
+    audio_play(dat->audio_device, &dat->music);
 }
 
 // called every time the game's state is updated
@@ -83,10 +83,13 @@ void game_update(game_data* const dat, uint8_t const* const keys) {
     place_update(dat, move);
 }
 
-void game_free(game_data* const game_data) {
+void game_free(game_data* const dat) {
+    audio_wav_unload(&dat->music);
+    audio_device_free(dat->audio_device);
+
     // clear each row
     for (int8_t i = 0; i < ROWS; i++) {
-        free(game_data->rows[i]);
-        game_data->rows[i] = NULL;
+        free(dat->rows[i]);
+        dat->rows[i] = NULL;
     }
 }

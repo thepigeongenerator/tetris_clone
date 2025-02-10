@@ -15,7 +15,7 @@ typedef colour8* row;
 
 typedef struct {
     row rows[ROWS];
-    audio_device const* audio_device;
+    audio_device* audio_device;
     audio_data music;
     uint16_t score;
     shape_id nxt[7];  // the order of the shape ids that they should appear in
