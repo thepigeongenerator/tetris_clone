@@ -11,8 +11,6 @@
 #include <time.h>
 #include <wchar.h>
 
-#include "SDL_render.h"
-#include "SDL_timer.h"
 #include "SDL_ttf.h"
 #include "errors.h"
 #include "game/game.h"
