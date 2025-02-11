@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <time.h>
 
 #include "../window/audio.h"
 #include "../window/colour8.h"
@@ -17,6 +18,7 @@ typedef struct {
     row rows[ROWS];
     audio_device* audio_device;
     audio_data music;
+    time_t music_timer;
     uint16_t score;
     shape_id nxt[7];  // the order of the shape ids that they should appear in
     uint8_t curr_idx; // current shape index
