@@ -23,7 +23,7 @@ void renderer_init(RenderData* const render_dat, game_data const* const game_dat
     SDL_Window* const window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL) error(ERROR_SDL_RENDERER_INIT, "Window failed to be created! SDL Error: %s", SDL_GetError());
 
-    SDL_Renderer* const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    SDL_Renderer* const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     if (renderer == NULL) error(ERROR_SDL_RENDERER_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
 
     TTF_Font* const font = TTF_OpenFont("pixeldroid_botic-regular.ttf", PX_DENS);
@@ -54,7 +54,7 @@ static void draw_score_text(SDL_Renderer* const renderer, TTF_Font* const font, 
     SDL_Surface* const txt_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){colour8_red32(COLOUR_SCORE), colour8_green32(COLOUR_SCORE), colour8_blue32(COLOUR_SCORE), 0xFF});
     SDL_Texture* const txt_texture = SDL_CreateTextureFromSurface(renderer, txt_surface);
 
-    SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), txt_surface->w, txt_surface->h};
+SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), txt_surface->w, txt_surface->h};
     SDL_RenderCopy(renderer, txt_texture, NULL, &text_rect);
 
     // free data
