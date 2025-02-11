@@ -6,7 +6,7 @@
 typedef struct {
     uint8_t* buf; // the audio buffer
     uint32_t len; // length in bytes of the audio buffer
-    uint32_t sec; // length in seconds of the audio buffer
+    uint32_t ms; // length in seconds of the audio buffer
 } audio_data;
 
 typedef struct audio_player {

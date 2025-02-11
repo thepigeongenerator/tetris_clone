@@ -9,7 +9,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <wchar.h>
 
+#include "SDL_render.h"
 #include "SDL_timer.h"
 #include "SDL_ttf.h"
 #include "errors.h"
@@ -71,9 +73,10 @@ int main(int const argc, char const* const* const argv) {
 
     init();
 
+    printf("target framerate: %u\n", 0);
+
     while (playing) {
         update();
-        SDL_Delay(50);
     }
 
     // cleanup of resources

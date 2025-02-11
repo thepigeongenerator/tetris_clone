@@ -86,7 +86,7 @@ audio_data audio_wav_load(audio_device const* const dev, char const* const fpath
     convert_audio(dev, wav_spec, &audio.buf, &audio.len);
 
     // calculate the amount of seconds that the audio fragment has
-    audio.sec = (audio.len / (SDL_AUDIO_BITSIZE(dev->fmt) / 8)) / wav_spec.channels / dev->freq;
+    audio.ms = 1000 * (((audio.len) / (SDL_AUDIO_BITSIZE(dev->fmt) / 8)) / wav_spec.channels / dev->freq);
 
     return audio;
 }
