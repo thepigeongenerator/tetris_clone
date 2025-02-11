@@ -31,7 +31,7 @@ static inline shape_row shape_get_row(shape const shape, uint8_t const index) {
     return shape >> (((SHAPE_HEIGHT - 1) - index) * SHAPE_WIDTH) & 0xF;
 }
 
-static inline bool is_set(shape_row const row, uint8_t const index) {
+static inline bool shape_is_set(shape_row const row, uint8_t const index) {
     return (row >> ((SHAPE_WIDTH - 1) - index) & 1) != 0;
 }
 
