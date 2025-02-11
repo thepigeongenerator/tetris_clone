@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+#include "../../main.h"
 #include "../../window/colour8.h"
 #include "../game.h"
 #include "shapes.h"
@@ -114,6 +115,8 @@ void place_update(game_data* const game_data, InputData const move) {
             clear_rows(game_data->rows, &game_data->score);                          // clear the rows that have been completed
 
             next_shape(game_data);
+            if (shape_intersects(game_data->rows, game_data->curr_idx, game_data->sel_x, game_data->sel_y))
+                stop();
             return;
         }
 
@@ -132,8 +135,8 @@ void place_update(game_data* const game_data, InputData const move) {
     // update the shape's rotation
     if (move & 8 || move & 16) {
         shape_id const id = move & 8 // check which direction we should move
-                               ? rotate_id(curr_id, -8)
-                               : rotate_id(curr_id, 8);
+                                ? rotate_id(curr_id, -8)
+                                : rotate_id(curr_id, 8);
         if (shape_intersects(game_data->rows, id, game_data->sel_x, game_data->sel_y) == false) {
             game_data->nxt[curr_idx] = id;
         }
