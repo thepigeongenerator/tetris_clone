@@ -75,11 +75,11 @@ static inline void set_colour(SDL_Renderer* const renderer, colour8 const c) {
 
 // draws a shape at the specified position
 static void draw_shape(SDL_Renderer* const renderer, shape_id const id, int8_t const pos_x, int8_t const pos_y) {
-    Shape const shape = shape_from_id(id);
+    shape const shape = shape_from_id(id);
     set_colour(renderer, colour_from_id(id));
 
     for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
-        ShapeRow const shape_row = shape_get_row(shape, y);
+        shape_row const shape_row = shape_get_row(shape, y);
 
         if (shape_row == 0)
             continue;

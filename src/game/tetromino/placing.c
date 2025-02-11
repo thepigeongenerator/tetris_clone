@@ -59,10 +59,10 @@ static void clear_rows(row* const rows, uint16_t* const score) {
 
 // sets a shape to the screen
 static void set_shape_i(row const* const row, shape_id const id, int8_t const pos_x) {
-    Shape const shape = shape_from_id(id);
+    shape const shape = shape_from_id(id);
     colour8 const colour = colour_from_id(id);
     for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
-        ShapeRow const shape_row = shape_get_row(shape, y);
+        shape_row const shape_row = shape_get_row(shape, y);
 
         if (shape_row == 0)
             continue;
@@ -78,10 +78,10 @@ static inline void set_shape(row const* const row, shape_id const id, int8_t con
 }
 
 static bool shape_intersects(row const* const rows, shape_id const id, int8_t const x, int8_t const y) {
-    Shape const shape = shape_from_id(id);
+    shape const shape = shape_from_id(id);
 
     for (int8_t y0 = 0; y0 < SHAPE_HEIGHT; y0++) {
-        ShapeRow const shape_row = shape_get_row(shape, y0); // get the shape row
+        shape_row const shape_row = shape_get_row(shape, y0); // get the shape row
         if (shape_row == 0) continue;                        // if the row doesn't contain data; continue
 
         for (int8_t x0 = 0; x0 < SHAPE_WIDTH; x0++) {
@@ -101,7 +101,7 @@ static inline shape_id rotate_id(shape_id const id, int const dir) {
     return (id + dir) & 31;
 }
 
-void place_update(game_data* const game_data, InputData const move) {
+void place_update(game_data* const game_data, input_data const move) {
     // store the current index and ID, only changes when placed (which yields no movement) and rotation (which occurs last)
     uint8_t const curr_idx = game_data->curr_idx;
     shape_id const curr_id = game_data->nxt[curr_idx];
