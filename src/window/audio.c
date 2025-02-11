@@ -9,36 +9,46 @@
 
 #include "../errors.h"
 
-// the maximum amount of sounds that can play at once
-#define MAX_SOUNDS 64
-
-typedef struct {
-    audio_data const* const playing_audio;
-    audio_device const audio_device;
-} AudioCallbackData;
-
 //
 // audio mixing
 //
 // audio callback from SDL_AudioSpec; called when the audio device needs more data
 static void audio_mixer(void* const userdata, uint8_t* const stream, int32_t const len) {
-    memset(stream, 0, len);                      // clear the playing audio
-    audio_device const* const device = userdata; // get the callback data
-    audio_data* const audio = device->playing_audio;
+    memset(stream, 0, len);             // clear the playing audio
+    audio_device* const dev = userdata; // get the callback data
 
-    for (int32_t i = 0; i < MAX_SOUNDS; i++) {
-        // skip if the audio doesn't conain any further data
-        if (audio[i].len <= 0) {
+    audio_player* prev = NULL;
+    audio_player* curr = dev->audio_dat;
+    while (curr != NULL) {
+        // if the current length, remove self from the list
+        if (curr->len == 0) {
+            audio_player* ncurr = curr->nxt; // store the next player as the new current player
+
+            // set the current player to the new current player & free the current player
+            free(curr);
+            curr = ncurr; // ncurr can be NULL, this is fine
+
+            // update the previous pointer accordingly
+            if (prev == NULL)
+                dev->audio_dat = ncurr;
+            else
+                prev->nxt = ncurr;
+
+            // continue code execution
             continue;
         }
 
         // get the length of which we shall be mixing
-        uint32_t const mix_length = SDL_min(audio[i].len, (uint32_t)len);
+        uint32_t const mix_length = SDL_min(curr->len, (uint32_t)len);
 
         // mix the audio with the stream
-        SDL_MixAudioFormat(stream, audio[i].buf, device->fmt, mix_length, SDL_MIX_MAXVOLUME);
-        audio[i].buf += mix_length; // move the pointer up a a bit
-        audio[i].len -= mix_length; // move up the mixed amount
+        SDL_MixAudioFormat(stream, curr->buf, dev->fmt, mix_length, SDL_MIX_MAXVOLUME);
+        curr->buf += mix_length; // move the pointer up a a bit
+        curr->len -= mix_length; // move up the mixed amount
+
+        // increment across the list
+        prev = curr;
+        curr = curr->nxt;
     }
 }
 
@@ -60,7 +70,7 @@ static void convert_audio(audio_device const* const dev, SDL_AudioSpec const wav
     // reallocate the conversion buffer to match the new size
     *wav_buf = realloc(cvt.buf, cvt.len_cvt);
     if (*wav_buf == NULL)
-        error(ERROR_MISC, "memory pointer changed upon reallocation of audio buffer after conversion");
+        error(ERROR_MISC, "null value when reallocating the audio buffer");
 }
 
 
@@ -74,6 +84,9 @@ audio_data audio_wav_load(audio_device const* const dev, char const* const fpath
 
     SDL_LoadWAV(fpath, &wav_spec, &audio.buf, &audio.len);
     convert_audio(dev, wav_spec, &audio.buf, &audio.len);
+
+    // calculate the amount of seconds that the audio fragment has
+    audio.sec = (audio.len / (SDL_AUDIO_BITSIZE(dev->fmt) / 8)) / wav_spec.channels / dev->freq;
 
     return audio;
 }
@@ -90,7 +103,7 @@ audio_device* audio_device_init(int32_t const freq, SDL_AudioFormat const fmt, u
 
     // create the audio device
     *dev = (audio_device){
-        calloc(MAX_SOUNDS, sizeof(audio_data)), // allocate memory on the heap for the playing audio array
+        NULL, // allocate memory on the heap for the playing audio array
         SDL_OpenAudioDevice(NULL, 0, &spec, NULL, 0),
         freq,
         fmt,
@@ -109,23 +122,23 @@ audio_device* audio_device_init(int32_t const freq, SDL_AudioFormat const fmt, u
 }
 
 // plays the audio
-void audio_play(audio_device const* const dev, audio_data const* audio) {
-    audio_data* const playing_audio = dev->playing_audio;
+void audio_play(audio_device* const dev, audio_data const* audio) {
+    // create an audio player
+    audio_player* player = malloc(sizeof(audio_player));
+    *player = (audio_player){
+        dev->audio_dat, // set nxt to the first item in dev (can be NULL, this is fine)
+        audio->buf,
+        audio->len,
+    };
 
-    for (int32_t i = 0; i < MAX_SOUNDS; i++) {
-        // overrite audio that has been deallocated
-        if (playing_audio[i].len <= 0) {
-            // override the audio
-            playing_audio[i] = *audio;
-            break; // don't continue. :3
-        }
-    }
+    // assign ourselves to the first item
+    dev->audio_dat = player;
 }
 
 // frees the audio device
 void audio_device_free(audio_device* const dev) {
     SDL_CloseAudioDevice(dev->id);
-    free(dev->playing_audio);
+    free(dev->audio_dat);
     free(dev);
 }
 
