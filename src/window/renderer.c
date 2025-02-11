@@ -85,7 +85,7 @@ static void draw_shape(SDL_Renderer* const renderer, shape_id const id, int8_t c
             continue;
 
         for (int8_t x = 0; x < SHAPE_WIDTH; x++)
-            if (is_set(shape_row, x))
+            if (shape_is_set(shape_row, x))
                 draw_block(renderer, pos_x + x, pos_y + y);
     }
 }

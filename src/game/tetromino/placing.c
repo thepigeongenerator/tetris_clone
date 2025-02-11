@@ -68,7 +68,7 @@ static void set_shape_i(row const* const row, shape_id const id, int8_t const po
             continue;
 
         for (int8_t x = 0; x < SHAPE_WIDTH; x++)
-            if (is_set(shape_row, x))
+            if (shape_is_set(shape_row, x))
                 row[y][x + pos_x] = colour;
     }
 }
@@ -85,7 +85,7 @@ static bool shape_intersects(row const* const rows, shape_id const id, int8_t co
         if (shape_row == 0) continue;                        // if the row doesn't contain data; continue
 
         for (int8_t x0 = 0; x0 < SHAPE_WIDTH; x0++) {
-            if (is_set(shape_row, x0) == false) continue; // if the bit isn't set at this index; continue
+            if (shape_is_set(shape_row, x0) == false) continue; // if the bit isn't set at this index; continue
             int8_t const x1 = x + x0;
             int8_t const y1 = y + y0;
 
