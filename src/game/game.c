@@ -73,7 +73,7 @@ void game_update(game_data* const dat, uint8_t const* const keys) {
     if (keys[SDL_SCANCODE_ESCAPE])
         stop();
 
-    InputData move = MOVE_NONE; // contains the move data
+    input_data move = MOVE_NONE; // contains the move data
     uint32_t ctime = SDL_GetTicks();
 
     if (ctime > dat->timer_update) {
@@ -87,7 +87,7 @@ void game_update(game_data* const dat, uint8_t const* const keys) {
     }
 
     if (ctime > dat->timer_input) {
-        InputData umove = MOVE_NONE;
+        input_data umove = MOVE_NONE;
 
         // get the input data and apply it to move
         if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) umove |= MOVE_LEFT;

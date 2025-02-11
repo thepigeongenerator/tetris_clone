@@ -4,8 +4,8 @@
 
 #include "../../window/colour8.h"
 
-typedef uint16_t Shape;
-typedef uint8_t ShapeRow;
+typedef uint16_t shape;
+typedef uint8_t shape_row;
 
 typedef uint8_t shape_id;
 enum {
@@ -27,13 +27,13 @@ enum {
 
 
 
-static inline ShapeRow shape_get_row(Shape const shape, uint8_t const index) {
+static inline shape_row shape_get_row(shape const shape, uint8_t const index) {
     return shape >> (((SHAPE_HEIGHT - 1) - index) * SHAPE_WIDTH) & 0xF;
 }
 
-static inline bool is_set(ShapeRow const row, uint8_t const index) {
+static inline bool is_set(shape_row const row, uint8_t const index) {
     return (row >> ((SHAPE_WIDTH - 1) - index) & 1) != 0;
 }
 
-Shape shape_from_id(shape_id id);
+shape shape_from_id(shape_id id);
 colour8 colour_from_id(shape_id id);

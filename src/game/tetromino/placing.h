@@ -5,7 +5,7 @@
 
 #include "../game.h"
 
-typedef uint8_t InputData;
+typedef uint8_t input_data;
 enum {
     MOVE_NONE = 0,
     MOVE_LEFT = 1,
@@ -15,7 +15,7 @@ enum {
     MOVE_ROTRIGHT = 16,
 };
 
-void place_update(game_data* game_data, InputData move);
+void place_update(game_data* game_data, input_data move);
 
 #ifdef DEBUG
 void dbg_set_all(game_data* game_data);
