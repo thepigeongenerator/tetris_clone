@@ -14,7 +14,6 @@
 #include "SDL_audio.h"
 #include "tetromino/placing.h"
 
-
 // shuffle the array using a Fisher–Yates shuffle
 static inline void shuffle(uint8_t const size, shape_id* const elmnts) {
     for (uint8_t i = 0; i < (size - 1); i++) {
@@ -66,13 +65,18 @@ void game_init(game_data* const dat) {
     // initialize audio
     dat->audio_device = audio_device_init(32000, AUDIO_S16, 1, 4096);
     dat->music = audio_wav_load(dat->audio_device, "korobeiniki.wav");
-    audio_play(dat->audio_device, &dat->music);
 }
 
 // called every time the game's state is updated
 void game_update(game_data* const dat, uint8_t const* const keys) {
     if (keys[SDL_SCANCODE_ESCAPE])
         stop();
+
+    time_t ctime = time(NULL);
+    if (ctime > dat->music_timer) {
+        dat->music_timer = ctime + dat->music.sec;
+        audio_play(dat->audio_device, &dat->music);
+    }
 
     InputData move = MOVE_NONE;
     if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) move |= MOVE_LEFT;
