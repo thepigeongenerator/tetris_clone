@@ -12,6 +12,7 @@
 #include "../window/colour8.h"
 #include "./tetromino/shapes.h"
 #include "SDL_audio.h"
+#include "SDL_timer.h"
 #include "tetromino/placing.h"
 
 // shuffle the array using a Fisher–Yates shuffle
@@ -72,19 +73,38 @@ void game_update(game_data* const dat, uint8_t const* const keys) {
     if (keys[SDL_SCANCODE_ESCAPE])
         stop();
 
-    time_t ctime = time(NULL);
-    if (ctime > dat->music_timer) {
-        dat->music_timer = ctime + dat->music.sec;
+    InputData move = MOVE_NONE; // contains the move data
+    uint32_t ctime = SDL_GetTicks();
+
+    if (ctime > dat->timer_update) {
+        dat->timer_update = ctime + 500;
+        move |= MOVE_DOWN;
+    }
+
+    if (ctime > dat->timer_music) {
+        dat->timer_music = ctime + (dat->music.ms);
         audio_play(dat->audio_device, &dat->music);
     }
 
-    InputData move = MOVE_NONE;
-    if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) move |= MOVE_LEFT;
-    if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) move |= MOVE_RIGHT;
-    if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_SPACE]) move |= MOVE_DOWN;
-    if (keys[SDL_SCANCODE_Q]) move |= MOVE_ROTLEFT;
-    if (keys[SDL_SCANCODE_E]) move |= MOVE_ROTRIGHT;
-    place_update(dat, move);
+    if (ctime > dat->timer_input) {
+        InputData umove = MOVE_NONE;
+
+        // get the input data and apply it to move
+        if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) umove |= MOVE_LEFT;
+        if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) umove |= MOVE_RIGHT;
+        if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_SPACE]) umove |= MOVE_DOWN;
+        if (keys[SDL_SCANCODE_Q]) umove |= MOVE_ROTLEFT;
+        if (keys[SDL_SCANCODE_E]) umove |= MOVE_ROTRIGHT;
+
+        if (umove != MOVE_NONE) {
+            dat->timer_input = ctime + 60;
+            move |= umove;
+        }
+    }
+
+    // update the block position
+    if (move != MOVE_NONE)
+        place_update(dat, move);
 }
 
 void game_free(game_data* const dat) {
