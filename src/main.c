@@ -23,7 +23,7 @@
 
 bool playing = true;
 
-RenderData render_dat = {0};
+render_data render_dat = {0};
 game_data game_dat = {0};
 
 
