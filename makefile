@@ -29,6 +29,9 @@ DEP := $(OBJ:.o=.d)
 ASSETS := $(patsubst assets/%,$(DIR_BUILD)/%,$(SRC_ASSETS))
 TARGET := $(DIR_BUILD)/$(NAME)$(EXT)
 
+define wr_colour
+	@echo -e "\033[$(2)m$(1)\033[0m"
+endef
 
 # sets the variables for the different targets
 linux-x86_64:
@@ -38,18 +41,14 @@ win-x86_64:
 web:
 	@$(MAKE) _build ARCH=web CC=emcc EXT=".html"
 
-# execute the binary
-run: $(ARCH)
-	cd $(DIR_BUILD) && ./$(NAME)$(EXT)
-
 all: linux-x86_64 win-x86_64 web
-_build: $(DIR) $(TARGET) $(ASSETS) compile_commands.json
+_build: compile_commands.json $(DIR) $(TARGET) $(ASSETS)
 clean:
-	rm -rf $(DIR_BIN) $(DIR_OBJ)
+	rm -rf $(DIR_BIN) $(DIR_OBJ) compile_commands.json
 
 # create the binary
 $(TARGET): $(OBJ)
-	@echo "using arguments: $(CFLAGS) $(LDFLAGS)"
+	@$(call wr_colour,"using arguments: $(CFLAGS) $(LDFLAGS)",94)
 	@$(CC) -o $(TARGET) $^ $(CFLAGS) $(LDFLAGS)
 
 # create .o and .d files
@@ -69,15 +68,15 @@ $(DIR):
 # update compile commands if the makefile has been updated (for linting)
 ifeq ($(DEBUG),1)
 compile_commands.json: makefile
-	@touch compile_commands.json
+	@$(call wr_colour,"compiling in debug mode",93)
 	$(MAKE) clean
-	@echo "compiling in non-debug mode"
+	@touch compile_commands.json
+	bear -- make
 else
 compile_commands.json: makefile
-	@echo "compiling in debug mode"
-	@touch compile_commands.json
+	@$(call wr_colour,"compiling in non-debug mode",93)
 	$(MAKE) clean
-	bear -- make
+	@touch compile_commands.json
 endif
 
 # include the dependencies
