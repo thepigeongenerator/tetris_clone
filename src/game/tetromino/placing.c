@@ -10,7 +10,7 @@
 
 static bool is_filled(row_const const row) {
     for (int8_t x = 0; x < COLUMNS; x++) {
-        if (row[x].packed == 0) {
+        if (row[x] == 0) {
             return false;
         }
     }
@@ -53,7 +53,7 @@ static void clear_rows(row* const rows, uint16_t* const score) {
 
         // zero out the filled row
         for (int8_t x = 0; x < COLUMNS; x++)
-            cache[dat.filled][x].packed = 0;
+            cache[dat.filled][x] = 0;
     } while (dat.filled > 0);
 }
 
@@ -82,16 +82,16 @@ static bool shape_intersects(row const* const rows, shape_id const id, int8_t co
 
     for (int8_t y0 = 0; y0 < SHAPE_HEIGHT; y0++) {
         shape_row const shape_row = shape_get_row(shape, y0); // get the shape row
-        if (shape_row == 0) continue;                        // if the row doesn't contain data; continue
+        if (shape_row == 0) continue;                         // if the row doesn't contain data; continue
 
         for (int8_t x0 = 0; x0 < SHAPE_WIDTH; x0++) {
             if (shape_is_set(shape_row, x0) == false) continue; // if the bit isn't set at this index; continue
             int8_t const x1 = x + x0;
             int8_t const y1 = y + y0;
 
-            if (x1 < 0 || x1 >= COLUMNS) return true;  // if X is out of bounds
-            if (y1 < 0 || y1 >= ROWS) return true;     // if Y is out of bounds
-            if (rows[y1][x1].packed != 0) return true; // if there is a block here
+            if (x1 < 0 || x1 >= COLUMNS) return true; // if X is out of bounds
+            if (y1 < 0 || y1 >= ROWS) return true;    // if Y is out of bounds
+            if (rows[y1][x1] != 0) return true;       // if there is a block here
         }
     }
     return false;
