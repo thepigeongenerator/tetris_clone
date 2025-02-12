@@ -7,24 +7,14 @@
             "request": "launch",
             "program": "",
             "linux": {
-                "program": "make",
-                "args": [
-                    "run"
-                ],
-                "env": {
-                    "ARCH": "linux-x86_64",
-                    "DEBUG": "1",
-                },
+                "preLaunchTask": "(dbg) compile linux-x86_64",
+                "program": "bin/linux-x86_64/${workspaceFolderBasename}",
+                "cwd": "bin/linux-x86_64/"
             },
             "windows": {
-                "program": "make",
-                "args": [
-                    "run"
-                ],
-                "env": {
-                    "ARCH": "win-x86_64",
-                    "DEBUG": "1",
-                },
+                "preLaunchTask": "(dbg) compile win-x86_64",
+                "program": "bin/win-x86_64/${workspaceFolderBasename}.exe",
+                "cwd": "bin/win-x86_64/"
             },
         }
     ]

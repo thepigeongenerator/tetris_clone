@@ -1,4 +1,4 @@
-NAME := tetris_clone
+NAME := $(shell basename $(PWD))
 
 # compiler settings
 CC := clang
