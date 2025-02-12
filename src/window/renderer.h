@@ -20,8 +20,8 @@ typedef struct {
     SDL_Window* window;
     SDL_Renderer* renderer;
     TTF_Font* font;
-} RenderData;
+} render_data;
 
-void renderer_init(RenderData* render_dat, game_data const* game_dat);
-void renderer_update(RenderData const* dat);
-void renderer_free(RenderData* dat);
+void renderer_init(render_data* render_dat, game_data const* game_dat);
+void renderer_update(render_data const* dat);
+void renderer_free(render_data* dat);

@@ -19,7 +19,7 @@
 
 #define COLOUR_SCORE COLOUR_YELLOW
 
-void renderer_init(RenderData* const render_dat, game_data const* const game_dat) {
+void renderer_init(render_data* const render_dat, game_data const* const game_dat) {
     SDL_Window* const window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL) error(ERROR_SDL_RENDERER_INIT, "Window failed to be created! SDL Error: %s", SDL_GetError());
 
@@ -30,11 +30,12 @@ void renderer_init(RenderData* const render_dat, game_data const* const game_dat
     if (font == NULL) error(ERROR_SDL_FONT_INIT, "Failed to open font! TTF Error: %s", TTF_GetError());
 
     // initialize the render data
-    *render_dat = (RenderData){
+    *render_dat = (render_data){
         game_dat,
         window,
         renderer,
-        font};
+        font,
+    };
 }
 
 static inline int32_t get_column_pos(uint8_t column) {
@@ -54,7 +55,7 @@ static void draw_score_text(SDL_Renderer* const renderer, TTF_Font* const font, 
     SDL_Surface* const txt_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){colour8_red32(COLOUR_SCORE), colour8_green32(COLOUR_SCORE), colour8_blue32(COLOUR_SCORE), 0xFF});
     SDL_Texture* const txt_texture = SDL_CreateTextureFromSurface(renderer, txt_surface);
 
-SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), txt_surface->w, txt_surface->h};
+    SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), txt_surface->w, txt_surface->h};
     SDL_RenderCopy(renderer, txt_texture, NULL, &text_rect);
 
     // free data
@@ -104,7 +105,7 @@ static void render_level(SDL_Renderer* const renderer, game_data const* const da
     }
 }
 
-void renderer_update(RenderData const* const dat) {
+void renderer_update(render_data const* const dat) {
     SDL_Renderer* const renderer = dat->renderer;
     game_data const* const game_data = dat->game_dat;
 
@@ -134,7 +135,7 @@ void renderer_update(RenderData const* const dat) {
     SDL_RenderPresent(renderer);
 }
 
-void renderer_free(RenderData* const render_data) {
+void renderer_free(render_data* const render_data) {
     SDL_DestroyRenderer(render_data->renderer);
     SDL_DestroyWindow(render_data->window);
     TTF_CloseFont(render_data->font);
