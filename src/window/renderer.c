@@ -97,7 +97,7 @@ static void render_level(SDL_Renderer* const renderer, game_data const* const da
         row_const const row = data->rows[y];
 
         for (int8_t x = 0; x < COLUMNS; x++) {
-            if (row[x].packed != 0) {
+            if (row[x] != 0) {
                 set_colour(renderer, row[x]);
                 draw_block(renderer, x, y);
             }
