@@ -55,7 +55,7 @@ static void draw_score_text(render_data const* dat) {
     SDL_Renderer* const renderer = dat->renderer;
     TTF_Font* const font = dat->font;
 
-    if (!(cache->prevscore != score && cache->score_texture != NULL)) {
+    if (cache->prevscore != score || cache->score_texture == NULL) {
         char score_text[6]; // max digits of a uint16 + \0 terminator
         if (!score) sprintf(score_text, "0");
         else sprintf(score_text, "%hu0", score);
