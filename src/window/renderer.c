@@ -9,6 +9,7 @@
 #include <SDL_video.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "../errors.h"
 #include "../game/game.h"
@@ -35,6 +36,7 @@ void renderer_init(render_data* const render_dat, game_data const* const game_da
         window,
         renderer,
         font,
+        calloc(1, sizeof(struct render_cache)), // zero-initialize the memory as we read from it
     };
 }
 
@@ -46,21 +48,34 @@ static inline int32_t get_row_pos(uint8_t row) {
     return row * BLOCK_HEIGHT + 1 + TET_PADDING;
 }
 
-static void draw_score_text(SDL_Renderer* const renderer, TTF_Font* const font, uint16_t const score) {
-    char score_text[5]; // max digits of a uint16
+static void draw_score_text(render_data const* dat) {
+    struct render_cache* const cache = dat->cache;
+    uint16_t const score = dat->game_dat->score;
 
-    if (!score) sprintf(score_text, "0");
-    else sprintf(score_text, "%hu0", score);
+    SDL_Renderer* const renderer = dat->renderer;
+    TTF_Font* const font = dat->font;
 
-    SDL_Surface* const txt_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){colour8_red32(COLOUR_SCORE), colour8_green32(COLOUR_SCORE), colour8_blue32(COLOUR_SCORE), 0xFF});
-    SDL_Texture* const txt_texture = SDL_CreateTextureFromSurface(renderer, txt_surface);
+    if (!(cache->prevscore != score && cache->score_texture != NULL)) {
+        char score_text[6]; // max digits of a uint16 + \0 terminator
+        if (!score) sprintf(score_text, "0");
+        else sprintf(score_text, "%hu0", score);
 
-    SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), txt_surface->w, txt_surface->h};
-    SDL_RenderCopy(renderer, txt_texture, NULL, &text_rect);
+        SDL_Surface* const txt_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){colour8_red32(COLOUR_SCORE), colour8_green32(COLOUR_SCORE), colour8_blue32(COLOUR_SCORE), 0xFF});
+        SDL_Texture* const txt_texture = SDL_CreateTextureFromSurface(renderer, txt_surface);
 
-    // free data
-    SDL_FreeSurface(txt_surface);
-    SDL_DestroyTexture(txt_texture);
+        if (cache->score_texture != NULL) {
+            // free old data
+            SDL_FreeSurface(cache->score_surface);
+            SDL_DestroyTexture(cache->score_texture);
+        }
+
+        // write data to cache
+        cache->score_surface = txt_surface;
+        cache->score_texture = txt_texture;
+    }
+
+    SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), cache->score_surface->w, cache->score_surface->h};
+    SDL_RenderCopy(renderer, cache->score_texture, NULL, &text_rect);
 }
 
 // draws a block at the specified position
@@ -122,7 +137,7 @@ void renderer_update(render_data const* const dat) {
     SDL_RenderDrawRect(renderer, &field_size);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS + 1, 3); // draw the next shape
 
-    draw_score_text(renderer, dat->font, dat->game_dat->score);
+    draw_score_text(dat);
 
     render_level(renderer, dat->game_dat);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx], game_data->sel_x, game_data->sel_y); // draw the current shape
@@ -139,7 +154,9 @@ void renderer_free(render_data* const render_data) {
     SDL_DestroyRenderer(render_data->renderer);
     SDL_DestroyWindow(render_data->window);
     TTF_CloseFont(render_data->font);
+    free(render_data->cache);
     render_data->renderer = NULL;
     render_data->window = NULL;
     render_data->font = NULL;
+    render_data->cache = NULL;
 }

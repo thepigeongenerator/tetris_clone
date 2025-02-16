@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL_render.h>
+#include <SDL_surface.h>
 #include <SDL_ttf.h>
 #include <SDL_video.h>
 #include <stdint.h>
@@ -15,11 +16,18 @@
 #define BLOCK_WIDTH   (TET_WIDTH / COLUMNS)                  // width of a block
 #define BLOCK_HEIGHT  (TET_HEIGHT / ROWS)                    // height of a block
 
+struct render_cache {
+    SDL_Texture* score_texture;
+    SDL_Surface* score_surface;
+    uint16_t prevscore;
+};
+
 typedef struct {
     game_data const* game_dat;
     SDL_Window* window;
     SDL_Renderer* renderer;
     TTF_Font* font;
+    struct render_cache* cache;
 } render_data;
 
 void renderer_init(render_data* render_dat, game_data const* game_dat);
