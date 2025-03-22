@@ -7,7 +7,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "../main.h"
+#include "../error.h"
 #include "../window/audio.h"
 #include "../window/colour8.h"
 #include "./tetromino/shapes.h"
@@ -71,7 +71,7 @@ void game_init(game_data* const dat) {
 // called every time the game's state is updated
 void game_update(game_data* const dat, uint8_t const* const keys) {
     if (keys[SDL_SCANCODE_ESCAPE])
-        stop();
+        set_gamestatus(STATUS_SUCCESS);
 
     input_data move = MOVE_NONE; // contains the move data
     uint32_t ctime = SDL_GetTicks();

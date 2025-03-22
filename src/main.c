@@ -1,5 +1,3 @@
-#include "main.h"
-
 #include <SDL.h>
 #include <SDL_error.h>
 #include <SDL_events.h>
@@ -12,12 +10,12 @@
 #include <wchar.h>
 
 #include "SDL_ttf.h"
-#include "errors.h"
+#include "error.h"
 #include "game/game.h"
 #include "window/renderer.h"
 
 #ifdef __EMSCRIPTEN__ // for web builds
-#include <emscripten.h>
+# include <emscripten.h>
 #endif
 
 
@@ -31,9 +29,9 @@ game_data game_dat = {0};
 static void init(void) {
     // initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
-        error(ERROR_SDL_INIT, "SDL could not initialize! SDL Error: %s", SDL_GetError());
+        fatal(ERROR_SDL_INIT, "SDL could not initialize! SDL Error: %s", SDL_GetError());
     if (TTF_Init() != 0)
-        error(ERROR_SDL_FONT_INIT, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
+        fatal(ERROR_SDL_FONT_INIT, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
 
     // initialize units
     game_init(&game_dat);
@@ -48,7 +46,7 @@ static void update(void) {
         while (SDL_PollEvent(&e)) {
             switch (e.type) {
             case SDL_QUIT:
-                exit(SUCCESS);
+                set_gamestatus(STATUS_SUCCESS);
                 break;
             }
         }
@@ -71,9 +69,7 @@ int main(int const argc, char const* const* const argv) {
 
     init();
 
-    printf("target framerate: %u\n", 0);
-
-    while (playing) {
+    while (get_gamestatus() == -1) {
         update();
     }
 

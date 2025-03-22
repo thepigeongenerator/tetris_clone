@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../errors.h"
+#include "../error.h"
 
 //
 // audio mixing
@@ -62,7 +62,7 @@ static void convert_audio(audio_device const* const dev, SDL_AudioSpec const wav
 
     // performs the conversion
     if (SDL_ConvertAudio(&cvt) != 0)
-        error(ERROR_SDL_AUDIO_INIT, "something went wrong when converting an audio buffer! SDL Error: %s", SDL_GetError());
+        fatal(ERROR_SDL_AUDIO_INIT, "something went wrong when converting an audio buffer! SDL Error: %s", SDL_GetError());
 
     // set the length to the new length
     *wav_len = cvt.len_cvt;
@@ -70,7 +70,7 @@ static void convert_audio(audio_device const* const dev, SDL_AudioSpec const wav
     // reallocate the conversion buffer to match the new size
     *wav_buf = realloc(cvt.buf, cvt.len_cvt);
     if (*wav_buf == NULL)
-        error(ERROR_MISC, "null value when reallocating the audio buffer");
+        fatal(ERROR_SDL_AUDIO, "null value when reallocating the audio buffer");
 }
 
 
@@ -112,7 +112,7 @@ audio_device* audio_device_init(int32_t const freq, SDL_AudioFormat const fmt, u
 
     // if the audio device isn't set, cause an error
     if (dev->id < 1) {
-        error(ERROR_SDL_AUDIO_INIT, "AudioDivice failed to open! SDL Error: %s", SDL_GetError());
+        fatal(ERROR_SDL_AUDIO_INIT, "AudioDivice failed to open! SDL Error: %s", SDL_GetError());
         return NULL;
     }
 
