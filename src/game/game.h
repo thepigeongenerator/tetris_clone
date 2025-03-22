@@ -24,12 +24,12 @@ typedef colour8* row;
 
 typedef struct {
     row rows[ROWS];
-    gametime* time;
+    struct gametime time;
     audiodevice* audio_device;
     audiodata music;
-    uint32_t timer_music;
-    uint32_t timer_update;
-    uint32_t timer_input;
+    time_t timer_music;
+    time_t timer_update;
+    time_t timer_input;
     uint16_t score;
     shape_id nxt[7];  // the order of the shape ids that they should appear in
     uint8_t curr_idx; // current shape index
@@ -38,7 +38,7 @@ typedef struct {
     bool run;
 } gamedata;
 
-void next_shape(gamedata*);           // initializes everything needed to start the game; outputs to gamedata
-void game_init(gamedata*, gametime*); // initializes the game
-void game_update(gamedata*);          // causes an update to occur within the game
-void game_free(gamedata*);            // frees the resources associated with the game
+void next_shape(gamedata*);  // initializes everything needed to start the game; outputs to gamedata
+void game_init(gamedata*);   // initializes the game
+void game_update(gamedata*); // causes an update to occur within the game
+void game_free(gamedata*);   // frees the resources associated with the game
