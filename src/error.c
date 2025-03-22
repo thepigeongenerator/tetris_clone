@@ -52,17 +52,17 @@ void warn(char const* fmt, ...) {
 void error(char const* fmt, ...) {
     char buf[PRINT_BUFFER_SIZE] = {0};
     write_args(buf, fmt);
-    (void)fprintf(stderr, "\033[mW: %s\033[0m", buf);
+    (void)fprintf(stderr, "\033[mE: %s\033[0m", buf);
 }
 
-noreturn void fatal(gamestatus error_code, char const* fname, uint32_t ln, char const* fmt, ...) {
+noreturn void fatal(gamestatus error_code, char const* fmt, ...) {
     char buf1[PRINT_BUFFER_SIZE] = {0};
     write_args(buf1, fmt);
 
     char buf2[PRINT_BUFFER_SIZE * 2] = {0};
-    sprintf(buf2, "%s\n    at %s:%u (exitcode: %u)", buf1, fname, ln, error_code);
+    sprintf(buf2, "%s\nexitcode: %u", buf1, error_code);
 
-    (void)fprintf(stderr, "\033[91mE: %s\033[0m\n", buf2);
+    (void)fprintf(stderr, "\033[101mF: %s\033[0m\n", buf2);
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "something went wrong! :O", buf2, NULL);
 
     // set status, but exit immediately, as code is not allowed to execute beyond this point

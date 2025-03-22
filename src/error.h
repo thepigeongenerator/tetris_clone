@@ -5,7 +5,7 @@
 
 /* defines statuses in the 0..127, any higher/negative values are POSIX-reserved.
  * The max value (or -1) shall mean the application is running, anything else shall mean an exit code of some kind */
-enum {
+enum gamestatus {
     // clang-format off
     STATUS_SUCCESS = 0,                // 0; successful exit
     STATUS_ERROR   = 1,                // miscellaneous error
@@ -36,4 +36,4 @@ void warn(char const*, ...);     // prints a warning message to stderr
 void error(char const*, ...);    // prints an warning message to stderr
 
 // prints an error message to stderr before exiting
-noreturn void fatal(gamestatus, char const* file_name, uint32_t line, char const* fmt, ...);
+noreturn void fatal(gamestatus, char const* fmt, ...);
