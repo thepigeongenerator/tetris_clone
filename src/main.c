@@ -6,11 +6,9 @@
 
 #include "error.h"
 #include "game/game.h"
-#include "game/gametime.h"
 #include "window/renderer.h"
 
 // initialized in init(), reading beforehand is undefined behaviour
-static gametime gt;
 static gamedata gdat;
 static renderdata rdat;
 
@@ -23,8 +21,7 @@ static void init(void) {
         fatal(ERROR_SDL_FONT_INIT, __FILE_NAME__, __LINE__, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
 
     // initialize other game components
-    gt = gametime_new();
-    game_init(&gdat, &gt);
+    game_init(&gdat);
     render_init(&rdat, &gdat);
 }
 
@@ -43,7 +40,6 @@ static void update(void) {
     }
 
     // perform updates
-    gametime_update(&gt);
     game_update(&gdat);
     render_update(&rdat);
 }

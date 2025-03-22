@@ -43,9 +43,12 @@ void next_shape(gamedata* const dat) {
     dat->nxt[TETROMINO_COUNT - 1] = cache;
 }
 
-void game_init(gamedata* const dat, gametime* gt) {
+void game_init(gamedata* const dat) {
     // set a random seed using the system clock
     srand(time(NULL));
+
+    struct gametime gt = {{0}, 0};
+    gametime_get(&gt.ts);
 
     // initialize audio device
     audiodevice* ad = audio_device_init(32000, AUDIO_S16, 1, 4096);
@@ -83,15 +86,24 @@ void game_init(gamedata* const dat, gametime* gt) {
     shuffle(TETROMINO_COUNT, dat->nxt); // manually trigger a shuffle
 }
 
+// updates the gametime
+static inline void update_gametime(gamedata* dat) {
+    struct timespec ts;
+    gametime_get(&ts);
+    dat->time.ms = ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+    dat->time.ts = ts;
+}
+
 // called every time the game's state is updated
 void game_update(gamedata* const dat) {
+    update_gametime(dat);
     uint8_t const* keys = SDL_GetKeyboardState(NULL);
 
     if (keys[SDL_SCANCODE_ESCAPE])
         dat->run = false;
 
     input_data move = MOVE_NONE; // contains the move data
-    uint32_t ctime = SDL_GetTicks();
+    time_t ctime = dat->time.ms;
 
     if (ctime > dat->timer_update) {
         dat->timer_update = ctime + 500;

@@ -1,39 +1,24 @@
 #pragma once
-
 #include <time.h>
 
-#include "../util/attributes.h"
-
-typedef struct {
-    struct timespec ts; // stores the time at the current update
-    double sec;         // stores the current time in seconds
-    float scale;        // multiplier for the time calculation, default value is 1.0
-    float delta;        // the time that it took between updates
-} gametime;
-
-// initializes the gametime struct
-atrb_const static inline gametime gametime_new(void) {
+struct gametime {
     struct timespec ts;
-    timespec_get(&ts, TIME_UTC);
+    time_t ms;
+};
 
-    return (gametime){
-        ts,
-        0.0,
-        1.0F,
-        0.0F,
-    };
+#if _POSIX_C_SOURCE >= 199309L
+static inline void gametime_get(struct timespec* ts) {
+    clock_gettime(CLOCK_MONOTONIC, ts);
 }
-
-// updates the internal variables
-static inline void gametime_update(gametime* gt) {
-    struct timespec ts;
-    timespec_get(&ts, TIME_UTC);
-    gt->sec = (double)ts.tv_nsec * 1e-9;                                    // calculate the current time in seconds
-    gt->delta = ((double)(ts.tv_nsec - gt->ts.tv_nsec) * 1e-9) * gt->scale; // calculate how much time has passed between this and last frame
-    gt->ts = ts;                                                            // update the game's timespec
+#elif defined _WIN32
+# include <windows.h>
+static inline void gametime_get(struct timespec* ts) {
+    LARGE_INTEGER cnt, frq;
+    QueryPerformanceCounter(&cnt);
+    QueryPerformanceFrequency(&frq);
+    ts->tv_sec = (time_t)(cnt.QuadPart / frq.QuadPart);
+    ts->tv_nsec = (time_t)((cnt.QuadPart % frq.QuadPart) * 1000000000 / frq.QuadPart);
 }
-
-// gets how many times the game updates per second
-atrb_const static inline float gametime_get_ups(gametime* gt) {
-    return 1.0F / gt->delta;
-}
+#else
+# error platform not supported
+#endif
