@@ -2,8 +2,7 @@
 
 #include <stdint.h>
 
-#include "../../error.h"
-#include "../../window/colour8.h"
+#include "../../window/colour/colour8.h"
 #include "../game.h"
 #include "shapes.h"
 
@@ -101,7 +100,7 @@ static inline shape_id rotate_id(shape_id const id, int const dir) {
     return (id + dir) & 31;
 }
 
-void place_update(game_data* const game_data, input_data const move) {
+void place_update(gamedata* const game_data, input_data const move) {
     // store the current index and ID, only changes when placed (which yields no movement) and rotation (which occurs last)
     uint8_t const curr_idx = game_data->curr_idx;
     shape_id const curr_id = game_data->nxt[curr_idx];
@@ -116,7 +115,7 @@ void place_update(game_data* const game_data, input_data const move) {
 
             next_shape(game_data);
             if (shape_intersects(game_data->rows, game_data->curr_idx, game_data->sel_x, game_data->sel_y))
-                set_gamestatus(STATUS_SUCCESS);
+                game_data->run = false;
             return;
         }
 

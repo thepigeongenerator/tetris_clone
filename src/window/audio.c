@@ -7,112 +7,117 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __unix__
+# include <unistd.h>
+# define fexists(fname) (access(fname, F_OK) == 0)
+#elif _WIN32
+# include <io.h>
+# define fexists(fname) (_access(fname, 0) == 0)
+#else
+# error platform not supported!
+#endif
+
 #include "../error.h"
 
-//
-// audio mixing
-//
-// audio callback from SDL_AudioSpec; called when the audio device needs more data
-static void audio_mixer(void* const userdata, uint8_t* const stream, int32_t const len) {
-    memset(stream, 0, len);             // clear the playing audio
-    audio_device* const dev = userdata; // get the callback data
+static void audiomixer(void* const userdata, uint8_t* const stream, int32_t const len) {
+    memset(stream, 0, len);            // clear the playing audio
+    audiodevice* const dev = userdata; // retreive the callback data
 
-    audio_player* prev = NULL;
-    audio_player* curr = dev->audio_dat;
+    // return if dev is null, since it can fail to initialize
+    if (dev == NULL) return;
+
+    struct audioplayer* prev = NULL;
+    struct audioplayer* curr = dev->audio_players;
     while (curr != NULL) {
-        // if the current length, remove self from the list
+        // if the current audio fragment has reached the end of their data
         if (curr->len == 0) {
-            audio_player* ncurr = curr->nxt; // store the next player as the new current player
+            struct audioplayer* ncurr = curr->nxt;
 
-            // set the current player to the new current player & free the current player
+            // free the memory allocated to it and assign the next to to the currently playing
             free(curr);
-            curr = ncurr; // ncurr can be NULL, this is fine
+            curr = ncurr;
 
-            // update the previous pointer accordingly
+            // write to the audio device if prev hasn't been set yet
             if (prev == NULL)
-                dev->audio_dat = ncurr;
+                dev->audio_players = curr;
             else
-                prev->nxt = ncurr;
+                prev->nxt = curr;
 
-            // continue code execution
+            // continue so if curr is now NULL, the loop stops
             continue;
         }
 
-        // get the length of which we shall be mixing
-        uint32_t const mix_length = SDL_min(curr->len, (uint32_t)len);
+        // calculate how much of the current audio player we should mix into the stream
+        uint32_t const mixlen = SDL_min(curr->len, (uint32_t)len);
 
-        // mix the audio with the stream
-        SDL_MixAudioFormat(stream, curr->buf, dev->fmt, mix_length, SDL_MIX_MAXVOLUME);
-        curr->buf += mix_length; // move the pointer up a a bit
-        curr->len -= mix_length; // move up the mixed amount
+        // mix the current buffer into the stream, and update the audio player values accordingly
+        SDL_MixAudioFormat(stream, curr->buf, dev->fmt, mixlen, SDL_MIX_MAXVOLUME);
+        curr->buf += mixlen;
+        curr->len -= mixlen;
 
-        // increment across the list
+        // increment the current node
         prev = curr;
         curr = curr->nxt;
     }
 }
 
-// converts the audio to the format of the audio device, reallocates wav_buf to a new size outputted to wav_len
-static void convert_audio(audio_device const* const dev, SDL_AudioSpec const wav_spec, uint8_t** const wav_buf, uint32_t* const wav_len) {
-    // build the audio converter with the audio given
-    SDL_AudioCVT cvt = {0};
-    SDL_BuildAudioCVT(&cvt, wav_spec.format, wav_spec.channels, wav_spec.freq, dev->fmt, dev->channels, dev->freq);
-    cvt.len = (*wav_len) * wav_spec.channels;            // calculate the size of the source data in bytes by multiplying the length by the amount of channels (warn: uint32_t -> int32_t)
-    cvt.buf = realloc(*wav_buf, cvt.len * cvt.len_mult); // grow the inputted buffer for the conversion
+static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8_t** bufptr, uint32_t* len) {
+    // init the converter
+    SDL_AudioCVT cvt;
+    SDL_BuildAudioCVT(&cvt, spec->format, spec->channels, spec->freq, dev->fmt, dev->channels, dev->freq);
+    cvt.len = (*len) * spec->channels;                  // calculate the size of the source data in bytes by multiplying the length by the amount of channels (warn: uint32_t -> int32_t)
+    cvt.buf = realloc(*bufptr, cvt.len * cvt.len_mult); // grow the inputted buffer for the conversion
 
-    // performs the conversion
-    if (SDL_ConvertAudio(&cvt) != 0)
-        fatal(ERROR_SDL_AUDIO_INIT, "something went wrong when converting an audio buffer! SDL Error: %s", SDL_GetError());
+    // ensure the conversion buffer reallocation goes correctly
+    if (cvt.buf == NULL) {
+        error("%s:%u something went wrong whilst growing the audio buffer whilst converting!", __FILE_NAME__, __LINE__);
+        free(*bufptr);
+        return 1;
+    }
 
-    // set the length to the new length
-    *wav_len = cvt.len_cvt;
+    // converts the audio to the new format
+    if (SDL_ConvertAudio(&cvt)) {
+        error("something went wrong when loading/converting an audio buffer! SDL Error: %s", SDL_GetError());
+        free(cvt.buf);
+        return 1;
+    }
 
-    // reallocate the conversion buffer to match the new size
-    *wav_buf = realloc(cvt.buf, cvt.len_cvt);
-    if (*wav_buf == NULL)
-        fatal(ERROR_SDL_AUDIO, "null value when reallocating the audio buffer");
+    *len = cvt.len;
+
+    *bufptr = realloc(cvt.buf, cvt.len_cvt);
+    if (*bufptr == NULL) {
+        warn("%s:%u something went wrong whilst shrinking the audio buffer whilst converting!", __FILE_NAME__, __LINE__);
+        *bufptr = cvt.buf; // use the conversion buffer, as this one will be valid if realloc fails
+    }
+
+    return 0;
 }
 
+audiodevice* audio_device_init(int32_t freq, SDL_AudioFormat fmt, uint8_t channels, uint16_t samples) {
+    audiodevice* dev = malloc(sizeof(audiodevice));
 
-//
-// audio / audio device management
-//
-// loads a WAV file and returns the relevant information
-audio_data audio_wav_load(audio_device const* const dev, char const* const fpath) {
-    SDL_AudioSpec wav_spec = {0};
-    audio_data audio = {0};
-
-    SDL_LoadWAV(fpath, &wav_spec, &audio.buf, &audio.len);
-    convert_audio(dev, wav_spec, &audio.buf, &audio.len);
-
-    // calculate the amount of seconds that the audio fragment has
-    audio.ms = 1000 * (((audio.len) / (SDL_AUDIO_BITSIZE(dev->fmt) / 8)) / wav_spec.channels / dev->freq);
-
-    return audio;
-}
-
-// initializes the audio device
-audio_device* audio_device_init(int32_t const freq, SDL_AudioFormat const fmt, uint8_t const channels, uint16_t const samples) {
-    // allocate memory for the audio device
-    audio_device* const dev = malloc(sizeof(audio_device));
+    if (dev == NULL) {
+        error("%s:%u null pointer when allocating memory for the audio device!", __FILE_NAME__, __LINE__);
+        return NULL;
+    }
 
     // define the audio specification
     SDL_AudioSpec spec = {freq, fmt, channels, 0, samples, 0, 0, NULL, NULL};
-    spec.callback = audio_mixer;
+    spec.callback = audiomixer;
     spec.userdata = dev;
 
     // create the audio device
-    *dev = (audio_device){
-        NULL, // allocate memory on the heap for the playing audio array
+    *dev = (audiodevice){
+        NULL,
         SDL_OpenAudioDevice(NULL, 0, &spec, NULL, 0),
         freq,
         fmt,
         channels,
     };
 
-    // if the audio device isn't set, cause an error
     if (dev->id < 1) {
-        fatal(ERROR_SDL_AUDIO_INIT, "AudioDivice failed to open! SDL Error: %s", SDL_GetError());
+        error("%s:%u audio device failed to open! SDL Error: %s", __FILE_NAME__, __LINE__, SDL_GetError());
+        free(dev);
         return NULL;
     }
 
@@ -121,28 +126,64 @@ audio_device* audio_device_init(int32_t const freq, SDL_AudioFormat const fmt, u
     return dev;
 }
 
-// plays the audio
-void audio_play(audio_device* const dev, audio_data const* audio) {
+void audio_play(audiodevice* dev, audiodata const* audio) {
+    if (dev == NULL) return;     // dev might fail to initialize
+    if (audio->len == 0) return; // audio might fail to initialize
+
     // create an audio player
-    audio_player* player = malloc(sizeof(audio_player));
-    *player = (audio_player){
-        dev->audio_dat, // set nxt to the first item in dev (can be NULL, this is fine)
+    struct audioplayer* player = malloc(sizeof(struct audioplayer));
+    *player = (struct audioplayer){
+        dev->audio_players, // set nxt to the first item in dev (can be NULL, this is fine)
         audio->buf,
         audio->len,
     };
 
     // assign ourselves to the first item
-    dev->audio_dat = player;
+    dev->audio_players = player;
 }
 
-// frees the audio device
-void audio_device_free(audio_device* const dev) {
+void audio_device_free(audiodevice* dev) {
+    if (dev == NULL) return;
     SDL_CloseAudioDevice(dev->id);
-    free(dev->audio_dat);
+
+    struct audioplayer* curr = dev->audio_players;
+
+    // free all audio players
+    while (curr != NULL) {
+        dev->audio_players = curr->nxt; // use audio_players in dev as a cache
+        free(curr);
+        curr = dev->audio_players;
+    }
+
+    // free the audio device itself
     free(dev);
 }
 
-// frees the buffer of the audio data
-void audio_wav_unload(audio_data* dat) {
-    free(dat->buf);
+audiodata audio_wav_load(audiodevice const* dev, char const* fpath) {
+    if (dev == NULL) return (audiodata){0};
+    SDL_AudioSpec spec;
+    audiodata audio;
+
+    debug("loading audio file '%s'...", fpath);
+
+    if (!fexists(fpath)) {
+        error("%s:%u couldn't find audio file '%s'!", __FILE_NAME__, __LINE__, fpath);
+        return (audiodata){0};
+    }
+
+    // load and parse the audio to the correct format
+    SDL_LoadWAV(fpath, &spec, &audio.buf, &audio.len);
+    if (audio_cvt(dev, &spec, &audio.buf, &audio.len)) {
+        return (audiodata){0};
+    }
+
+    // calculate the time in miliseconds of the audio fragment
+    audio.ms = 1000 * (((audio.len) / (SDL_AUDIO_BITSIZE(dev->fmt) / 8)) / spec.channels / dev->freq);
+
+    return audio;
+}
+
+void audio_wav_unload(audiodata* audio) {
+    free(audio->buf);
+    *audio = (audiodata){0}; // zero out all audio data
 }
