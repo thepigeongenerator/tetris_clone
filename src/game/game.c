@@ -10,6 +10,7 @@
 #include <string.h>
 #include <time.h>
 
+#include "../error.h"
 #include "../window/audio.h"
 #include "../window/colour/colour8.h"
 #include "./tetromino/shapes.h"
@@ -67,7 +68,10 @@ void game_init(gamedata* const dat, gametime* gt) {
 
     // initialize the rows within the game data
     for (int8_t i = 0; i < ROWS; i++) {
-        dat->rows[i] = calloc(COLUMNS, sizeof(colour8)); // TODO: add memory safety check
+        dat->rows[i] = calloc(COLUMNS, sizeof(colour8));
+
+        if (dat->rows[i] == NULL)
+            fatal(ERROR_STD_MEMORY_INIT, __FILE_NAME__, __LINE__, "something went wrong when allocating memory for row %i", i);
     }
 
     // set the shape data in each slot to it's corrsponding ID
