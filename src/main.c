@@ -1,44 +1,34 @@
 #include <SDL.h>
 #include <SDL_error.h>
 #include <SDL_events.h>
-#include <SDL_keyboard.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <wchar.h>
+#include <SDL_ttf.h>
+#include <stdint.h>
 
-#include "SDL_ttf.h"
 #include "error.h"
 #include "game/game.h"
+#include "game/gametime.h"
 #include "window/renderer.h"
 
-#ifdef __EMSCRIPTEN__ // for web builds
-# include <emscripten.h>
-#endif
+// initialized in init(), reading beforehand is undefined behaviour
+static gametime gt;
+static gamedata gdat;
+static renderdata rdat;
 
-
-bool playing = true;
-
-render_data render_dat = {0};
-game_data game_dat = {0};
-
-
-// handles game application initialisation
+// initialize the game
 static void init(void) {
     // initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
-        fatal(ERROR_SDL_INIT, "SDL could not initialize! SDL Error: %s", SDL_GetError());
+        fatal(ERROR_SDL_INIT, __FILE_NAME__, __LINE__, "SDL could not initialize! SDL Error: %s", SDL_GetError());
     if (TTF_Init() != 0)
-        fatal(ERROR_SDL_FONT_INIT, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
+        fatal(ERROR_SDL_FONT_INIT, __FILE_NAME__, __LINE__, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
 
-    // initialize units
-    game_init(&game_dat);
-    renderer_init(&render_dat, &game_dat);
+    // initialize other game components
+    gt = gametime_new();
+    game_init(&gdat, &gt);
+    render_init(&rdat, &gdat);
 }
 
-// handles game application updating
+// perform the updates to the game
 static void update(void) {
     // update the input
     {
@@ -46,36 +36,31 @@ static void update(void) {
         while (SDL_PollEvent(&e)) {
             switch (e.type) {
             case SDL_QUIT:
-                set_gamestatus(STATUS_SUCCESS);
+                gdat.run = false;
                 break;
             }
         }
     }
 
-    // preform updates
-    game_update(&game_dat, SDL_GetKeyboardState(NULL));
-    renderer_update(&render_dat);
+    // perform updates
+    gametime_update(&gt);
+    game_update(&gdat);
+    render_update(&rdat);
 }
 
-// handles game application quitting
-void stop(void) {
-    playing = false;
-}
-
-// entry point of the application
-int main(int const argc, char const* const* const argv) {
-    (void)argc;
-    (void)argv;
+// entry-point of the application
+int32_t main(int32_t argc, char** argv) {
+    (void)argc, (void)argv;
 
     init();
+    debug("successfully initialized!");
 
-    while (get_gamestatus() == -1) {
+    while (gdat.run == true)
         update();
-    }
 
-    // cleanup of resources
-    game_free(&game_dat);
+    debug("done! starting to free resources...");
+    game_free(&gdat);
+    render_free(&rdat);
     SDL_Quit();
-
     return 0;
 }

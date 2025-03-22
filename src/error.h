@@ -30,12 +30,10 @@ enum gamestatus {
 };
 typedef int8_t gamestatus;
 
-void set_gamestatus(gamestatus); // sets the current status of the game
-gamestatus get_gamestatus(void); // gets the current status of the game
-void debug(char const*, ...);    // prints a debug message to stdout if the DEBUG environment variable is set, otherwise the call is ignored.
-void info(char const*, ...);     // prints an info message to stdout
-void warn(char const*, ...);     // prints a warning message to stderr
-void error(char const*, ...);    // prints an warning message to stderr
+__attribute__((format(printf, 1, 2))) void debug(char const*, ...); // prints a debug message to stdout if the DEBUG environment variable is set, otherwise the call is ignored.
+__attribute__((format(printf, 1, 2))) void info(char const*, ...);  // prints an info message to stdout
+__attribute__((format(printf, 1, 2))) void warn(char const*, ...);  // prints a warning message to stderr
+__attribute__((format(printf, 1, 2))) void error(char const*, ...); // prints an warning message to stderr
 
 // prints an error message to stderr before exiting
-noreturn void fatal(gamestatus, char const* fmt, ...);
+__attribute__((format(printf, 4, 5))) noreturn void fatal(gamestatus, char const* file_name, uint32_t line, char const* fmt, ...);
