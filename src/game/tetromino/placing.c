@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#include "../../main.h"
+#include "../../error.h"
 #include "../../window/colour8.h"
 #include "../game.h"
 #include "shapes.h"
@@ -116,7 +116,7 @@ void place_update(game_data* const game_data, input_data const move) {
 
             next_shape(game_data);
             if (shape_intersects(game_data->rows, game_data->curr_idx, game_data->sel_x, game_data->sel_y))
-                stop();
+                set_gamestatus(STATUS_SUCCESS);
             return;
         }
 

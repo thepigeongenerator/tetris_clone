@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../errors.h"
+#include "../error.h"
 #include "../game/game.h"
 #include "../game/tetromino/shapes.h"
 #include "SDL_surface.h"
@@ -22,13 +22,13 @@
 
 void renderer_init(render_data* const render_dat, game_data const* const game_dat) {
     SDL_Window* const window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (window == NULL) error(ERROR_SDL_RENDERER_INIT, "Window failed to be created! SDL Error: %s", SDL_GetError());
+    if (window == NULL) fatal(ERROR_SDL_RENDERING_INIT, "Window failed to be created! SDL Error: %s", SDL_GetError());
 
     SDL_Renderer* const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL) error(ERROR_SDL_RENDERER_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
+    if (renderer == NULL) fatal(ERROR_SDL_RENDERING_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
 
     TTF_Font* const font = TTF_OpenFont("pixeldroid_botic-regular.ttf", PX_DENS);
-    if (font == NULL) error(ERROR_SDL_FONT_INIT, "Failed to open font! TTF Error: %s", TTF_GetError());
+    if (font == NULL) fatal(ERROR_SDL_FONT_INIT, "Failed to open font! TTF Error: %s", TTF_GetError());
 
     // initialize the render data
     *render_dat = (render_data){

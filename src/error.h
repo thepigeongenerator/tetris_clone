@@ -22,6 +22,8 @@ enum gamestatus {
     ERROR_SDL_RENDERING_INIT = ERROR_SDL_INIT | 16, // rendering initialization error
     ERROR_SDL_AUDIO          = ERROR_SDL      | 8,  // audio error
     ERROR_SDL_AUDIO_INIT     = ERROR_SDL_INIT | 8,  // audio initialization error
+    ERROR_SDL_FONT           = ERROR_SDL      | 4,  // font error
+    ERROR_SDL_FONT_INIT      = ERROR_SDL_INIT | 4,  // font initialization error
 
     STATUS_RUNNING = -1,
     // clang-format on
