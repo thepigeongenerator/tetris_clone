@@ -1,7 +1,21 @@
-.cache
-.vscode/*
-!.vscode/tasks.json
-!.vscode/launch.json
-bin
-obj
-compile_commands.json
+# ignore all dotfiles by default
+.*
+
+# rubbish we don't want to track
+~*
+*~
+*.bak
+
+# ignore output files
+*.o
+*.d
+*.log
+/bin/
+/obj/
+/compile_commands.json
+
+# unignore dotfiles that we'd like to keep
+!.gitignore
+!.editorconfig
+!/.clang-format
+!/.github/
