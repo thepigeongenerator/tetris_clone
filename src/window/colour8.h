@@ -37,17 +37,17 @@ static inline void set_colour8(SDL_Renderer* const renderer, colour8 const c) {
     (void)SDL_SetRenderDrawColor(renderer, colour8_red32(c), colour8_green32(c), colour8_blue32(c), 0xFF);
 }
 
-// american macros:
+// American macros:
 #define color8         colour8
 #define color8_red32   colour8_red32
 #define color8_green32 colour8_green32
 #define color8_blue32  colour8_blue32
-#define COLOR_BLACK   COLOUR_BLACK
-#define COLOR_RED     COLOUR_RED
-#define COLOR_YELLOW  COLOUR_YELLOW
-#define COLOR_ORANGE  COLOUR_ORANGE
-#define COLOR_GREEN   COLOUR_GREEN
-#define COLOR_CYAN    COLOUR_CYAN
-#define COLOR_BLUE    COLOUR_BLUE
-#define COLOR_MAGENTA COLOUR_MAGENTA
-#define COLOR_WHITE   COLOUR_WHITE
+#define COLOR_BLACK    COLOUR_BLACK
+#define COLOR_RED      COLOUR_RED
+#define COLOR_YELLOW   COLOUR_YELLOW
+#define COLOR_ORANGE   COLOUR_ORANGE
+#define COLOR_GREEN    COLOUR_GREEN
+#define COLOR_CYAN     COLOUR_CYAN
+#define COLOR_BLUE     COLOUR_BLUE
+#define COLOR_MAGENTA  COLOUR_MAGENTA
+#define COLOR_WHITE    COLOUR_WHITE
