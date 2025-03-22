@@ -77,7 +77,7 @@ static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8
 
     // converts the audio to the new format
     if (SDL_ConvertAudio(&cvt)) {
-        error("something went wrong when loading/converting an audio buffer! SDL Error: %s", SDL_GetError());
+        error("%s:%u something went wrong when loading/converting an audio buffer! SDL Error: %s", __FILE_NAME__, __LINE__, SDL_GetError());
         free(cvt.buf);
         return 1;
     }
