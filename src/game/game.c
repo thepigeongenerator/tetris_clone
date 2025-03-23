@@ -126,7 +126,7 @@ void game_update(gamedata* const dat) {
         if (keys[SDL_SCANCODE_E]) umove |= MOVE_ROTRIGHT;
 
         if (umove != MOVE_NONE) {
-            dat->timer_input = ctime + 60;
+            dat->timer_input = ctime + 80;
             move |= umove;
         }
     }
