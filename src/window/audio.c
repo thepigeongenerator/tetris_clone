@@ -64,8 +64,14 @@ static void audiomixer(void* const userdata, uint8_t* const stream, int32_t cons
 static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8_t** bufptr, uint32_t* len) {
     // init the converter
     SDL_AudioCVT cvt;
-    SDL_BuildAudioCVT(&cvt, spec->format, spec->channels, spec->freq, dev->fmt, dev->channels, dev->freq);
     cvt.len = (*len) * spec->channels;                  // calculate the size of the source data in bytes by multiplying the length by the amount of channels (warn: uint32_t -> int32_t)
+    if (SDL_BuildAudioCVT(&cvt, spec->format, spec->channels, spec->freq, dev->fmt, dev->channels, dev->freq) < 0) {
+        error("%s:%u could not build the audio converter! SDL Error: %s", __FILE_NAME__, __LINE__, SDL_GetError());
+        free(*bufptr); // free the buffer upon an error, as we won't be using this
+        return 1;
+    } else if (!cvt.needed) { // ensure the conversion is necessary
+        return 0;
+    }
     cvt.buf = realloc(*bufptr, cvt.len * cvt.len_mult); // grow the inputted buffer for the conversion
 
     // ensure the conversion buffer reallocation goes correctly
