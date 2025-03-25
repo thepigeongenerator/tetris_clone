@@ -92,6 +92,7 @@ static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8
 
 
     // update output
+    *len = cvt.len_cvt;                      // set the length to the new length after the conversion
     *bufptr = realloc(cvt.buf, cvt.len_cvt); // reallocate the buffer to the new size
     if (*bufptr == NULL) {
         warn("%s:%u something went wrong whilst shrinking the audio buffer whilst converting!", __FILE_NAME__, __LINE__);
