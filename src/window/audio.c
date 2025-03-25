@@ -90,7 +90,6 @@ static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8
         return 1;
     }
 
-
     // update output
     *len = cvt.len_cvt;                      // set the length to the new length after the conversion
     *bufptr = realloc(cvt.buf, cvt.len_cvt); // reallocate the buffer to the new size
