@@ -61,10 +61,11 @@ static void audiomixer(void* const userdata, uint8_t* const stream, int32_t cons
     }
 }
 
+// converts the inputted audio to the format of dev
+// returns 1 upon failure, 0 upon success. When 1 is returned *bufptr will be freed. Otherwise *bufptr is reallocated
 static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8_t** bufptr, uint32_t* len) {
     // init the converter
     SDL_AudioCVT cvt;
-    cvt.len = (*len) * spec->channels;                  // calculate the size of the source data in bytes by multiplying the length by the amount of channels (warn: uint32_t -> int32_t)
     if (SDL_BuildAudioCVT(&cvt, spec->format, spec->channels, spec->freq, dev->fmt, dev->channels, dev->freq) < 0) {
         error("%s:%u could not build the audio converter! SDL Error: %s", __FILE_NAME__, __LINE__, SDL_GetError());
         free(*bufptr); // free the buffer upon an error, as we won't be using this
@@ -72,25 +73,26 @@ static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8
     } else if (!cvt.needed) { // ensure the conversion is necessary
         return 0;
     }
+    cvt.len = (*len);                                   // specify the length of the source data buffer in bytes (warn: uint32_t -> int32_t)
     cvt.buf = realloc(*bufptr, cvt.len * cvt.len_mult); // grow the inputted buffer for the conversion
 
     // ensure the conversion buffer reallocation goes correctly
     if (cvt.buf == NULL) {
-        error("%s:%u something went wrong whilst growing the audio buffer whilst converting!", __FILE_NAME__, __LINE__);
-        free(*bufptr);
+        error("%s:%u failed to reallocate the audio buffer to the new size of %u bytes!", __FILE_NAME__, __LINE__, cvt.len);
+        free(*bufptr); // free the inputted pointer, as realloc doesn't clear this address if it fails
         return 1;
     }
 
     // converts the audio to the new format
     if (SDL_ConvertAudio(&cvt)) {
         error("%s:%u something went wrong when loading/converting an audio buffer! SDL Error: %s", __FILE_NAME__, __LINE__, SDL_GetError());
-        free(cvt.buf);
+        free(cvt.buf); // free the conversion buffer if it fails, as realloc moved the data to this adress; old adress is no longer valid
         return 1;
     }
 
-    *len = cvt.len;
 
-    *bufptr = realloc(cvt.buf, cvt.len_cvt);
+    // update output
+    *bufptr = realloc(cvt.buf, cvt.len_cvt); // reallocate the buffer to the new size
     if (*bufptr == NULL) {
         warn("%s:%u something went wrong whilst shrinking the audio buffer whilst converting!", __FILE_NAME__, __LINE__);
         *bufptr = cvt.buf; // use the conversion buffer, as this one will be valid if realloc fails
