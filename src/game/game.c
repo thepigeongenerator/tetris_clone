@@ -58,6 +58,7 @@ void game_init(gamedata* const dat) {
         gt,                                    // time
         ad,                                    // audio_device
         audio_wav_load(ad, "korobeiniki.wav"), // music
+        audio_wav_load(ad, "place.wav"),       // place_sfx
         0,                                     // timer_music
         0,                                     // timer_update
         0,                                     // timer_input

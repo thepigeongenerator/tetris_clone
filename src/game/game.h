@@ -27,6 +27,7 @@ typedef struct {
     struct gametime time;
     audiodevice* audio_device;
     audiodata music;
+    audiodata place_sfx;
     time_t timer_music;
     time_t timer_update;
     time_t timer_input;
