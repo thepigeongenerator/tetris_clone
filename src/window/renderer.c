@@ -64,6 +64,7 @@ static void draw_score_text(renderdata const* dat) {
         SDL_Surface* const txt_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){COLOUR_SCORE.r, COLOUR_SCORE.g, COLOUR_SCORE.b, COLOUR_SCORE.a});
         SDL_Texture* const txt_texture = SDL_CreateTextureFromSurface(renderer, txt_surface);
 
+        // BUG: inspect memory leak somewhere over here
         if (cache->score_texture != NULL) {
             // free old data
             SDL_FreeSurface(cache->score_surface);
