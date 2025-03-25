@@ -3,7 +3,6 @@
 #include <SDL_audio.h>
 #include <SDL_keyboard.h>
 #include <SDL_scancode.h>
-#include <SDL_timer.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -14,6 +13,7 @@
 #include "../window/audio.h"
 #include "../window/colour/colour8.h"
 #include "./tetromino/shapes.h"
+#include "gametime.h"
 #include "tetromino/placing.h"
 
 // shuffle the array using a Fisher–Yates shuffle
