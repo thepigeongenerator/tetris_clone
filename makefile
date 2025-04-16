@@ -12,7 +12,7 @@ NAME := $(shell basename $(PWD))
 CC := clang
 STD := c17
 LANG = c
-CFLAGS := $(shell pkg-config --cflags sdl2 SDL2_ttf) -Wall -Wextra -Wpedantic -Wno-pointer-arith
+CFLAGS := $(shell pkg-config --cflags sdl2 SDL2_ttf) -m32 -Wall -Wextra -Wpedantic -Wno-pointer-arith
 LDFLAGS := $(shell pkg-config --libs sdl2 SDL2_ttf) -lm
 DEBUG ?= 0
 
