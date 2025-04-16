@@ -16,7 +16,7 @@
     (void)vsnprintf(buf, PRINT_BUFFER_SIZE, fmt, args); \
     va_end(args);
 
-void debug(char const* fmt, ...) {
+void debug(char const* restrict fmt, ...) {
     char const* env = getenv("DEBUG");
     if (env == NULL || *env != '1')
         return;
@@ -27,25 +27,25 @@ void debug(char const* fmt, ...) {
     (void)fprintf(stdout, "\033[95m%s\033[0m\n", buf);
 }
 
-void info(char const* fmt, ...) {
+void info(char const* restrict fmt, ...) {
     char buf[PRINT_BUFFER_SIZE] = {0};
     write_args(buf, fmt);
     (void)fprintf(stdout, "\033[0m%s\033[0m\n", buf); // write colour here for consistency
 }
 
-void warn(char const* fmt, ...) {
+void warn(char const* restrict fmt, ...) {
     char buf[PRINT_BUFFER_SIZE] = {0};
     write_args(buf, fmt);
     (void)fprintf(stderr, "\033[93mW: %s\033[0m\n", buf);
 }
 
-void error(char const* fmt, ...) {
+void error(char const* restrict fmt, ...) {
     char buf[PRINT_BUFFER_SIZE] = {0};
     write_args(buf, fmt);
-    (void)fprintf(stderr, "\033[91mE: %s\033[0m", buf);
+    (void)fprintf(stderr, "\033[91mE: %s\033[0m\n", buf);
 }
 
-noreturn void fatal(gamestatus error_code, char const* fname, uint32_t ln, char const* fmt, ...) {
+noreturn void fatal(unsigned error_code, char const* restrict fname, unsigned ln, char const* restrict fmt, ...) {
     char buf1[PRINT_BUFFER_SIZE] = {0};
     write_args(buf1, fmt);
 
