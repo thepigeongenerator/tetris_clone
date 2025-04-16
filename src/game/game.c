@@ -9,9 +9,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "../error.h"
 #include "../window/audio.h"
-#include "../window/colour/colour8.h"
 #include "./tetromino/shapes.h"
 #include "gametime.h"
 #include "tetromino/placing.h"
@@ -54,6 +52,7 @@ void game_init(gamedata* const dat) {
     audiodevice* ad = audio_device_init(32000, AUDIO_S16, 1, 4096);
 
     *dat = (gamedata){
+        {0},                                   // rowdat
         {0},                                   // row
         gt,                                    // time
         ad,                                    // audio_device
@@ -72,10 +71,7 @@ void game_init(gamedata* const dat) {
 
     // initialize the rows within the game data
     for (int8_t i = 0; i < ROWS; i++) {
-        dat->rows[i] = calloc(COLUMNS, sizeof(colour8));
-
-        if (dat->rows[i] == NULL)
-            fatal(ERROR_STD_MEMORY_INIT, __FILE_NAME__, __LINE__, "something went wrong when allocating memory for row %i", i);
+        dat->rows[i] = dat->rowdat + (i * COLUMNS);
     }
 
     // set the shape data in each slot to it's corrsponding ID
@@ -141,12 +137,6 @@ void game_free(gamedata* const dat) {
     audio_wav_unload(&dat->music);
     audio_wav_unload(&dat->place_sfx);
     audio_device_free(dat->audio_device);
-
-    // clear each row
-    for (int8_t i = 0; i < ROWS; i++) {
-        free(dat->rows[i]);
-        dat->rows[i] = NULL;
-    }
 
     // zero-out the rest of the data
     *dat = (gamedata){0};
