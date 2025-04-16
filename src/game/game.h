@@ -1,8 +1,8 @@
 #pragma once
-#include <SDL_scancode.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
 
 #include "../window/audio.h"
 #include "../window/colour/colour8.h"
