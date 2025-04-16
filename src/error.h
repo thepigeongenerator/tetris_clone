@@ -28,12 +28,11 @@ enum gamestatus {
     STATUS_RUNNING = -1,
     // clang-format on
 };
-typedef int8_t gamestatus;
 
-__attribute__((format(printf, 1, 2))) void debug(char const*, ...); // prints a debug message to stdout if the DEBUG environment variable is set, otherwise the call is ignored.
-__attribute__((format(printf, 1, 2))) void info(char const*, ...);  // prints an info message to stdout
-__attribute__((format(printf, 1, 2))) void warn(char const*, ...);  // prints a warning message to stderr
-__attribute__((format(printf, 1, 2))) void error(char const*, ...); // prints an warning message to stderr
+__attribute__((nonnull(1))) __attribute__((format(printf, 1, 2))) void debug(char const* restrict, ...); // prints a debug message to stdout if the DEBUG environment variable is set, otherwise the call is ignored.
+__attribute__((nonnull(1))) __attribute__((format(printf, 1, 2))) void info(char const* restrict, ...);  // prints an info message to stdout
+__attribute__((nonnull(1))) __attribute__((format(printf, 1, 2))) void warn(char const* restrict, ...);  // prints a warning message to stderr
+__attribute__((nonnull(1))) __attribute__((format(printf, 1, 2))) void error(char const* restrcit, ...); // prints an warning message to stderr
 
 // prints an error message to stderr before exiting
-__attribute__((format(printf, 4, 5))) noreturn void fatal(gamestatus, char const* file_name, uint32_t line, char const* fmt, ...);
+__attribute__((nonnull(2, 5))) __attribute__((format(printf, 4, 5))) noreturn void fatal(unsigned, char const* restrict file_name, unsigned line, char const* restrict fmt, ...);
