@@ -58,7 +58,7 @@ endif
 
 # compiles and execute the binary
 run: compile
-	./$(TARGET)
+	cd $(dir $(TARGET)) && ./$(notdir $(TARGET))
 compile: compile_commands.json $(DIR) $(TARGET) $(ASSETS)
 clean:
 	rm -rf $(DIR_BIN) $(DIR_OBJ) compile_commands.json
