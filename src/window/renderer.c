@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <wchar.h>
 
@@ -64,8 +65,7 @@ static void draw_score_text(renderdata const* dat) {
         SDL_Surface* const txt_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){COLOUR_SCORE.r, COLOUR_SCORE.g, COLOUR_SCORE.b, COLOUR_SCORE.a});
         SDL_Texture* const txt_texture = SDL_CreateTextureFromSurface(renderer, txt_surface);
 
-        // BUG: inspect memory leak somewhere over here
-        if (cache->score_texture != NULL) {
+        if (cache->score_texture != NULL || cache->score_surface != NULL) {
             // free old data
             SDL_FreeSurface(cache->score_surface);
             SDL_DestroyTexture(cache->score_texture);
@@ -74,6 +74,11 @@ static void draw_score_text(renderdata const* dat) {
         // write data to cache
         cache->score_surface = txt_surface;
         cache->score_texture = txt_texture;
+    }
+
+    if (cache->score_surface == NULL || cache->score_texture == NULL) {
+        error("the score texture was unavailable!");
+        return;
     }
 
     SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), cache->score_surface->w, cache->score_surface->h};
@@ -150,6 +155,8 @@ void render_free(renderdata* const render_data) {
     SDL_DestroyRenderer(render_data->renderer);
     SDL_DestroyWindow(render_data->window);
     TTF_CloseFont(render_data->font);
+    SDL_FreeSurface(render_data->cache->score_surface);
+    SDL_DestroyTexture(render_data->cache->score_texture);
     free(render_data->cache);
     *render_data = (renderdata){0};
 }
