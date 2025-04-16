@@ -7,41 +7,55 @@
 #
 # project name = the workspace directory name
 NAME := $(shell basename $(PWD))
+DEBUG ?= 0
+ARCH ?= 0
 
 # compiler settings
 CC := clang
 STD := c17
-LANG = c
 CFLAGS := $(shell pkg-config --cflags sdl2 SDL2_ttf) -m32 -Wall -Wextra -Wpedantic -Wno-pointer-arith
-LDFLAGS := $(shell pkg-config --libs sdl2 SDL2_ttf) -lm
-DEBUG ?= 0
+LDFLAGS := $(shell pkg-config --libs sdl2 SDL2_ttf) -m32 -lm
 
-ifeq ($(DEBUG),1)
-CFLAGS += -DDEBUG -fsanitize=address,undefined -g -Og
-PROF := dbg
+ifneq ($(DEBUG),0)
+CFLAGS  += -g -Og -fsanitize=address,undefined
+LDFLAGS += -fsanitize=address,undefined
+PROF    := dbg
 else
-REL_FLAGS += -O2
-PROF := rel
+CFLAGS  += -DNDEBUG -O2 -Werror
+PROF    := rel
 endif
 
+ifneq ($(MAKECMDGOALS),clean)
+ifeq      ($(ARCH),linux-x86_64)
+CFLAGS  += -target x86_64-pc-linux-gnu
+LDFLAGS += -target x86_64-pc-linux-gnu
+else ifeq ($(ARCH),win-x86_64)
+CFLAGS  += -target x86_64-pc-windows-gnu
+LDFLAGS += -target x86_64-pc-windows-gnu
+EXT     := .exe
+else
+$(error you must set the ARCH environment variable to one of these: 'linux-x86_64' 'win-x86_64')
+endif
+endif
+
+ifneq ($(ARCH),0)
 # dirs
-DIR_BIN := bin
-DIR_OBJ := obj
-DIR_BUILD := $(DIR_BIN)/$(ARCH)/$(PROF)
-DIR := $(DIR_BIN)/$(ARCH)/$(PROF) $(DIR_OBJ)/$(ARCH)/$(PROF)
+DIR_BIN := bin/$(ARCH)/$(PROF)
+DIR_OBJ := obj/$(ARCH)/$(PROF)
+TARGET := $(DIR_BIN)/$(NAME)$(EXT)
 
 # source files
 SRC := $(wildcard src/*.c) $(wildcard src/**/*.c) $(wildcard src/**/**/*.c) $(wildcard src/**/**/**/*.c) $(wildcard src/**/**/**/**/*.c)
-SRC_ASSETS := $(wildcard assets/*)
-
-# output locations
-OBJ := $(patsubst src/%,$(DIR_OBJ)/$(ARCH)/$(PROF)/%,$(SRC:.c=.o))
+OBJ := $(patsubst src/%,$(DIR_OBJ)/%,$(SRC:.c=.o))
 DEP := $(OBJ:.o=.d)
-ASSETS := $(patsubst assets/%,$(DIR_BUILD)/%,$(SRC_ASSETS))
-TARGET := $(DIR_BUILD)/$(NAME)$(EXT)
+SRC_ASSETS := $(wildcard assets/*)
+ASSETS := $(patsubst assets/%,$(DIR_BIN)/%,$(SRC_ASSETS))
+
+COMPILE_COMMANDS := $(DIR_OBJ)/compile_commands.json
+endif
 
 define wr_colour
-	@echo -e "\033[$(2)m$(1)\033[0m"
+	@printf '\033[%sm%s\033[0m\n' $(2) $(1)
 endef
 
 # set the correct environment variables depending on the platform
@@ -59,9 +73,11 @@ endif
 # compiles and execute the binary
 run: compile
 	cd $(dir $(TARGET)) && ./$(notdir $(TARGET))
-compile: compile_commands.json $(DIR) $(TARGET) $(ASSETS)
+compile: compile_commands $(TARGET) $(ASSETS)
+
+.NOTPARALLEL:
 clean:
-	rm -rf $(DIR_BIN) $(DIR_OBJ) compile_commands.json
+	rm -rf obj/ bin/ compile_commands.json
 
 # create the binary (linking step)
 $(TARGET): $(OBJ)
@@ -69,33 +85,43 @@ $(TARGET): $(OBJ)
 	@$(call wr_colour,"CFLAGS: '$(CFLAGS)'",94)
 	@$(call wr_colour,"LDFLAGS: '$(LDFLAGS)'",94)
 	@$(call wr_colour,"linking to: '$@'",92)
-	@$(CC) -o $(TARGET) $^ $(CFLAGS) $(LDFLAGS)
+
+	@mkdir -p ${@D}
+	@$(CC) -o $(TARGET) $^ $(LDFLAGS)
 	@$(call wr_colour,"current profile: '$(PROF)'",93)
 
 # create .o and .d files
-$(DIR_OBJ)/$(ARCH)/$(PROF)/%.o: src/%.c
+$(DIR_OBJ)/%.o: src/%.c
 	@$(call wr_colour,"compiling $(notdir $@) from $(notdir $<)",92)
-	@mkdir -p $(dir $@)
-	@$(CC) -o $@ -MD -MP -c $< $(CFLAGS) -std=$(STD) -x $(LANG) -Wno-unused-command-line-argument
+	@mkdir -p ${@D}
+	@$(CC) $(CFLAGS) -c -MD -MP -std=$(STD) -x c -o $@ $<
 
 # copy assets
-$(DIR_BUILD)/%: assets/%
-	@mkdir -p $(dir $@)
-	cp -v $< $@
-
-# create directories
-$(DIR):
-	mkdir -p $@
+$(DIR_BIN)/%: assets/%
+	@mkdir -p ${@D}
+	@cp -v $< $@
 
 # update compile commands if the makefile has been updated (for linting)
-ifeq ($(DEBUG),1)
-compile_commands.json: makefile
-	$(MAKE) clean
-	@touch compile_commands.json
-	bear -- make compile
-else
-compile_commands.json:
+compile_commands: # default, empty rule
+ifneq ($(shell which bear),)
+ifneq ($(COMPILE_COMMANDS),)
+ifeq ($(NOCMDS),)
+.NOTPARALLEL .PHONY:
+compile_commands: $(COMPILE_COMMANDS)
+	@[ "$(readlink compile_commands.json)" != "$<" ] && ln -sf $< compile_commands.json
+
+.NOTPARALLEL:
+$(COMPILE_COMMANDS): makefile
+	@$(call wr_colour,"regenerating compile_commands.json thus recompiling.",93)
+	@mkdir -p ${@D} # ensure the target directory exists
+	@touch $@       # create the file so it isn't retriggered (will just change modification time if already exists)
+	@bear --output $@ -- make -B compile NOCMDS=1 # rebuild the current target using bear, to create the compile commands
 endif
+endif
+endif
+
+# disable implicit rules
+.SUFFIXES:
 
 # include the dependencies
 -include $(DEP)
