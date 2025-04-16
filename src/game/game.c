@@ -139,6 +139,7 @@ void game_update(gamedata* const dat) {
 
 void game_free(gamedata* const dat) {
     audio_wav_unload(&dat->music);
+    audio_wav_unload(&dat->place_sfx);
     audio_device_free(dat->audio_device);
 
     // clear each row
