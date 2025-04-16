@@ -30,7 +30,7 @@ void render_init(renderdata* const render_dat, gamedata const* const game_dat) {
     if (renderer == NULL) fatal(ERROR_SDL_RENDERING_INIT, __FILE_NAME__, __LINE__, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
 
     TTF_Font* const font = TTF_OpenFont("pixeldroid_botic-regular.ttf", PX_DENS);
-    if (font == NULL) fatal(ERROR_SDL_FONT_INIT, __FILE_NAME__, __LINE__, "Failed to open font! TTF Error: %s", TTF_GetError());
+    if (font == NULL) error("Failed to open font! TTF Error: %s", TTF_GetError());
 
     // initialize the render data
     *render_dat = (renderdata){
@@ -138,7 +138,8 @@ void render_update(renderdata const* const dat) {
     SDL_RenderDrawRect(renderer, &field_size);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS + 1, 3); // draw the next shape
 
-    draw_score_text(dat);
+    if (dat->font)
+        draw_score_text(dat);
 
     render_level(renderer, dat->game_dat);
     draw_shape(renderer, game_data->nxt[game_data->curr_idx], game_data->sel_x, game_data->sel_y); // draw the current shape
