@@ -23,7 +23,8 @@ typedef colour8 const* const row_const;
 typedef colour8* row;
 
 typedef struct {
-    row rows[ROWS];
+    colour8 rowdat[ROWS * COLUMNS];
+    colour8* rows[ROWS];
     struct gametime time;
     audiodevice* audio_device;
     audiodata music;
