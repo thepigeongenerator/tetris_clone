@@ -2,58 +2,57 @@
 
 #include <stdint.h>
 
+#include "../../window/audio.h"
 #include "../../window/colour/colour8.h"
 #include "../game.h"
 #include "shapes.h"
 
 
-static bool is_filled(row_const const row) {
+static int is_filled(row_const const row) {
     for (int8_t x = 0; x < COLUMNS; x++) {
         if (row[x] == 0) {
-            return false;
+            return 0;
         }
     }
 
-    return true;
+    return 1;
 }
 
 static void clear_rows(row* const rows, uint16_t* const score) {
     row cache[4] = {0}; // you can only clear four rows at a time
-    struct {
-        uint8_t filled  : 3; // values will only ever be 0..4
-        uint8_t checked : 3; // values will only ever be 0..4
-    } dat = {0};
+    unsigned filled = 0;
+    unsigned checked = 0;
 
     // loop through each row (excluding the empty rows at the top when clearing a line)
-    for (int8_t y = 0; y < (ROWS - dat.filled); y++) {
-        int8_t const i = (ROWS - 1) - y; // get the index starting from the bottom
+    for (unsigned y = 0; y < (ROWS - filled); y++) {
+        int const i = (ROWS - 1) - y; // get the index starting from the bottom
 
-        rows[i] = rows[i - dat.filled]; // set the row to the new or same address
+        rows[i] = rows[i - filled]; // set the row to the new or same address
 
         // continue if the line isn't filled or the max amount has been reached
-        if (dat.checked >= 4 || !is_filled(rows[i])) {
-            if (dat.filled > 0 && dat.checked < 4) dat.checked++;
+        if (checked >= 4 || !is_filled(rows[i])) {
+            if (filled > 0 && checked < 4) checked++;
             continue; // continue to the next line
         }
 
-        cache[dat.filled] = rows[i]; // cache the current row address
-        dat.filled++;                // increase filled, and keep the row in the cache
-        dat.checked++;               // increase the checked count
-        y--;                         // decrease y to check this line again
+        cache[filled] = rows[i]; // cache the current row address
+        filled++;                // increase filled, and keep the row in the cache
+        checked++;               // increase the checked count
+        y--;                     // decrease y to check this line again
     }
 
-    if (dat.filled == 0) return;
-    *score += 8 << dat.filled;
+    if (filled == 0) return;
+    *score += 8 << filled;
 
     // do while, as we already know that entering the loop that filled is non-zero
     do {
-        dat.filled--;
-        rows[dat.filled] = cache[dat.filled];
+        filled--;
+        rows[filled] = cache[filled];
 
         // zero out the filled row
-        for (int8_t x = 0; x < COLUMNS; x++)
-            cache[dat.filled][x] = 0;
-    } while (dat.filled > 0);
+        for (unsigned x = 0; x < COLUMNS; x++)
+            cache[filled][x] = 0;
+    } while (filled > 0);
 }
 
 // sets a shape to the screen
@@ -76,24 +75,24 @@ static inline void set_shape(row const* const row, shape_id const id, int8_t con
     set_shape_i(&row[pos_y], id, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
 }
 
-static bool shape_intersects(row const* const rows, shape_id const id, int8_t const x, int8_t const y) {
+static int shape_intersects(row const* const rows, shape_id const id, int8_t const x, int8_t const y) {
     shape const shape = shape_from_id(id);
 
-    for (int8_t y0 = 0; y0 < SHAPE_HEIGHT; y0++) {
+    for (int y0 = 0; y0 < SHAPE_HEIGHT; y0++) {
         shape_row const shape_row = shape_get_row(shape, y0); // get the shape row
         if (shape_row == 0) continue;                         // if the row doesn't contain data; continue
 
-        for (int8_t x0 = 0; x0 < SHAPE_WIDTH; x0++) {
+        for (int x0 = 0; x0 < SHAPE_WIDTH; x0++) {
             if (shape_is_set(shape_row, x0) == false) continue; // if the bit isn't set at this index; continue
-            int8_t const x1 = x + x0;
-            int8_t const y1 = y + y0;
+            int const x1 = x + x0;
+            int const y1 = y + y0;
 
-            if (x1 < 0 || x1 >= COLUMNS) return true; // if X is out of bounds
-            if (y1 < 0 || y1 >= ROWS) return true;    // if Y is out of bounds
-            if (rows[y1][x1] != 0) return true;       // if there is a block here
+            if (x1 < 0 || x1 >= COLUMNS) return 1; // if X is out of bounds
+            if (y1 < 0 || y1 >= ROWS) return 1;    // if Y is out of bounds
+            if (rows[y1][x1] != 0) return 1;       // if there is a block here
         }
     }
-    return false;
+    return 0;
 }
 
 static inline shape_id rotate_id(shape_id const id, int const dir) {

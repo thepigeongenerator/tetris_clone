@@ -2,7 +2,6 @@
 #include <SDL_error.h>
 #include <SDL_events.h>
 #include <SDL_ttf.h>
-#include <stdint.h>
 
 #include "error.h"
 #include "game/game.h"
@@ -45,7 +44,7 @@ static void update(void) {
 }
 
 // entry-point of the application
-int32_t main(int32_t argc, char** argv) {
+int main(int argc, char** argv) {
     (void)argc, (void)argv;
 
     init();
