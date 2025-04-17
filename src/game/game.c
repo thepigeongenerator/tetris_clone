@@ -92,7 +92,8 @@ static inline void update_gametime(gamedata* dat) {
 void game_update(gamedata* const dat) {
     static time_t timer_update = 0;
     static time_t timer_music = 0;
-    static time_t timer_input = 0;
+    static time_t timer_move = 0;
+    static time_t timer_rot = 0;
     update_gametime(dat);
     uint8_t const* keys = SDL_GetKeyboardState(NULL);
 
@@ -112,18 +113,27 @@ void game_update(gamedata* const dat) {
         audio_play(dat->audio_device, &dat->music);
     }
 
-    if (ctime > timer_input) {
-        input_data umove = MOVE_NONE;
+    // for rotation updating
+    if (ctime > timer_rot) {
+        input_data urot = MOVE_NONE;
+        if (keys[SDL_SCANCODE_Q]) urot |= MOVE_ROTLEFT;
+        if (keys[SDL_SCANCODE_E]) urot |= MOVE_ROTRIGHT;
 
-        // get the input data and apply it to move
+        if (urot != MOVE_NONE) {
+            timer_rot = ctime + 100;
+            move |= urot;
+        }
+    }
+
+    // for movement updating
+    if (ctime > timer_move) {
+        input_data umove = MOVE_NONE;
         if (keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A]) umove |= MOVE_LEFT;
         if (keys[SDL_SCANCODE_RIGHT] || keys[SDL_SCANCODE_D]) umove |= MOVE_RIGHT;
         if (keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_SPACE]) umove |= MOVE_DOWN;
-        if (keys[SDL_SCANCODE_Q]) umove |= MOVE_ROTLEFT;
-        if (keys[SDL_SCANCODE_E]) umove |= MOVE_ROTRIGHT;
 
         if (umove != MOVE_NONE) {
-            timer_input = ctime + 20;
+            timer_move = ctime + 20;
             move |= umove;
         }
     }
