@@ -58,9 +58,6 @@ void game_init(gamedata* const dat) {
         ad,                                    // audio_device
         audio_wav_load(ad, "korobeiniki.wav"), // music
         audio_wav_load(ad, "place.wav"),       // place_sfx
-        0,                                     // timer_music
-        0,                                     // timer_update
-        0,                                     // timer_input
         0,                                     // score
         {0},                                   // nxt
         0,                                     // curr_idx
@@ -93,6 +90,9 @@ static inline void update_gametime(gamedata* dat) {
 
 // called every time the game's state is updated
 void game_update(gamedata* const dat) {
+    static time_t timer_update = 0;
+    static time_t timer_music = 0;
+    static time_t timer_input = 0;
     update_gametime(dat);
     uint8_t const* keys = SDL_GetKeyboardState(NULL);
 
@@ -102,17 +102,17 @@ void game_update(gamedata* const dat) {
     input_data move = MOVE_NONE; // contains the move data
     time_t ctime = dat->time.ms;
 
-    if (ctime > dat->timer_update) {
-        dat->timer_update = ctime + 500;
+    if (ctime > timer_update) {
+        timer_update = ctime + 500;
         move |= MOVE_DOWN;
     }
 
-    if (ctime > dat->timer_music) {
-        dat->timer_music = ctime + (dat->music.ms);
+    if (ctime > timer_music) {
+        timer_music = ctime + (dat->music.ms);
         audio_play(dat->audio_device, &dat->music);
     }
 
-    if (ctime > dat->timer_input) {
+    if (ctime > timer_input) {
         input_data umove = MOVE_NONE;
 
         // get the input data and apply it to move
@@ -123,7 +123,7 @@ void game_update(gamedata* const dat) {
         if (keys[SDL_SCANCODE_E]) umove |= MOVE_ROTRIGHT;
 
         if (umove != MOVE_NONE) {
-            dat->timer_input = ctime + 80;
+            timer_input = ctime + 20;
             move |= umove;
         }
     }

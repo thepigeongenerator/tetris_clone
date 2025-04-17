@@ -2,7 +2,6 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <time.h>
 
 #include "../window/audio.h"
 #include "../window/colour/colour8.h"
@@ -29,9 +28,6 @@ typedef struct {
     audiodevice* audio_device;
     audiodata music;
     audiodata place_sfx;
-    time_t timer_music;
-    time_t timer_update;
-    time_t timer_input;
     uint16_t score;
     shape_id nxt[7];  // the order of the shape ids that they should appear in
     uint8_t curr_idx; // current shape index
