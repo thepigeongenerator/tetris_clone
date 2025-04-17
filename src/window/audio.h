@@ -19,7 +19,7 @@ struct audioplayer {
 struct audiodevice {
     struct audioplayer* audio_players;
     SDL_AudioDeviceID id;
-    int32_t freq;
+    int freq;
     SDL_AudioFormat fmt;
     uint8_t channels;
 };
@@ -27,7 +27,7 @@ struct audiodevice {
 typedef struct audiodata audiodata;
 typedef struct audiodevice audiodevice;
 
-audiodevice* audio_device_init(int32_t, SDL_AudioFormat, uint8_t, uint16_t);
+audiodevice* audio_device_init(int, SDL_AudioFormat, uint8_t, uint16_t);
 void audio_play(audiodevice*, audiodata const*);
 void audio_device_free(audiodevice*);
 

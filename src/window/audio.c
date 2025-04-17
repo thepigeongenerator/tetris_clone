@@ -19,7 +19,7 @@
 
 #include "../error.h"
 
-static void audiomixer(void* const userdata, uint8_t* const stream, int32_t const len) {
+static void audiomixer(void* const userdata, uint8_t* const stream, int const len) {
     memset(stream, 0, len);            // clear the playing audio
     audiodevice* const dev = userdata; // retreive the callback data
 
@@ -48,7 +48,7 @@ static void audiomixer(void* const userdata, uint8_t* const stream, int32_t cons
         }
 
         // calculate how much of the current audio player we should mix into the stream
-        uint32_t const mixlen = SDL_min(curr->len, (uint32_t)len);
+        int const mixlen = SDL_min(curr->len, (unsigned)len);
 
         // mix the current buffer into the stream, and update the audio player values accordingly
         SDL_MixAudioFormat(stream, curr->buf, dev->fmt, mixlen, SDL_MIX_MAXVOLUME);
@@ -63,7 +63,7 @@ static void audiomixer(void* const userdata, uint8_t* const stream, int32_t cons
 
 // converts the inputted audio to the format of dev
 // returns 1 upon failure, 0 upon success. When 1 is returned *bufptr will be freed. Otherwise *bufptr is reallocated
-static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8_t** bufptr, uint32_t* len) {
+static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8_t** bufptr, unsigned* len) {
     // init the converter
     SDL_AudioCVT cvt;
     if (SDL_BuildAudioCVT(&cvt, spec->format, spec->channels, spec->freq, dev->fmt, dev->channels, dev->freq) < 0) {
@@ -101,7 +101,7 @@ static int8_t audio_cvt(audiodevice const* dev, SDL_AudioSpec const* spec, uint8
     return 0;
 }
 
-audiodevice* audio_device_init(int32_t freq, SDL_AudioFormat fmt, uint8_t channels, uint16_t samples) {
+audiodevice* audio_device_init(int freq, SDL_AudioFormat fmt, uint8_t channels, uint16_t samples) {
     audiodevice* dev = malloc(sizeof(audiodevice));
 
     if (dev == NULL) {
