@@ -6,6 +6,7 @@
 #include "../util/compat.h"
 
 char const* restrict path_dat = NULL;
+char const* restrict path_opts = NULL;
 char const* restrict path_font = NULL;
 char const* restrict path_music = NULL;
 char const* restrict path_place_sfx = NULL;
@@ -52,14 +53,16 @@ int paths_init(void) {
     if (!len) return 1;
 
     // these are explicitly static, as string literals just work like that
-    path_font = init_path("pixeldroid_botic-regular.ttf", len + 28);
+    path_opts = init_path("opts", len + 4); // TODO: shouldn't opts be stored at .config/?
+    path_font = init_path("pixeldroid_botic-regular.ttf", len + 28); // TODO: these three paths should not be stored like opts
     path_music = init_path("korobeiniki.wav", len + 15);
     path_place_sfx = init_path("place.wav", len + 9);
-    return -(!path_font || !path_music || !path_place_sfx);
+    return -(!path_opts || !path_font || !path_music || !path_place_sfx);
 }
 
 void paths_free(void) {
     free((void*)path_dat), path_dat = NULL;
+    free((void*)path_opts), path_opts = NULL;
     free((void*)path_music), path_music = NULL;
     free((void*)path_place_sfx), path_place_sfx = NULL;
 }
