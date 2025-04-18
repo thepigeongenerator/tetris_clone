@@ -31,7 +31,7 @@ CFLAGS  += -target x86_64-pc-linux-gnu
 LDFLAGS += -target x86_64-pc-linux-gnu
 else ifeq ($(ARCH),win-x86_64)
 CFLAGS  += -target x86_64-pc-windows-gnu
-LDFLAGS += -target x86_64-pc-windows-gnu
+LDFLAGS += -target x86_64-pc-windows-gnu -fuse-ld=lld
 EXT     := .exe
 else
 $(error you must set the ARCH environment variable to one of these: 'linux-x86_64' 'win-x86_64')
