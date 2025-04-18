@@ -165,7 +165,7 @@ audiodata audio_wav_load(audiodevice const* dev, char const* fpath) {
 
     debug("loading audio file '%s'...", fpath);
 
-    if (!faccess(fpath, FA_R)) {
+    if (faccess(fpath, FA_R)) {
         error("%s:%u audio file either isn't readable or doesn't exist. path: '%s'!", __FILE_NAME__, __LINE__, fpath);
         return (audiodata){0};
     }
