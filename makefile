@@ -13,8 +13,8 @@ ARCH ?= 0
 # compiler settings
 CC := clang
 STD := c17
-CFLAGS := $(shell pkg-config --cflags sdl2 SDL2_ttf) -m32 -Wall -Wextra -Wpedantic -Wno-pointer-arith
-LDFLAGS := $(shell pkg-config --libs sdl2 SDL2_ttf) -m32 -lm
+CFLAGS := -m32 -Wall -Wextra -Wpedantic -Wno-pointer-arith
+LDFLAGS := -m32 -lm
 
 ifneq ($(DEBUG),0)
 CFLAGS  += -g -Og -fsanitize=address,undefined
@@ -27,8 +27,8 @@ endif
 
 ifneq ($(MAKECMDGOALS),clean)
 ifeq      ($(ARCH),linux-x86)
-CFLAGS  += -target x86_64-pc-linux-gnu
-LDFLAGS += -target x86_64-pc-linux-gnu
+CFLAGS  += -target x86_64-pc-linux-gnu $(shell pkg-config --cflags sdl2 SDL2_ttf)
+LDFLAGS += -target x86_64-pc-linux-gnu $(shell pkg-config --libs sdl2 SDL2_ttf)
 else ifeq ($(ARCH),win-x86)
 CFLAGS  += -target x86_64-pc-windows-gnu
 LDFLAGS += -target x86_64-pc-windows-gnu -fuse-ld=lld
