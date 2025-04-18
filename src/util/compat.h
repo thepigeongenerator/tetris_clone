@@ -8,6 +8,16 @@
 # error platform not supported!
 #endif
 
+#ifdef _WIN32
+# define PATH_SEP        '\\' // contains the path separator as a character. Yes it is extremely annoying that this has to exist.
+# define PATH_SEP_STR    "\\" // contains the path separator as a string, useful for concatenation. Yes it is extremely annoying that this has to exist.
+
+#else
+# define PATH_SEP        '/' // contains the path separator as a character. Yes it is extremely annoying that this has to exist.
+# define PATH_SEP_STR    "/" // contains the path separator as a string, useful for concatenation. Yes it is extremely annoying that this has to exist.
+
+#endif
+
 // define the constants if they haven't been
 #ifndef F_OK
 # define F_OK 0
