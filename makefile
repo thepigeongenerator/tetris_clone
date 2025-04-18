@@ -58,18 +58,6 @@ define wr_colour
 	@printf '\033[%sm%s\033[0m\n' $(2) $(1)
 endef
 
-# set the correct environment variables depending on the platform
-ifneq ($(MAKECMDGOALS),clean)
-ifeq ($(ARCH),linux-x86_64)
-CFLAGS += -target x86_64-pc-linux-gnu
-else ifeq ($(ARCH),win-x86_64)
-CFLAGS += -target x86_64-pc-windows-gnu
-EXT=.exe
-else
-$(error you must set the ARCH environment variable to one of these: 'linux-x86_64' 'win-x86_64')
-endif
-endif
-
 # compiles and execute the binary
 run: compile
 	cd $(dir $(TARGET)) && ./$(notdir $(TARGET))
