@@ -7,17 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __unix__
-# include <unistd.h>
-# define fexists(fname) (access(fname, F_OK) == 0)
-#elif _WIN32
-# include <io.h>
-# define fexists(fname) (_access(fname, 0) == 0)
-#else
-# error platform not supported!
-#endif
-
 #include "../error.h"
+#include "../util/compat.h"
 
 static void audiomixer(void* const userdata, uint8_t* const stream, int const len) {
     memset(stream, 0, len);            // clear the playing audio
@@ -174,8 +165,8 @@ audiodata audio_wav_load(audiodevice const* dev, char const* fpath) {
 
     debug("loading audio file '%s'...", fpath);
 
-    if (!fexists(fpath)) {
-        error("%s:%u couldn't find audio file '%s'!", __FILE_NAME__, __LINE__, fpath);
+    if (!faccess(fpath, FA_R)) {
+        error("%s:%u audio file either isn't readable or doesn't exist. path: '%s'!", __FILE_NAME__, __LINE__, fpath);
         return (audiodata){0};
     }
 
