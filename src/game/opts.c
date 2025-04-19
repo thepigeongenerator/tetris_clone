@@ -1,6 +1,5 @@
 #include <stdbool.h>
 #include <stdio.h>
-#include <string.h>
 
 #include "../error.h"
 #include "../util/compat.h"
@@ -19,7 +18,8 @@ struct proc_buf_dat {
 };
 
 /* processes the data within the buffer.
-   NOTE: when the function returns, eol might not be set, this is to ensure that we know for certain that an EOL indicator has been reached. */
+   NOTE: when the function returns, eol might not be set, this is to ensure that we know for certain that an EOL indicator has been reached.
+   BUG: when working with a partial buffer, the returned pointers become invalid */
 static void proc_buf(char const* restrict buf, struct proc_buf_dat* restrict dat) {
     // reset if EOL has been reached
     if (dat->eol) *dat = (struct proc_buf_dat){0};
