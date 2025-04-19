@@ -32,10 +32,12 @@ int load_opts(void) {
 
         for (unsigned i = 0; i < BUF_SIZE; i++) {
             // handling of special characters (in the order of most common to least)
-            if (buf[i] == ' ') continue;  // spaces are ignored; neither keys or values can contain spaces
-            if (buf[i] == '\t') continue; // ^ same with tabs
-            if (buf[i] == '\n') break;    // don't check \0, since if \n isn't present, the string will be BUF_SIZE length
-            if (buf[i] == '#') break;     // stop the rest of the data is a comment
+            if (buf[i] == ' ' || buf[i] == '\t') { // whitespace is ignored; neither keys or values can contain spaces
+                if (!val) continue;
+                else break; // if val was found; break out of the loop
+            }
+            if (buf[i] == '\n') break; // don't check \0, since if \n isn't present, the string will be BUF_SIZE length
+            if (buf[i] == '#') break;  // stop the rest of the data is a comment
 
             // increment the key/value length if set
             if (val) val_len++; // first check if value is set, as it is set last
@@ -44,7 +46,7 @@ int load_opts(void) {
             // get the values
             if (!key) key = &buf[i];              // store the key's pointer at this point
             else if (!feq) feq = (buf[i] == '='); // otherwise store whether we've found the equal sign
-            else if (!val) val = &buf[i];       // otherwise store the start of the value pointer PERF: we can optimise this further by stopping the loop as soon as we reach another space at this point
+            else if (!val) val = &buf[i];         // otherwise store the start of the value pointer
             else { }
         }
 
