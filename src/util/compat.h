@@ -1,6 +1,7 @@
 #pragma once
 
 #if defined __unix__
+# include <features.h>
 # include <unistd.h>
 #elif defined _WIN32
 # include <io.h>
@@ -43,11 +44,14 @@ enum faccess_perms {
     FA_R = R_OK, // test for read permissions
 };
 
-// tests a files access with F_OK, X_OK, R_OK, W_OK OR'd together
+/* tests a files access with F_OK, X_OK, R_OK, W_OK OR'd together
+   returns 0 upon success. -1 when errno is set and anything else when one or more of the permissions isn't set */
 static inline int faccess(char const* restrict fname, int perms) {
-#if defined __unix__
+#if defined __unix__ && _POSIX_C_SOURCE >= 200809L
     return !access(fname, perms);
 #elif defined _WIN32
     return !_access(fname, perms);
+#else
+# error platform unsupported!
 #endif
 }
