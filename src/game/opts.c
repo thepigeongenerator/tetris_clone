@@ -21,23 +21,48 @@ int load_opts(void) {
     FILE* fptr = fopen(path_opts, "r");
     if (!fptr) return 1;
 
+    unsigned key_len = 0;   // length of the key data
+    unsigned val_len = 0;   // length of the value data
+    char const* key = NULL; // the pointer for the start of the key
+    char const* val = NULL; // the pointer for the start of the value
+    bool feq = false;       // whether we've found the equal sign
+    bool eol = false;       // whether we've reached the end of the line/string, so we don't read what should be comments as data, etc.
+    bool nodat = false;     // whether we are done and can just look for an EOL indicator
+
     // read the file line by line
     char buf[BUF_SIZE]; // buffer will contain \0 terminated string. fgets stores into the buffer until \n or EOF
     while (fgets(buf, BUF_SIZE, fptr)) {
-        unsigned key_len = 0;
-        unsigned val_len = 0;
-        char* key = NULL;
-        char* val = NULL;
-        bool feq = false; // whether we found the equal sign
+        // reset if EOL has been reached
+        if (eol) {
+            key_len = 0;
+            val_len = 0;
+            key = NULL;
+            val = NULL;
+            feq = false;
+            eol = false;
+            nodat = false;
+        }
 
+        // loop through each character
         for (unsigned i = 0; i < BUF_SIZE; i++) {
-            // handling of special characters (in the order of most common to least)
-            if (buf[i] == ' ' || buf[i] == '\t') { // whitespace is ignored; neither keys or values can contain spaces
-                if (!val) continue;
-                else break; // if val was found; break out of the loop
+            // check EOL / EOF indicators (or just end of string) (CRLF vs LF doesn't matter here, since both end with \n)
+            if (buf[i] == '\n' || buf[i] == '\0') {
+                eol = true;
+                break;
             }
-            if (buf[i] == '\n') break; // don't check \0, since if \n isn't present, the string will be BUF_SIZE length
-            if (buf[i] == '#') break;  // stop the rest of the data is a comment
+            if (nodat) continue;
+
+            // ignore whitespace, to acquire a correct starting point
+            if (buf[i] == ' ' || buf[i] == '\t') {
+                if (val) nodat = true; // don't continue processing if we encounter a space after starting val
+                continue;
+            }
+
+            // ignore comments
+            if (buf[i] == '#') {
+                nodat = true;
+                continue;
+            }
 
             // increment the key/value length if set
             if (val) val_len++; // first check if value is set, as it is set last
@@ -51,6 +76,7 @@ int load_opts(void) {
         }
 
         // ignore if either the key or value haven't been set
+        //  NOTE: eol might not be set at this point, this is intentional so we don't accidentally read a comment outside the buffer size as a key-value pair
         if (!key || !val) continue;
         // TODO: load opts from the file
         // the options shall be loaded as key-value-pairs
