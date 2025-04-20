@@ -1,5 +1,8 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "../error.h"
 #include "../util/compat.h"
@@ -8,21 +11,51 @@
 #define BUF_SIZE 32
 
 struct proc_buf_dat {
-    char const* restrict key; // length of the key data
-    char const* restrict val; // length of the value data
-    unsigned key_len;         // the pointer for the start of the key
-    unsigned val_len;         // the pointer for the start of the value
+    char const* restrict key; // the pointer for the start of the key
+    char const* restrict val; // the pointer for the start of the value
+    char* restrict pkey;      // pointer to a malloc'd key
+    char* restrict pval;      // pointer to a malloc'd val
+    unsigned key_len;         // string length of the key data
+    unsigned val_len;         // string length of the value data
+    unsigned pkey_len;        // string length of the malloc'd key when they got malloc'd
+    unsigned pval_len;        // string length of the malloc'd val when they got malloc'd
     bool feq;                 // whether we've found the equal sign and are looking for the value
     bool eol;                 // whether we've reached the end of the line/string, so we don't read what should be comments as data, etc.
     bool nodat;               // whether we are done and can just look for an EOL indicator
 };
 
+/* use malloc to append src to the end of dest.
+   if dest == NULL, memory is allocated, otherwise it is reallocated.
+   returns 0 upon success, 1 upon failure. */
+static inline int str_put(char* restrict* restrict dest, size_t dest_len, char const* restrict src, size_t src_len) {
+    assert(dest);
+    assert(src);
+    if (!dest) {
+        *dest = malloc(src_len + 1);
+        if (!*dest) return 1;
+    } else {
+        assert(*dest);
+        assert(src_len > dest_len);
+        void* ptr = realloc(*dest, src_len + 1);
+        if (!ptr) return 1;
+        *dest = ptr;
+    }
+
+    // copy the missing data to the end of the destination
+    memcpy(*dest + dest_len, src + dest_len, src_len - dest_len);
+    *dest[src_len] = '\0'; // null-terminate the destination
+    return 0;
+}
+
 /* processes the data within the buffer.
-   NOTE: when the function returns, eol might not be set, this is to ensure that we know for certain that an EOL indicator has been reached.
-   BUG: when working with a partial buffer, the returned pointers become invalid */
+   NOTE: when the function returns, eol might not be set, this is to ensure that we know for certain that an EOL indicator has been reached. */
 static void proc_buf(char const* restrict buf, struct proc_buf_dat* restrict dat) {
     // reset if EOL has been reached
-    if (dat->eol) *dat = (struct proc_buf_dat){0};
+    if (dat->eol) {
+        free(dat->pkey);
+        free(dat->pval);
+        *dat = (struct proc_buf_dat){0};
+    }
 
     // loop through each character
     for (unsigned i = 0; i < BUF_SIZE; i++) {
@@ -54,6 +87,15 @@ static void proc_buf(char const* restrict buf, struct proc_buf_dat* restrict dat
         else if (!dat->feq) dat->feq = (buf[i] == '='); // otherwise store whether we've found the equal sign
         else if (!dat->val) dat->val = &buf[i];         // otherwise store the start of the value pointer
     }
+
+    // allocate memory for the resulting string(s)
+    if (dat->pval_len < dat->val_len) { // first check this condition, as key won't have changed if this is true
+        str_put(&dat->pval, dat->pval_len, dat->val, dat->val_len);
+        dat->pval_len = dat->val_len;
+    } else if (dat->pkey_len < dat->key_len) {
+        str_put(&dat->pkey, dat->pkey_len, dat->key, dat->key_len);
+        dat->pkey_len = dat->key_len;
+    }
 }
 
 /* attempts to load the options,
@@ -77,8 +119,8 @@ int load_opts(void) {
         // process the data in the current buffer
         proc_buf(buf, &dat);
 
-        // ignore if either the key or value haven't been set
-        if (!dat.key || !dat.val) continue;
+        // ignore if EOL hasn't been reached yet, due to the built up data possibly being incomplete
+        if (!dat.eol) continue;
         // TODO: load opts from the file
         // the options shall be loaded as key-value-pairs
         // lines starting with # are seen as comments
@@ -86,6 +128,8 @@ int load_opts(void) {
         // if a field couldn't be parsed the program is not allowed to fail. I'd say we fix the field for the user.
     }
 
+    free(dat.pkey);
+    free(dat.pval);
     fclose(fptr);
     return 0;
 }
