@@ -41,17 +41,14 @@ struct proc_buf_dat {
 };
 
 /* use malloc to append src to the end of dest.
-   if dest == NULL, memory is allocated, otherwise it is reallocated.
+   if *dest == NULL, memory is allocated, otherwise it is reallocated.
    returns 0 upon success, 1 upon failure. */
-static inline int str_put(char* restrict* restrict dest, size_t dest_len, char const* restrict src, size_t src_len) {
-    assert(dest);
-    assert(src);
-    if (!dest) {
+__attribute__((nonnull(1, 3))) static inline int str_put(char* restrict* restrict dest, size_t dest_len, char const* restrict src, size_t src_len) {
+    if (!*dest) {
         *dest = malloc(src_len + 1);
         if (!*dest) return 1;
     } else {
-        assert(*dest);
-        assert(src_len > dest_len);
+        assert(src_len > dest_len); // sanity check
         void* ptr = realloc(*dest, src_len + 1);
         if (!ptr) return 1;
         *dest = ptr;
