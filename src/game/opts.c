@@ -55,7 +55,7 @@ __attribute__((nonnull(1, 3))) static inline int str_put(char* restrict* restric
     }
 
     // copy the missing data to the end of the destination
-    memcpy(*dest + dest_len, src + dest_len, src_len - dest_len);
+    memcpy(*dest + dest_len, src, src_len - dest_len);
     (*dest)[src_len] = '\0'; // null-terminate the destination
     return 0;
 }
@@ -143,6 +143,8 @@ int load_opts(void) {
     while (fgets(buf, BUF_SIZE, fptr)) {
         // process the data in the current buffer
         proc_buf(buf, &dat);
+        if (dat.pkey) debug("key: '%s'", dat.pkey);
+        if (dat.pval) debug("val: '%s'", dat.pval);
 
         // ignore if EOL hasn't been reached yet, due to the built up data possibly being incomplete
         if (!dat.eol) continue;
