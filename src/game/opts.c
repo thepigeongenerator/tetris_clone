@@ -1,4 +1,7 @@
+#include "opts.h"
+
 #include <assert.h>
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,9 +9,22 @@
 
 #include "../error.h"
 #include "../util/compat.h"
+#include "../window/colour/colour8.h"
 #include "paths.h"
 
 #define BUF_SIZE 32
+
+struct opts opts = {
+    1.0F,            // movement sensitivity
+    1.0F,            // roll sensitivity
+    COLOUR8_YELLOW,  // colour for the O shape
+    COLOUR8_CYAN,    // colour for the I shape
+    COLOUR8_RED,     // colour for the S shape
+    COLOUR8_GREEN,   // colour for the Z shape
+    COLOUR8_MAGENTA, // colour for the T shape
+    COLOUR8_ORANGE,  // colour for the L shape
+    COLOUR8_BLUE,    // colour for the J shape
+};
 
 struct proc_buf_dat {
     char const* restrict key; // the pointer for the start of the key
@@ -98,6 +114,18 @@ static void proc_buf(char const* restrict buf, struct proc_buf_dat* restrict dat
     }
 }
 
+#define load_opt(_t, _opt, _key, _val, _fn, ...)                                       \
+    do {                                                                               \
+        errno = 0;                                                                     \
+        char* end;                                                                     \
+        _t res = _fn(_val, &end __VA_ARGS__);                                          \
+        if (end != _val && errno != ERANGE && *end == '\0') {                          \
+            _opt = res;                                                                \
+            debug("loading opt %s", _key);                                             \
+        } else                                                                         \
+            error("ignoring invalid option value from '%s'; value: '%s'", _key, _val); \
+    } while (0)
+
 /* attempts to load the options,
    returns 1 upon failure */
 int load_opts(void) {
@@ -121,6 +149,17 @@ int load_opts(void) {
 
         // ignore if EOL hasn't been reached yet, due to the built up data possibly being incomplete
         if (!dat.eol) continue;
+        if (!dat.pkey || !dat.pval) continue;
+        else if (!!strcmp(dat.pkey, "sensitivity")) load_opt(float, opts.sensitivity, dat.pkey, dat.pval, strtof32, );
+        else if (!!strcmp(dat.pkey, "sensitivity_roll")) load_opt(float, opts.sensitivity_roll, dat.pkey, dat.pval, strtof32, );
+        else if (!!strcmp(dat.pkey, "colour_O")) load_opt(colour8, opts.colour_O, dat.pkey, dat.pval, strtol, , 16);
+        else if (!!strcmp(dat.pkey, "colour_I")) load_opt(colour8, opts.colour_I, dat.pkey, dat.pval, strtol, , 16);
+        else if (!!strcmp(dat.pkey, "colour_S")) load_opt(colour8, opts.colour_S, dat.pkey, dat.pval, strtol, , 16);
+        else if (!!strcmp(dat.pkey, "colour_Z")) load_opt(colour8, opts.colour_Z, dat.pkey, dat.pval, strtol, , 16);
+        else if (!!strcmp(dat.pkey, "colour_T")) load_opt(colour8, opts.colour_T, dat.pkey, dat.pval, strtol, , 16);
+        else if (!!strcmp(dat.pkey, "colour_L")) load_opt(colour8, opts.colour_L, dat.pkey, dat.pval, strtol, , 16);
+        else if (!!strcmp(dat.pkey, "colour_J")) load_opt(colour8, opts.colour_J, dat.pkey, dat.pval, strtol, , 16);
+        else error("unknown key-value pair: '%s = %s'", dat.pkey, dat.pval);
         // TODO: load opts from the file
         // the options shall be loaded as key-value-pairs
         // lines starting with # are seen as comments
