@@ -48,9 +48,9 @@ enum faccess_perms {
    returns 0 upon success. -1 when errno is set and anything else when one or more of the permissions isn't set */
 static inline int faccess(char const* restrict fname, int perms) {
 #if defined __unix__ && _POSIX_C_SOURCE >= 200809L
-    return !access(fname, perms);
+    return access(fname, perms);
 #elif defined _WIN32
-    return !_access(fname, perms);
+    return _access(fname, perms);
 #else
 # error platform unsupported!
 #endif
