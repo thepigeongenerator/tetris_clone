@@ -59,7 +59,7 @@ static inline int str_put(char* restrict* restrict dest, size_t dest_len, char c
 
     // copy the missing data to the end of the destination
     memcpy(*dest + dest_len, src + dest_len, src_len - dest_len);
-    *dest[src_len] = '\0'; // null-terminate the destination
+    (*dest)[src_len] = '\0'; // null-terminate the destination
     return 0;
 }
 
