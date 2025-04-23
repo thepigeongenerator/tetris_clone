@@ -9,9 +9,12 @@
 #include <string.h>
 #include <time.h>
 
+#include "../error.h"
 #include "../window/audio.h"
 #include "./tetromino/shapes.h"
 #include "gametime.h"
+#include "opts.h"
+#include "paths.h"
 #include "tetromino/placing.h"
 
 // shuffle the array using a Fisher–Yates shuffle
@@ -78,6 +81,8 @@ void game_init(gamedata* const dat) {
     dat->curr_idx = -1;                 // set the current index to the max so it becomes zero after increasement
     next_shape(dat);                    // select the next shape (shuffle should not be triggered)
     shuffle(TETROMINO_COUNT, dat->nxt); // manually trigger a shuffle
+
+    load_opts();
 }
 
 // updates the gametime
