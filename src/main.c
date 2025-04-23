@@ -5,6 +5,7 @@
 
 #include "error.h"
 #include "game/game.h"
+#include "game/paths.h"
 #include "window/renderer.h"
 
 // initialized in init(), reading beforehand is undefined behaviour
@@ -20,6 +21,7 @@ static void init(void) {
         fatal(ERROR_SDL_FONT_INIT, __FILE_NAME__, __LINE__, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
 
     // initialize other game components
+    paths_init();
     game_init(&gdat);
     render_init(&rdat, &gdat);
 }
@@ -56,6 +58,7 @@ int main(int argc, char** argv) {
     debug("done! starting to free resources...");
     game_free(&gdat);
     render_free(&rdat);
+    paths_free();
     SDL_Quit();
     return 0;
 }
