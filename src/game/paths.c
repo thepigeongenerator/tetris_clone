@@ -53,10 +53,10 @@ int paths_init(void) {
     if (!len) return 1;
 
     // these are explicitly static, as string literals just work like that
-    path_opts = init_path("opts", len + 4); // TODO: shouldn't opts be stored at .config/?
-    path_font = init_path("pixeldroid_botic-regular.ttf", len + 28); // TODO: these three paths should not be stored like opts
-    path_music = init_path("korobeiniki.wav", len + 15);
-    path_place_sfx = init_path("place.wav", len + 9);
+    path_opts = init_path("/opts.cfg", len + 9);                      // TODO: shouldn't opts be stored at .config/?
+    path_font = init_path("/pixeldroid_botic-regular.ttf", len + 29); // TODO: these three paths should not be stored like opts
+    path_music = init_path("/korobeiniki.wav", len + 16);
+    path_place_sfx = init_path("place.wav", len + 10);
     return -(!path_opts || !path_font || !path_music || !path_place_sfx);
 }
 
