@@ -36,30 +36,30 @@
 #define SHAPE_J_270 ((shape)0x0E20) // 0000 1110 0010 0000      the J tetromino with a 270° rotation
 
 shape shape_from_id(shape_id const id) {
-    static shape const shapes[TETROMINO_COUNT][4] = {
-        // 0°       90°         180°         170°
-        {SHAPE_O, SHAPE_O,    SHAPE_O,     SHAPE_O    },
-        {SHAPE_I, SHAPE_I_90, SHAPE_I_180, SHAPE_I_270},
-        {SHAPE_S, SHAPE_S_90, SHAPE_S_180, SHAPE_S_270},
-        {SHAPE_Z, SHAPE_Z_90, SHAPE_Z_180, SHAPE_Z_270},
-        {SHAPE_T, SHAPE_T_90, SHAPE_T_180, SHAPE_T_270},
-        {SHAPE_L, SHAPE_L_90, SHAPE_L_180, SHAPE_L_270},
-        {SHAPE_J, SHAPE_J_90, SHAPE_J_180, SHAPE_J_270},
-    };
+	static shape const shapes[TETROMINO_COUNT][4] = {
+		// 0°       90°         180°         170°
+		{SHAPE_O, SHAPE_O,    SHAPE_O,     SHAPE_O    },
+		{SHAPE_I, SHAPE_I_90, SHAPE_I_180, SHAPE_I_270},
+		{SHAPE_S, SHAPE_S_90, SHAPE_S_180, SHAPE_S_270},
+		{SHAPE_Z, SHAPE_Z_90, SHAPE_Z_180, SHAPE_Z_270},
+		{SHAPE_T, SHAPE_T_90, SHAPE_T_180, SHAPE_T_270},
+		{SHAPE_L, SHAPE_L_90, SHAPE_L_180, SHAPE_L_270},
+		{SHAPE_J, SHAPE_J_90, SHAPE_J_180, SHAPE_J_270},
+	};
 
-    // first 3 bits is the shape type, the rest is rotation data
-    return shapes[id & 7][id >> 3];
+	// first 3 bits is the shape type, the rest is rotation data
+	return shapes[id & 7][id >> 3];
 }
 
 colour8 colour_from_id(shape_id const id) {
-    switch (id & 7) {
-    case TETROMINO_O: return COLOUR8_YELLOW;
-    case TETROMINO_I: return COLOUR8_CYAN;
-    case TETROMINO_S: return COLOUR8_GREEN;
-    case TETROMINO_Z: return COLOUR8_RED;
-    case TETROMINO_T: return COLOUR8_MAGENTA;
-    case TETROMINO_L: return COLOUR8_ORANGE;
-    case TETROMINO_J: return COLOUR8_BLUE;
-    default: return COLOUR8_BLACK;
-    }
+	switch (id & 7) {
+	case TETROMINO_O: return COLOUR8_YELLOW;
+	case TETROMINO_I: return COLOUR8_CYAN;
+	case TETROMINO_S: return COLOUR8_GREEN;
+	case TETROMINO_Z: return COLOUR8_RED;
+	case TETROMINO_T: return COLOUR8_MAGENTA;
+	case TETROMINO_L: return COLOUR8_ORANGE;
+	case TETROMINO_J: return COLOUR8_BLUE;
+	default: return COLOUR8_BLACK;
+	}
 }

@@ -4,24 +4,24 @@
 #include <stdint.h>
 
 struct audiodata {
-    uint8_t* buf; // pointer to the audio buffer
-    uint32_t len; // length in bytes of the audio buffer
-    uint32_t ms;  // length in miliseconds of the audio buffer
+	uint8_t* buf; // pointer to the audio buffer
+	uint32_t len; // length in bytes of the audio buffer
+	uint32_t ms;  // length in miliseconds of the audio buffer
 };
 
 // contains the data of the audio fragments to be played
 struct audioplayer {
-    struct audioplayer* nxt; // pointer to the next audioplayer (may be null)
-    uint8_t* buf;            // pointer to the current item in the buffer to be played
-    uint32_t len;            // the length in bytes that the buffer has remaining
+	struct audioplayer* nxt; // pointer to the next audioplayer (may be null)
+	uint8_t* buf;            // pointer to the current item in the buffer to be played
+	uint32_t len;            // the length in bytes that the buffer has remaining
 };
 
 struct audiodevice {
-    struct audioplayer* audio_players;
-    SDL_AudioDeviceID id;
-    int freq;
-    SDL_AudioFormat fmt;
-    uint8_t channels;
+	struct audioplayer* audio_players;
+	SDL_AudioDeviceID id;
+	int freq;
+	SDL_AudioFormat fmt;
+	uint8_t channels;
 };
 
 typedef struct audiodata audiodata;

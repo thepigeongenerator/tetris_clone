@@ -6,7 +6,7 @@ BasedOnStyle:  ''                            # (LLVM,Google,Chromium,Mozilla,Web
 Standard:      Auto                          # automatically detect the language version
 ColumnLimit:   0                             # 0: disable column limit
 LineEnding:    LF                            # use LF line endings
-UseTab:        Never                         # (Never,ForIndentation,ForContinuationAndIndentation,Always)
+UseTab:        ForContinuationAndIndentation # (Never,ForIndentation,ForContinuationAndIndentation,Always)
 TabWidth:      4                             # recommended to set this equal to IndentWidth
 IndentWidth:   4                             # how wide each indent is
 ContinuationIndentWidth: 4                   # width for a line continuation

@@ -19,18 +19,18 @@
 
 // contains the data that's cached between renders
 struct render_cache {
-    SDL_Texture* score_texture;
-    SDL_Surface* score_surface;
-    uint16_t prevscore;
+	SDL_Texture* score_texture;
+	SDL_Surface* score_surface;
+	uint16_t prevscore;
 };
 
 // contains the data necessary for rendering
 typedef struct {
-    gamedata const* game_dat;
-    SDL_Window* window;
-    SDL_Renderer* renderer;
-    TTF_Font* font;
-    struct render_cache* cache;
+	gamedata const* game_dat;
+	SDL_Window* window;
+	SDL_Renderer* renderer;
+	TTF_Font* font;
+	struct render_cache* cache;
 } renderdata;
 
 void render_init(renderdata*, gamedata const*); // initializes the renderer, outputs to render_data

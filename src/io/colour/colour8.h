@@ -19,22 +19,22 @@ typedef uint8_t colour8;
 
 // gets the red channel in 32 bit colour space
 static inline uint8_t colour8_red32(colour8 const colour) {
-    return (colour >> 5) * (255 / 7);
+	return (colour >> 5) * (255 / 7);
 }
 
 // gets the green channel in 32 bit colour space
 static inline uint8_t colour8_green32(colour8 const colour) {
-    return ((colour >> 2) & 7) * (255 / 7);
+	return ((colour >> 2) & 7) * (255 / 7);
 }
 
 // gets the blue channel in 32 bit colour space
 static inline uint8_t colour8_blue32(colour8 const colour) {
-    return (colour & 3) * (255 / 3);
+	return (colour & 3) * (255 / 3);
 }
 
 // sets the render colour to a colour8 value
 static inline void set_colour8(SDL_Renderer* const renderer, colour8 const c) {
-    (void)SDL_SetRenderDrawColor(renderer, colour8_red32(c), colour8_green32(c), colour8_blue32(c), 0xFF);
+	(void)SDL_SetRenderDrawColor(renderer, colour8_red32(c), colour8_green32(c), colour8_blue32(c), 0xFF);
 }
 
 // american macros:

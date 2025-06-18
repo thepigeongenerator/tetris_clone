@@ -22,18 +22,18 @@ typedef colour8 const* const row_const;
 typedef colour8* row;
 
 typedef struct {
-    colour8 rowdat[ROWS * COLUMNS];
-    colour8* rows[ROWS];
-    struct gametime time;
-    audiodevice* audio_device;
-    audiodata music;
-    audiodata place_sfx;
-    uint16_t score;
-    shape_id nxt[7];  // the order of the shape ids that they should appear in
-    uint8_t curr_idx; // current shape index
-    int8_t sel_x;     // selected shape x position
-    int8_t sel_y;     // selected shape y position
-    bool run;
+	colour8 rowdat[ROWS * COLUMNS];
+	colour8* rows[ROWS];
+	struct gametime time;
+	audiodevice* audio_device;
+	audiodata music;
+	audiodata place_sfx;
+	uint16_t score;
+	shape_id nxt[7];  // the order of the shape ids that they should appear in
+	uint8_t curr_idx; // current shape index
+	int8_t sel_x;     // selected shape x position
+	int8_t sel_y;     // selected shape y position
+	bool run;
 } gamedata;
 
 void next_shape(gamedata*);  // initializes everything needed to start the game; outputs to gamedata

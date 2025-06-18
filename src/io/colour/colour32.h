@@ -5,13 +5,13 @@
 
 // stores colour in a rgba format, each channel being a 8 bits wide.
 typedef union {
-    uint32_t packed;
-    struct {
-        uint8_t a;
-        uint8_t b;
-        uint8_t g;
-        uint8_t r;
-    };
+	uint32_t packed;
+	struct {
+		uint8_t a;
+		uint8_t b;
+		uint8_t g;
+		uint8_t r;
+	};
 } colour32;
 
 #define COLOUR32_BLACK   ((colour32){0x000000FF})
@@ -26,7 +26,7 @@ typedef union {
 
 // sets the render colour to a colour32 value
 static inline void set_colour32(SDL_Renderer* const renderer, colour32 const c) {
-    (void)SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
+	(void)SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
 }
 
 // american macros:
