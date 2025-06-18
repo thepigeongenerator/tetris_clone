@@ -1,8 +1,10 @@
 #pragma once
 
 #include <SDL_render.h>
+#include <SDL_surface.h>
 #include <SDL_ttf.h>
 #include <SDL_video.h>
+#include <stdint.h>
 
 #include "../game/game.h"
 

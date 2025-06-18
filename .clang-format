@@ -14,14 +14,14 @@ ContinuationIndentWidth: 4                   # width for a line continuation
 # ---------------------------
 # alignment options
 # ---------------------------
-AlignAfterOpenBracket:        Align            # (Align,DontAlign,AlwaysBreak,BlockIndent)
+AlignAfterOpenBracket:        DontAlign        # (Align,DontAlign,AlwaysBreak,BlockIndent)
 AlignArrayOfStructures:       Left             # (Left,Right,None)
 AlignConsecutiveMacros:       AcrossEmptyLines # (None,Consecutive,AcrossEmptyLines,AcrossComments,AcrossEmptyLinesAndComments)
 AlignConsecutiveAssignments:  None             # (None,Consecutive,AcrossEmptyLines,AcrossComments,AcrossEmptyLinesAndComments)
 AlignConsecutiveBitFields:    AcrossEmptyLines # (None,Consecutive,AcrossEmptyLines,AcrossComments,AcrossEmptyLinesAndComments)
 AlignConsecutiveDeclarations: None             # (None,Consecutive,AcrossEmptyLines,AcrossComments,AcrossEmptyLinesAndComments)
 AlignEscapedNewlines:         Left             # (DontAlign,Left,LeftWithLastLine,Right)
-AlignOperands:                Align            # (DontAlign,Align,AlignAfterOperator)
+AlignOperands:                DontAlign        # (DontAlign,Align,AlignAfterOperator)
 AlignTrailingComments:        Always           # (Leave,Always,Never)
 
 # ---------------------------
@@ -59,6 +59,7 @@ BraceWrapping:
   AfterEnum:             false
   AfterFunction:         false
   AfterNamespace:        false
+  AfterObjCDeclaration:  false
   AfterStruct:           false
   AfterUnion:            false
   AfterExternBlock:      false
@@ -85,6 +86,7 @@ BinPackArguments:  false                      # false: function calls either on 
 DerivePointerAlignment: false      # automatically detect pointer alignment
 PointerAlignment:       Left       # (Left,Right,Middle)
 ReferenceAlignment:     Pointer    # (Pointer,Left,Right,Middle)
+QualifierAlignment:     Right      # (Leave,Left,Right,Custom)
 
 # ---------------------------
 # include settings and sorting
@@ -93,12 +95,12 @@ IncludeIsMainSourceRegex: ''                        # only [*.{c,cc,cpp,c++,cxx,
 IncludeIsMainRegex:       '([-_](test|unittest))?$' # regex used for identifying an include as "main", to assign catagory 0
 IncludeBlocks:      Regroup                         # (Preserve,Merge,Regroup)
 IncludeCategories:
-  - Regex:         '^<.*\.h>' # system headers
-    Priority:      1
+  - Regex:         '^<.*\.h>'      # system headers
+    Priority:      2
     SortPriority:  0
     CaseSensitive: true
-  - Regex:         '^".*'     # custom headers
-    Priority:      2
+  - Regex:         '^".*'          # custom headers
+    Priority:      3
     SortPriority:  0
     CaseSensitive: true
 
@@ -140,6 +142,7 @@ RemoveBracesLLVM:                 false                # don't automatically rem
 SeparateDefinitionBlocks:         Leave                # (Leave,Always.Never)
 ShortNamespaceLines:              1                    # how many lines a namespaces can be to be regarded "short"
 SortIncludes:                     CaseSensitive        # (Never,CaseSensitive,CaseInsensitive)
+SortJavaStaticImport:             Before               # (After,Before)
 SortUsingDeclarations:            LexicographicNumeric # (Never,Lexicographic,LexicographicNumeric)
 
 # ---------------------------
@@ -192,6 +195,17 @@ IndentCaseBlocks:      false
 IndentGotoLabels:      true
 IndentExternBlock:     AfterExternBlock  # (AfterExternBlock,NoIndent,Indent)
 IndentRequiresClause:  false
-IndentPPDirectives:    AfterHash         # preprocessor indent style (None,AfterHash,BeforeHash)
+IndentPPDirectives:    None              # preprocessor indent style (None,AfterHash,BeforeHash)
 PPIndentWidth:         1
+
+---
+# ---------------------------
+# Objective-C specific settings
+# ---------------------------
+Language:                        ObjC
+ObjCBinPackProtocolList:         Never
+ObjCBlockIndentWidth:            4
+ObjCBreakBeforeNestedBlockParam: true
+ObjCSpaceAfterProperty:          false
+ObjCSpaceBeforeProtocolList:     true
 ...

@@ -29,10 +29,22 @@ enum gamestatus {
     // clang-format on
 };
 
-__attribute__((nonnull(1))) __attribute__((format(printf, 1, 2))) void debug(char const* restrict, ...); // prints a debug message to stdout if the DEBUG environment variable is set, otherwise the call is ignored.
-__attribute__((nonnull(1))) __attribute__((format(printf, 1, 2))) void info(char const* restrict, ...);  // prints an info message to stdout
-__attribute__((nonnull(1))) __attribute__((format(printf, 1, 2))) void warn(char const* restrict, ...);  // prints a warning message to stderr
-__attribute__((nonnull(1))) __attribute__((format(printf, 1, 2))) void error(char const* restrcit, ...); // prints an warning message to stderr
+#if __INCLUDE_LEVEL__ > 0
+#include <SDL_messagebox.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-// prints an error message to stderr before exiting
-__attribute__((nonnull(2, 5))) __attribute__((format(printf, 4, 5))) noreturn void fatal(unsigned, char const* restrict file_name, unsigned line, char const* restrict fmt, ...);
+#include "util/macro.h"
+#endif
+
+#define debug(s, ...) printf("\033[95m" __FILE__ ":" MACRO_STR2(__LINE__) ": [DBG]: " s "\033[0m\n" __VA_OPT__(, __VA_ARGS__))
+#define info(s, ...)  printf(__FILE__ ":" MACRO_STR2(__LINE__) ": [INF]: " s "\n", __VA_OPT__(, __VA_ARGS__))
+#define warn(s, ...)  fprintf(stderr, "\033[93m" __FILE__ ":" MACRO_STR2(__LINE__) ": [WAR]: " s "\033[0m\n" __VA_OPT__(, __VA_ARGS__))
+#define error(s, ...) fprintf(stderr, "\033[91m" __FILE__ ":" MACRO_STR2(__LINE__) ": [ERR]: " s "\033[0m\n" __VA_OPT__(, __VA_ARGS__))
+
+#define fatal(c, s, ...)                                                                                                        \
+    do {                                                                                                                        \
+        printf("\033[101m" __FILE__ ":" MACRO_STR2(__LINE__) ": [FAT]: " s "\033[0m\n" __VA_OPT__(, __VA_ARGS__));              \
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "something went wrong! :O", "view stderr for full details: \n" s, NULL); \
+        exit(c);                                                                                                                \
+    } while (0)

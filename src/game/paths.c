@@ -40,7 +40,7 @@ static unsigned getdatpath(void) {
     return len;
 }
 
-static inline char const* init_path(char const* const restrict str, unsigned len) {
+static inline char const* init_path(char const* restrict const str, unsigned len) {
     void* ptr = malloc(len);
     if (!ptr) return NULL;
     strcpy(ptr, path_dat);

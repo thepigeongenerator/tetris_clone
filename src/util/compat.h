@@ -1,40 +1,40 @@
 #pragma once
 
 #if defined __unix__
-# include <features.h>
-# include <unistd.h>
+#include <features.h>
+#include <unistd.h>
 #elif defined _WIN32
-# include <io.h>
+#include <io.h>
 #else
-# error platform not supported!
+#error platform not supported!
 #endif
 
 #ifdef _WIN32
-# define PATH_SEP        '\\' // contains the path separator as a character. Yes it is extremely annoying that this has to exist.
-# define PATH_SEP_STR    "\\" // contains the path separator as a string, useful for concatenation. Yes it is extremely annoying that this has to exist.
+#define PATH_SEP        '\\' // contains the path separator as a character. Yes it is extremely annoying that this has to exist.
+#define PATH_SEP_STR    "\\" // contains the path separator as a string, useful for concatenation. Yes it is extremely annoying that this has to exist.
 
-# define unixonly(_exec)       // (no-op) executes inline code when __unix__ is defined, otherwise is no-op
-# define winonly(_exec)  _exec // executes inline code when _WIN32 is defined, otherwise is no-op
+#define unixonly(_exec)       // (no-op) executes inline code when __unix__ is defined, otherwise is no-op
+#define winonly(_exec)  _exec // executes inline code when _WIN32 is defined, otherwise is no-op
 #else
-# define PATH_SEP        '/' // contains the path separator as a character. Yes it is extremely annoying that this has to exist.
-# define PATH_SEP_STR    "/" // contains the path separator as a string, useful for concatenation. Yes it is extremely annoying that this has to exist.
+#define PATH_SEP        '/' // contains the path separator as a character. Yes it is extremely annoying that this has to exist.
+#define PATH_SEP_STR    "/" // contains the path separator as a string, useful for concatenation. Yes it is extremely annoying that this has to exist.
 
-# define unixonly(_exec) _exec // executes inline code when __unix__ is defined, otherwise is no-op
-# define winonly(_exec)        // (no-op) executes inline code when _WIN32 is defined, otherwise is no-op
+#define unixonly(_exec) _exec // executes inline code when __unix__ is defined, otherwise is no-op
+#define winonly(_exec)        // (no-op) executes inline code when _WIN32 is defined, otherwise is no-op
 #endif
 
 // define the constants if they haven't been
 #ifndef F_OK
-# define F_OK 0
+#define F_OK 0
 #endif
 #ifndef X_OK
-# define X_OK 1
+#define X_OK 1
 #endif
 #ifndef W_OK
-# define W_OK 2
+#define W_OK 2
 #endif
 #ifndef R_OK
-# define R_OK 4
+#define R_OK 4
 #endif
 
 enum faccess_perms {
@@ -52,6 +52,6 @@ static inline int faccess(char const* restrict fname, int perms) {
 #elif defined _WIN32
     return _access(fname, perms);
 #else
-# error platform unsupported!
+#error platform unsupported!
 #endif
 }

@@ -135,8 +135,8 @@ void place_update(gamedata* const game_data, input_data const move) {
     // update the shape's rotation
     if (move & 8 || move & 16) {
         shape_id const id = move & 8 // check which direction we should move
-                                ? rotate_id(curr_id, -8)
-                                : rotate_id(curr_id, 8);
+            ? rotate_id(curr_id, -8)
+            : rotate_id(curr_id, 8);
         if (shape_intersects(game_data->rows, id, game_data->sel_x, game_data->sel_y) == false) {
             game_data->nxt[curr_idx] = id;
         }

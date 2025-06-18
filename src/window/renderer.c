@@ -10,9 +10,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
-#include <wchar.h>
 
 #include "../error.h"
 #include "../game/game.h"
@@ -24,10 +22,10 @@
 
 void render_init(renderdata* const render_dat, gamedata const* const game_dat) {
     SDL_Window* const window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (window == NULL) fatal(ERROR_SDL_RENDERING_INIT, __FILE_NAME__, __LINE__, "Window failed to be created! SDL Error: %s", SDL_GetError());
+    if (window == NULL) fatal(ERROR_SDL_RENDERING_INIT, "Window failed to be created! SDL Error: %s", SDL_GetError());
 
     SDL_Renderer* const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL) fatal(ERROR_SDL_RENDERING_INIT, __FILE_NAME__, __LINE__, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
+    if (renderer == NULL) fatal(ERROR_SDL_RENDERING_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
 
     TTF_Font* const font = TTF_OpenFont("pixeldroid_botic-regular.ttf", PX_DENS);
     if (font == NULL) error("Failed to open font! TTF Error: %s", TTF_GetError());
@@ -77,7 +75,7 @@ static void draw_score_text(renderdata const* dat) {
     }
 
     if (cache->score_surface == NULL || cache->score_texture == NULL) {
-        error("the score texture was unavailable!");
+        error("the score texture was unavailable!",);
         return;
     }
 

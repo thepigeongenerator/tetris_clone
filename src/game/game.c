@@ -6,18 +6,15 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
-#include "../error.h"
 #include "../window/audio.h"
 #include "./tetromino/shapes.h"
 #include "gametime.h"
 #include "opts.h"
-#include "paths.h"
 #include "tetromino/placing.h"
 
-// shuffle the array using a Fisher–Yates shuffle
+/* shuffle the array using a Fisher–Yates shuffle */
 static inline void shuffle(uint8_t const size, shape_id* const elmnts) {
     for (uint8_t i = 0; i < (size - 1); i++) {
         uint8_t const j = i + rand() % (size - i);

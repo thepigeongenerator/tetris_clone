@@ -15,10 +15,8 @@ static renderdata rdat;
 // initialize the game
 static void init(void) {
     // initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
-        fatal(ERROR_SDL_INIT, __FILE_NAME__, __LINE__, "SDL could not initialize! SDL Error: %s", SDL_GetError());
-    if (TTF_Init() != 0)
-        fatal(ERROR_SDL_FONT_INIT, __FILE_NAME__, __LINE__, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) fatal(ERROR_SDL_INIT, "SDL could not initialize! SDL Error: %s", SDL_GetError());
+    if (TTF_Init() != 0) fatal(ERROR_SDL_FONT_INIT, "the TTF module of SDL could not initialize! TTF Error: %s", TTF_GetError());
 
     // initialize other game components
     paths_init();
@@ -50,12 +48,12 @@ int main(int argc, char** argv) {
     (void)argc, (void)argv;
 
     init();
-    debug("successfully initialized!");
+    debug("successfully initialized!", );
 
     while (gdat.run == true)
         update();
 
-    debug("done! starting to free resources...");
+    debug("done! starting to free resources...", );
     game_free(&gdat);
     render_free(&rdat);
     paths_free();

@@ -125,12 +125,10 @@ static void proc_buf(char const* restrict buf, struct proc_buf_dat* restrict dat
 
     // allocate memory for the resulting string(s)
     if (dat->pval_len < dat->val_len) { // first check this condition, as key won't have changed if this is true
-        if (str_put(&dat->pval, dat->pval_len, dat->val, dat->val_len))
-            fatal(ERROR_STD_MEMORY_INIT, __FILE_NAME__, __LINE__, "something went wrong when attempting to allocate space for the option string");
+        if (str_put(&dat->pval, dat->pval_len, dat->val, dat->val_len)) fatal(ERROR_STD_MEMORY_INIT, "something went wrong when attempting to allocate space for the option string", );
         dat->pval_len = dat->val_len;
     } else if (dat->pkey_len < dat->key_len) {
-        if (str_put(&dat->pkey, dat->pkey_len, dat->key, dat->key_len))
-            fatal(ERROR_STD_MEMORY_INIT, __FILE_NAME__, __LINE__, "something went wrong when attempting to allocate space for the option string");
+        if (str_put(&dat->pkey, dat->pkey_len, dat->key, dat->key_len)) fatal(ERROR_STD_MEMORY_INIT, "something went wrong when attempting to allocate space for the option string", );
         dat->pkey_len = dat->key_len;
     }
 }
@@ -151,7 +149,7 @@ static void proc_buf(char const* restrict buf, struct proc_buf_dat* restrict dat
    returns 1 upon failure */
 int load_opts(void) {
     if (!path_opts) {
-        error("the variable to the path to the options failed to initialize");
+        error("the variable to the path to the options failed to initialize", );
         return 1;
     }
 
