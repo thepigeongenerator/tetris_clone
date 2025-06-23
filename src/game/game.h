@@ -25,7 +25,6 @@ typedef struct {
 	colour8 rowdat[ROWS * COLUMNS];
 	colour8* rows[ROWS];
 	struct gametime time;
-	audiodevice* audio_device;
 	audiodata music;
 	audiodata place_sfx;
 	uint16_t score;

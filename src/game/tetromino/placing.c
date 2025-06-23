@@ -112,7 +112,7 @@ void place_update(gamedata* const game_data, input_data const move) {
 			set_shape(game_data->rows, curr_id, game_data->sel_x, game_data->sel_y); // if the shape intersects vertically, write the shape at the current position and return
 			clear_rows(game_data->rows, &game_data->score);                          // clear the rows that have been completed
 
-			audio_play(game_data->audio_device, &game_data->place_sfx);
+			audio_play(&game_data->place_sfx);
 
 			next_shape(game_data);
 			if (shape_intersects(game_data->rows, game_data->curr_idx, game_data->sel_x, game_data->sel_y))

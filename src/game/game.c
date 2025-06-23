@@ -48,21 +48,20 @@ void game_init(gamedata* const dat) {
 	gametime_get(&gt.ts);
 
 	// initialize audio device
-	audiodevice* ad = audio_device_init(32000, AUDIO_S16, 1, 4096);
+	audio_device_init(32000, AUDIO_S16, 1, 4096);
 
 	*dat = (gamedata){
-		{0},                                   // rowdat
-		{0},                                   // row
-		gt,                                    // time
-		ad,                                    // audio_device
-		audio_wav_load(ad, "korobeiniki.wav"), // music
-		audio_wav_load(ad, "place.wav"),       // place_sfx
-		0,                                     // score
-		{0},                                   // nxt
-		0,                                     // curr_idx
-		0,                                     // sel_x
-		0,                                     // sel_y
-		true,                                  // run
+		{0},                               // rowdat
+		{0},                               // row
+		gt,                                // time
+		audio_wav_load("korobeiniki.wav"), // music
+		audio_wav_load("place.wav"),       // place_sfx
+		0,                                 // score
+		{0},                               // nxt
+		0,                                 // curr_idx
+		0,                                 // sel_x
+		0,                                 // sel_y
+		true,                              // run
 	};
 
 	// initialize the rows within the game data
@@ -109,7 +108,7 @@ void game_update(gamedata* const dat) {
 
 	if (ctime > timer_music) {
 		timer_music = ctime + (dat->music.ms);
-		audio_play(dat->audio_device, &dat->music);
+		audio_play(&dat->music);
 	}
 
 	// for rotation updating
@@ -145,7 +144,7 @@ void game_update(gamedata* const dat) {
 void game_free(gamedata* const dat) {
 	audio_wav_unload(&dat->music);
 	audio_wav_unload(&dat->place_sfx);
-	audio_device_free(dat->audio_device);
+	audio_device_free();
 
 	// zero-out the rest of the data
 	*dat = (gamedata){0};
