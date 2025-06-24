@@ -9,15 +9,16 @@
 #include <time.h>
 
 #include "../io/audio.h"
+#include "../util/types.h"
 #include "./tetromino/shapes.h"
 #include "gametime.h"
 #include "tetromino/placing.h"
 
 /* shuffle the array using a Fisher–Yates shuffle */
-static inline void shuffle(uint8_t const size, shape_id* const elmnts) {
-	for (uint8_t i = 0; i < (size - 1); i++) {
-		uint8_t const j = i + rand() % (size - i);
-		shape_id const cache = elmnts[i];
+static inline void shuffle(uint8_t const size, u8* const elmnts) {
+	for (uint i = 0; i < (size - 1); i++) {
+		uint const j = i + rand() % (size - i);
+		u8 const cache = elmnts[i];
 		elmnts[i] = elmnts[j];
 		elmnts[j] = cache;
 	}
@@ -35,7 +36,7 @@ void next_shape(gamedata* const dat) {
 	dat->curr_idx = 0;
 
 	shuffle(TETROMINO_COUNT - 1, dat->nxt);
-	shape_id cache = dat->nxt[0];
+	u8 cache = dat->nxt[0];
 	dat->nxt[0] = dat->nxt[TETROMINO_COUNT - 1];
 	dat->nxt[TETROMINO_COUNT - 1] = cache;
 }
@@ -70,7 +71,7 @@ void game_init(gamedata* const dat) {
 	}
 
 	// set the shape data in each slot to it's corrsponding ID
-	for (shape_id i = 0; i < TETROMINO_COUNT; i++)
+	for (uint i = 0; i < TETROMINO_COUNT; i++)
 		dat->nxt[i] = i;
 
 	dat->curr_idx = -1;                 // set the current index to the max so it becomes zero after increasement

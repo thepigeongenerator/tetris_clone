@@ -5,7 +5,7 @@
 
 #include "../io/audio.h"
 #include "../io/colour/colour8.h"
-#include "./tetromino/shapes.h"
+#include "../util/types.h"
 #include "gametime.h"
 
 // constants for pi(π) and tau(τ)
@@ -28,7 +28,7 @@ typedef struct {
 	audiodata music;
 	audiodata place_sfx;
 	uint16_t score;
-	shape_id nxt[7];  // the order of the shape ids that they should appear in
+	u8 nxt[7];        // the order of the shape ids that they should appear in
 	uint8_t curr_idx; // current shape index
 	int8_t sel_x;     // selected shape x position
 	int8_t sel_y;     // selected shape y position

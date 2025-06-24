@@ -15,6 +15,7 @@
 #include "../error.h"
 #include "../game/game.h"
 #include "../game/tetromino/shapes.h"
+#include "../util/types.h"
 #include "colour/colour32.h"
 #include "colour/colour8.h"
 
@@ -90,12 +91,12 @@ static inline int draw_block(SDL_Renderer* const renderer, int8_t const x, int8_
 }
 
 // draws a shape at the specified position
-static void draw_shape(SDL_Renderer* const renderer, shape_id const id, int8_t const pos_x, int8_t const pos_y) {
-	shape const shape = shape_from_id(id);
+static void draw_shape(SDL_Renderer* const renderer, u8 const id, int8_t const pos_x, int8_t const pos_y) {
+	u16 shape = shape_from_id(id);
 	set_colour8(renderer, colour_from_id(id));
 
 	for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
-		shape_row const shape_row = shape_get_row(shape, y);
+		u8 shape_row = shape_get_row(shape, y);
 
 		if (shape_row == 0)
 			continue;

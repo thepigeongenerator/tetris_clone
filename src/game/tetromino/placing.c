@@ -4,6 +4,7 @@
 
 #include "../../io/audio.h"
 #include "../../io/colour/colour8.h"
+#include "../../util/types.h"
 #include "../game.h"
 #include "shapes.h"
 
@@ -56,11 +57,11 @@ static void clear_rows(row* const rows, uint16_t* const score) {
 }
 
 // sets a shape to the screen
-static void set_shape_i(row const* const row, shape_id const id, int8_t const pos_x) {
-	shape const shape = shape_from_id(id);
+static void set_shape_i(row const* const row, u8 const id, int8_t const pos_x) {
+	u16 const shape = shape_from_id(id);
 	colour8 const colour = colour_from_id(id);
 	for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
-		shape_row const shape_row = shape_get_row(shape, y);
+		u8 const shape_row = shape_get_row(shape, y);
 
 		if (shape_row == 0)
 			continue;
@@ -71,16 +72,16 @@ static void set_shape_i(row const* const row, shape_id const id, int8_t const po
 	}
 }
 
-static inline void set_shape(row const* const row, shape_id const id, int8_t const pos_x, int8_t const pos_y) {
+static inline void set_shape(row const* const row, u8 const id, int8_t const pos_x, int8_t const pos_y) {
 	set_shape_i(&row[pos_y], id, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
 }
 
-static int shape_intersects(row const* const rows, shape_id const id, int8_t const x, int8_t const y) {
-	shape const shape = shape_from_id(id);
+static int shape_intersects(row const* const rows, u8 const id, int8_t const x, int8_t const y) {
+	u16 const shape = shape_from_id(id);
 
 	for (int y0 = 0; y0 < SHAPE_HEIGHT; y0++) {
-		shape_row const shape_row = shape_get_row(shape, y0); // get the shape row
-		if (shape_row == 0) continue;                         // if the row doesn't contain data; continue
+		u8 const shape_row = shape_get_row(shape, y0); // get the shape row
+		if (shape_row == 0) continue;                  // if the row doesn't contain data; continue
 
 		for (int x0 = 0; x0 < SHAPE_WIDTH; x0++) {
 			if (shape_is_set(shape_row, x0) == false) continue; // if the bit isn't set at this index; continue
@@ -95,14 +96,14 @@ static int shape_intersects(row const* const rows, shape_id const id, int8_t con
 	return 0;
 }
 
-static inline shape_id rotate_id(shape_id const id, int const dir) {
+static inline u8 rotate_id(u8 const id, int const dir) {
 	return (id + dir) & 31;
 }
 
 void place_update(gamedata* const game_data, input_data const move) {
 	// store the current index and ID, only changes when placed (which yields no movement) and rotation (which occurs last)
 	uint8_t const curr_idx = game_data->curr_idx;
-	shape_id const curr_id = game_data->nxt[curr_idx];
+	u8 curr_id = game_data->nxt[curr_idx];
 
 
 	// set the shape if we moved vertically and intersected
@@ -134,7 +135,7 @@ void place_update(gamedata* const game_data, input_data const move) {
 
 	// update the shape's rotation
 	if (move & 8 || move & 16) {
-		shape_id const id = move & 8 // check which direction we should move
+		u8 const id = move & 8 // check which direction we should move
 			? rotate_id(curr_id, -8)
 			: rotate_id(curr_id, 8);
 		if (shape_intersects(game_data->rows, id, game_data->sel_x, game_data->sel_y) == false) {

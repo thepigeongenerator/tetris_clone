@@ -3,11 +3,8 @@
 #include <stdint.h>
 
 #include "../../io/colour/colour8.h"
+#include "../../util/types.h"
 
-typedef uint16_t shape;
-typedef uint8_t shape_row;
-
-typedef uint8_t shape_id;
 enum {
 	TETROMINO_O = 0,
 	TETROMINO_I = 1,
@@ -27,13 +24,13 @@ enum {
 
 
 
-static inline shape_row shape_get_row(shape const shape, uint8_t const index) {
+static inline u8 shape_get_row(u16 shape, u8 index) {
 	return shape >> (((SHAPE_HEIGHT - 1) - index) * SHAPE_WIDTH) & 0xF;
 }
 
-static inline bool shape_is_set(shape_row const row, uint8_t const index) {
+static inline bool shape_is_set(u8 row, u8 index) {
 	return (row >> ((SHAPE_WIDTH - 1) - index) & 1) != 0;
 }
 
-shape shape_from_id(shape_id id);
-colour8 colour_from_id(shape_id id);
+u16 shape_from_id(u8 id);
+colour8 colour_from_id(u8 id);
