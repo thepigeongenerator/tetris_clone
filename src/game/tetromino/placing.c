@@ -2,8 +2,8 @@
 
 #include <stdint.h>
 
-#include "../../window/audio.h"
-#include "../../window/colour/colour8.h"
+#include "../../io/audio.h"
+#include "../../io/colour/colour8.h"
 #include "../game.h"
 #include "shapes.h"
 

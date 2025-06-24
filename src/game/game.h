@@ -3,8 +3,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../window/audio.h"
-#include "../window/colour/colour8.h"
+#include "../io/audio.h"
+#include "../io/colour/colour8.h"
 #include "./tetromino/shapes.h"
 #include "gametime.h"
 

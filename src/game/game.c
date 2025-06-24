@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "../window/audio.h"
+#include "../io/audio.h"
 #include "./tetromino/shapes.h"
 #include "gametime.h"
 #include "tetromino/placing.h"

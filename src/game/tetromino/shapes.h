@@ -2,7 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../../window/colour/colour8.h"
+#include "../../io/colour/colour8.h"
 
 typedef uint16_t shape;
 typedef uint8_t shape_row;

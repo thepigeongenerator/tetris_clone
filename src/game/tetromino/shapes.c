@@ -1,6 +1,6 @@
 #include "shapes.h"
 
-#include "../../window/colour/colour8.h"
+#include "../../io/colour/colour8.h"
 
 /*                                     0    1    2    3         */
 #define SHAPE_O     ((shape)0x0660) // 0000 0110 0110 0000      the O tetromino with no rotation
