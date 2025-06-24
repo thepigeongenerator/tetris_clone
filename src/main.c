@@ -6,7 +6,7 @@
 #include "error.h"
 #include "game/game.h"
 #include "game/paths.h"
-#include "io/renderer.h"
+#include "io/render.h"
 
 // initialized in init(), reading beforehand is undefined behaviour
 static gamedata gdat;
