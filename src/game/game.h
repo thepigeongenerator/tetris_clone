@@ -3,10 +3,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../io/audio.h"
 #include "../io/colour/colour8.h"
 #include "../util/types.h"
-#include "gametime.h"
+#include "../util/vec.h"
+#include "tetromino/shapes.h"
 
 // constants for pi(π) and tau(τ)
 #define PI   (M_PI)         // π constant
@@ -15,27 +15,27 @@
 #define TAUf (M_PIf * 2.0F) // τ constant as a 32-bit floating point
 
 // stores the data used in the game
-#define COLUMNS ((int8_t)10)
-#define ROWS    ((int8_t)24)
+#define COLUMNS 10
+#define ROWS    24
 
-typedef colour8 const* const row_const;
-typedef colour8* row;
+/* contains the placement data */
+struct pdat {
+	u8 nxt[TETROMINO_COUNT];
+	i8vec2 sel;
+	u8 idx;
+};
 
-typedef struct {
-	colour8 rowdat[ROWS * COLUMNS];
+/* contains game data that's commonly shared */
+struct gamedata {
+	struct pdat pdat;
 	colour8* rows[ROWS];
-	struct gametime time;
-	audiodata music;
-	audiodata place_sfx;
-	uint16_t score;
-	u8 nxt[7];        // the order of the shape ids that they should appear in
-	uint8_t curr_idx; // current shape index
-	int8_t sel_x;     // selected shape x position
-	int8_t sel_y;     // selected shape y position
-	bool run;
-} gamedata;
+	u16 pnts;
+};
 
-void next_shape(gamedata*);  // initializes everything needed to start the game; outputs to gamedata
-void game_init(gamedata*);   // initializes the game
-void game_update(gamedata*); // causes an update to occur within the game
-void game_free(gamedata*);   // frees the resources associated with the game
+
+/* increments to the next shape, shuffling the next shapes, if there isn't a next shape immediately after the current one. */
+void next_shape(void);
+
+struct gamedata* game_init(void);
+void game_update(int);
+void game_free(void);

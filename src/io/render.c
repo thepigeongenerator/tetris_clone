@@ -7,81 +7,63 @@
 #include <SDL_surface.h>
 #include <SDL_ttf.h>
 #include <SDL_video.h>
+#include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
 #include "../error.h"
 #include "../game/game.h"
 #include "../game/tetromino/shapes.h"
 #include "../util/types.h"
+#include "../util/vec.h"
 #include "colour/colour32.h"
 #include "colour/colour8.h"
 
 #define COLOUR_SCORE COLOUR32_YELLOW
 
-void render_init(renderdata* const render_dat, gamedata const* const game_dat) {
-	SDL_Window* const window = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	if (window == NULL) fatal(ERROR_SDL_RENDERING_INIT, "Window failed to be created! SDL Error: %s", SDL_GetError());
+SDL_Renderer* rend = NULL;
+TTF_Font* font = NULL;
+struct gamedata const* gdat = NULL;
 
-	SDL_Renderer* const renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
-	if (renderer == NULL) fatal(ERROR_SDL_RENDERING_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
+static SDL_Surface* score_surface = NULL;
+static SDL_Texture* score_texture = NULL;
 
-	TTF_Font* const font = TTF_OpenFont("pixeldroid_botic-regular.ttf", PX_DENS);
+void render_init(SDL_Window* win, struct gamedata const* game_data) {
+	rend = SDL_CreateRenderer(win, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
+	if (rend == NULL) fatal(ERROR_SDL_RENDERING_INIT, "Renderer failed to be created! SDL Error: %s", SDL_GetError());
+
+	font = TTF_OpenFont("pixeldroid_botic-regular.ttf", PX_DENS);
 	if (font == NULL) error("Failed to open font! TTF Error: %s", TTF_GetError());
 
-	// initialize the render data
-	*render_dat = (renderdata){
-		game_dat,
-		window,
-		renderer,
-		font,
-		calloc(1, sizeof(struct render_cache)), // zero-initialize the memory as we read from it
-	};
+	gdat = game_data;
 }
 
-static inline int32_t get_column_pos(uint8_t column) {
+static inline int32_t get_column_pos(uint column) {
 	return column * BLOCK_WIDTH + 1 + TET_PADDING;
 }
 
-static inline int32_t get_row_pos(uint8_t row) {
+static inline int32_t get_row_pos(uint row) {
 	return row * BLOCK_HEIGHT + 1 + TET_PADDING;
 }
 
-static void draw_score_text(renderdata const* dat) {
-	struct render_cache* const cache = dat->cache;
-	uint16_t const score = dat->game_dat->score;
+static void draw_score_text(void) {
+	static u16 prev_pts = 0xFFFF;
 
-	SDL_Renderer* const renderer = dat->renderer;
-	TTF_Font* const font = dat->font;
+	if (prev_pts ^ gdat->pnts) {
+		char score_text[6] = "0"; // max digits of a u16 + null terminator
+		prev_pts = gdat->pnts;
+		if (gdat->pnts) sprintf(score_text, "%hu0", gdat->pnts);
 
-	if (cache->prevscore != score || cache->score_texture == NULL) {
-		char score_text[6]; // max digits of a uint16 + \0 terminator
-		if (!score) sprintf(score_text, "0");
-		else sprintf(score_text, "%hu0", score);
-
-		SDL_Surface* const txt_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){COLOUR_SCORE.r, COLOUR_SCORE.g, COLOUR_SCORE.b, COLOUR_SCORE.a});
-		SDL_Texture* const txt_texture = SDL_CreateTextureFromSurface(renderer, txt_surface);
-
-		if (cache->score_texture != NULL || cache->score_surface != NULL) {
-			// free old data
-			SDL_FreeSurface(cache->score_surface);
-			SDL_DestroyTexture(cache->score_texture);
-		}
-
-		// write data to cache
-		cache->score_surface = txt_surface;
-		cache->score_texture = txt_texture;
+		SDL_FreeSurface(score_surface);
+		SDL_DestroyTexture(score_texture);
+		score_surface = TTF_RenderText_Solid(font, score_text, (SDL_Colour){COLOUR_SCORE.r, COLOUR_SCORE.g, COLOUR_SCORE.b, COLOUR_SCORE.a});
+		score_texture = SDL_CreateTextureFromSurface(rend, score_surface);
 	}
 
-	if (cache->score_surface == NULL || cache->score_texture == NULL) {
-		error("the score texture was unavailable!", );
-		return;
-	}
-
-	SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), cache->score_surface->w, cache->score_surface->h};
-	SDL_RenderCopy(renderer, cache->score_texture, NULL, &text_rect);
+	assert(score_surface && score_texture);
+	SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), score_surface->w, score_surface->h};
+	SDL_RenderCopy(rend, score_texture, NULL, &text_rect);
 }
 
 // TODO: this is suboptimal, since each block will be 2 triangles, wasting perf. Consider using switch...case hard-coded drawing
@@ -92,72 +74,61 @@ static inline int draw_block(SDL_Renderer* const renderer, int8_t const x, int8_
 }
 
 // draws a shape at the specified position
-static void draw_shape(SDL_Renderer* const renderer, u8 const id, int8_t const pos_x, int8_t const pos_y) {
+static void draw_shape(u8 const id, i8vec2 pos) {
 	u16 shape = shape_from_id(id);
-	set_colour8(renderer, colour_from_id(id));
+	set_colour8(rend, colour_from_id(id));
 
 	for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
 		u8 shape_row = shape_get_row(shape, y);
 
-		if (shape_row == 0)
-			continue;
+		if (shape_row == 0) continue;
 
 		for (int8_t x = 0; x < SHAPE_WIDTH; x++)
 			if (shape_is_set(shape_row, x))
-				draw_block(renderer, pos_x + x, pos_y + y);
+				draw_block(rend, pos[0] + x, pos[1] + y);
 	}
 }
 
 // draw the block data in the level
-static void render_level(SDL_Renderer* const renderer, gamedata const* const data) {
-	for (int8_t y = 0; y < ROWS; y++) {
-		row_const const row = data->rows[y];
+static void render_level(void) {
+	for (int y = 0; y < ROWS; y++) {
+		u8 const* row = gdat->rows[y];
 
-		for (int8_t x = 0; x < COLUMNS; x++) {
+		for (int x = 0; x < COLUMNS; x++) {
 			if (row[x] != 0) {
-				set_colour8(renderer, row[x]);
-				draw_block(renderer, x, y);
+				set_colour8(rend, row[x]);
+				draw_block(rend, x, y);
 			}
 		}
 	}
 }
 
-void render_update(renderdata const* const dat) {
-	SDL_Renderer* const renderer = dat->renderer;
-	gamedata const* const game_data = dat->game_dat;
-
-	int success = 0; // if an error occurs, this value is <0
-
-	// clear render
-	set_colour32(renderer, COLOUR32_BLACK); // using colour32 is more efficient, as it sets the colours directly
-	success |= SDL_RenderClear(renderer);
-
-	set_colour32(renderer, COLOUR32_WHITE);
+void render_update(void) {
+	set_colour32(rend, COLOUR32_BLACK);
+	SDL_RenderClear(rend);
+	set_colour32(rend, COLOUR32_WHITE);
 
 	static SDL_Rect const field_size = {TET_PADDING, TET_PADDING, TET_WIDTH + 1, TET_HEIGHT + 1};
-	SDL_RenderDrawRect(renderer, &field_size);
-	draw_shape(renderer, game_data->nxt[game_data->curr_idx + 1], COLUMNS + 1, 3); // draw the next shape
+	SDL_RenderDrawRect(rend, &field_size);
 
-	if (dat->font)
-		draw_score_text(dat);
+	if (font) draw_score_text();
 
-	render_level(renderer, dat->game_dat);
-	draw_shape(renderer, game_data->nxt[game_data->curr_idx], game_data->sel_x, game_data->sel_y); // draw the current shape
+	render_level();
+	draw_shape(gdat->pdat.nxt[gdat->pdat.idx], gdat->pdat.sel);
+	draw_shape(gdat->pdat.nxt[gdat->pdat.idx + 1], (i8vec2){COLUMNS + 1, 3});
 
-	if (success < 0) {
-		warn("something went wrong whilst renderering! SDL Error: %s\n", SDL_GetError());
-		return;
-	}
-
-	SDL_RenderPresent(renderer);
+	SDL_RenderPresent(rend);
 }
 
-void render_free(renderdata* const render_data) {
-	SDL_DestroyRenderer(render_data->renderer);
-	SDL_DestroyWindow(render_data->window);
-	TTF_CloseFont(render_data->font);
-	SDL_FreeSurface(render_data->cache->score_surface);
-	SDL_DestroyTexture(render_data->cache->score_texture);
-	free(render_data->cache);
-	*render_data = (renderdata){0};
+void render_free(void) {
+	assert(rend);
+	SDL_DestroyRenderer(rend);
+	rend = NULL;
+
+	TTF_CloseFont(font);
+	SDL_FreeSurface(score_surface);
+	SDL_DestroyTexture(score_texture);
+	font = NULL;
+	score_surface = NULL;
+	score_texture = NULL;
 }

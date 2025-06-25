@@ -1,71 +1,67 @@
 #include "placing.h"
 
 #include <stdint.h>
+#include <string.h>
+#include <sys/cdefs.h>
 
-#include "../../io/audio.h"
-#include "../../io/colour/colour8.h"
+#include "../../io/input.h"
+#include "../../io/window.h"
 #include "../../util/types.h"
+#include "../../util/vec.h"
 #include "../game.h"
 #include "shapes.h"
 
 
-static int is_filled(row_const const row) {
-	for (int8_t x = 0; x < COLUMNS; x++) {
-		if (row[x] == 0) {
-			return 0;
-		}
-	}
-
-	return 1;
+/* checks if `row` of `COLUMNS` wide contains anything with `0`.
+ * returns `1` if it doesn't, otherwise returns `0` */
+__attribute_const__ static int is_filled(u8 const* restrict row) {
+	int res = 0;
+#if defined(__clang__)
+#pragma unroll COLUMNS
+#elif defined(__GNUC__)
+#pragma GCC unroll COLUMNS
+#endif
+	for (int i = 0; i < COLUMNS; i++) res |= !row[i];
+	return !res;
 }
 
-static void clear_rows(row* const rows, uint16_t* const score) {
-	row cache[4] = {0}; // you can only clear four rows at a time
-	unsigned filled = 0;
-	unsigned checked = 0;
+/* checks for filled rows, clearing a max of 4 consecutive rows, if present.
+ * all row pointers will be moved down to fill the gap, the filled rows will be inserted at the top, and zeroed-out */
+static void clear_rows(u8* restrict* restrict rows, u16* const score) {
+	u8* cache[4] = {0}; // the I piece is 4 long, meaning only 4 rows can be cleared at a time
+	uint fillc = 0;
+	uint checkc = 0;
 
-	// loop through each row (excluding the empty rows at the top when clearing a line)
-	for (unsigned y = 0; y < (ROWS - filled); y++) {
-		int const i = (ROWS - 1) - y; // get the index starting from the bottom
+	for (uint y = 0; y < (ROWS - fillc); y++) {
+		int i = (ROWS - 1) - y;    // invert the index direction, so we start at the highest index
+		rows[i] = rows[i - fillc]; // either assigns the current row to itself, or to the "next" row
 
-		rows[i] = rows[i - filled]; // set the row to the new or same address
-
-		// continue if the line isn't filled or the max amount has been reached
-		if (checked >= 4 || !is_filled(rows[i])) {
-			if (filled > 0 && checked < 4) checked++;
-			continue; // continue to the next line
-		}
-
-		cache[filled] = rows[i]; // cache the current row address
-		filled++;                // increase filled, and keep the row in the cache
-		checked++;               // increase the checked count
-		y--;                     // decrease y to check this line again
-	}
-
-	if (filled == 0) return;
-	*score += 8 << filled;
-
-	// do while, as we already know that entering the loop that filled is non-zero
-	do {
-		filled--;
-		rows[filled] = cache[filled];
-
-		// zero out the filled row
-		for (unsigned x = 0; x < COLUMNS; x++)
-			cache[filled][x] = 0;
-	} while (filled > 0);
-}
-
-// sets a shape to the screen
-static void set_shape_i(row const* const row, u8 const id, int8_t const pos_x) {
-	u16 const shape = shape_from_id(id);
-	colour8 const colour = colour_from_id(id);
-	for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
-		u8 const shape_row = shape_get_row(shape, y);
-// TODO: this is suboptimal, ditch the entire "representing shapes as binary-formatted data" and instead use a switch...case.
-
-		if (shape_row == 0)
+		if (checkc >= 4 || !is_filled(rows[i])) {
+			checkc += (fillc > 0 && checkc < 4);
 			continue;
+		}
+
+		cache[fillc] = rows[i]; // cache the current row address, since it's going to be overridden
+		fillc++;
+		checkc++;
+		y--;
+	}
+
+	*score += (8 << fillc) * !!fillc;
+	for (uint i = 0; i < fillc; i++) {
+		memset(cache[i], 0, COLUMNS);
+		rows[i] = cache[i];
+	}
+}
+
+// TODO: this is suboptimal, ditch the entire "representing shapes as binary-formatted data" and instead use a switch...case.
+/* writes a shape to the screen */
+static void set_shape(u8* restrict const* restrict row, u8 id, int pos_x) {
+	u16 shape = shape_from_id(id);
+	u8 colour = colour_from_id(id);
+
+	for (uint y = 0; y < SHAPE_HEIGHT; y++) {
+		u8 const shape_row = shape_get_row(shape, y);
 
 		for (int8_t x = 0; x < SHAPE_WIDTH; x++)
 			if (shape_is_set(shape_row, x))
@@ -73,11 +69,7 @@ static void set_shape_i(row const* const row, u8 const id, int8_t const pos_x) {
 	}
 }
 
-static inline void set_shape(row const* const row, u8 const id, int8_t const pos_x, int8_t const pos_y) {
-	set_shape_i(&row[pos_y], id, pos_x); // calls itself, but omitting the pos_y argument, instead opting for specifying the row
-}
-
-static int shape_intersects(row const* const rows, u8 const id, int8_t const x, int8_t const y) {
+static int shape_intersects(u8* restrict const* restrict const rows, u8 const id, i8vec2 pos) {
 	u16 const shape = shape_from_id(id);
 
 	for (int y0 = 0; y0 < SHAPE_HEIGHT; y0++) {
@@ -86,8 +78,8 @@ static int shape_intersects(row const* const rows, u8 const id, int8_t const x, 
 
 		for (int x0 = 0; x0 < SHAPE_WIDTH; x0++) {
 			if (shape_is_set(shape_row, x0) == false) continue; // if the bit isn't set at this index; continue
-			int const x1 = x + x0;
-			int const y1 = y + y0;
+			int x1 = pos[0] + x0;
+			int y1 = pos[1] + y0;
 
 			if (x1 < 0 || x1 >= COLUMNS) return 1; // if X is out of bounds
 			if (y1 < 0 || y1 >= ROWS) return 1;    // if Y is out of bounds
@@ -97,50 +89,37 @@ static int shape_intersects(row const* const rows, u8 const id, int8_t const x, 
 	return 0;
 }
 
-static inline u8 rotate_id(u8 const id, int const dir) {
-	return (id + dir) & 31;
-}
-
-void place_update(gamedata* const game_data, input_data const move) {
+void place_update(struct gamedata* gdat, int movdat) {
 	// store the current index and ID, only changes when placed (which yields no movement) and rotation (which occurs last)
-	uint8_t const curr_idx = game_data->curr_idx;
-	u8 curr_id = game_data->nxt[curr_idx];
-
+	int tmp;
+	u8 idx = gdat->pdat.idx;
+	u8 id = gdat->pdat.nxt[idx];
 
 	// set the shape if we moved vertically and intersected
-	if (move & 4) {
-		int8_t const y = game_data->sel_y + 1;
-		if (shape_intersects(game_data->rows, curr_id, game_data->sel_x, y)) {
-			set_shape(game_data->rows, curr_id, game_data->sel_x, game_data->sel_y); // if the shape intersects vertically, write the shape at the current position and return
-			clear_rows(game_data->rows, &game_data->score);                          // clear the rows that have been completed
+	if (movdat & MOVD) {
+		i8 y = gdat->pdat.sel[1] + 1;
+		if (shape_intersects(gdat->rows, id, gdat->pdat.sel)) {
+			set_shape(gdat->rows + gdat->pdat.sel[1], id, gdat->pdat.sel[0]); // if the shape intersects vertically, write the shape at the current position and return
+			clear_rows(gdat->rows, &gdat->pnts);                              // clear the rows that have been completed
 
-			audio_play(&game_data->place_sfx);
+			// TODO: play place_sfx
 
-			next_shape(game_data);
-			if (shape_intersects(game_data->rows, game_data->curr_idx, game_data->sel_x, game_data->sel_y))
-				game_data->run = false;
-			return;
-		}
+			next_shape();
+			if (shape_intersects(gdat->rows, gdat->pdat.idx, gdat->pdat.sel)) {
+				window_close();
+				return;
+			}
 
-		// otherwise, just set Y
-		game_data->sel_y = y;
-	}
-
-	// update shape's X coordinate movement
-	if ((move & 3) != 3 && (move & 3)) {
-		int8_t const x = game_data->sel_x + ((move & 3) == 1 ? -1 : 1); // either move along -x or +x
-		if (shape_intersects(game_data->rows, curr_id, x, game_data->sel_y) == false) {
-			game_data->sel_x = x; // set X if the shape does not intersect
+			// otherwise, just set Y
+			gdat->pdat.sel[1] = y;
 		}
 	}
 
-	// update the shape's rotation
-	if (move & 8 || move & 16) {
-		u8 const id = move & 8 // check which direction we should move
-			? rotate_id(curr_id, -8)
-			: rotate_id(curr_id, 8);
-		if (shape_intersects(game_data->rows, id, game_data->sel_x, game_data->sel_y) == false) {
-			game_data->nxt[curr_idx] = id;
-		}
-	}
+	// update X axis
+	tmp = !!(movdat & MOVL) * -1 + !!(movdat & MOVR);
+	gdat->pdat.sel[0] += (tmp && shape_intersects(gdat->rows, id, gdat->pdat.sel + (i8vec2){tmp, 0})) * tmp;
+
+	// update roll
+	tmp = id - (((!!(movdat & MOVRL) * -8 + !!(movdat & MOVRR) * 8) + id) & 31);
+	gdat->pdat.nxt[idx] += (tmp && shape_intersects(gdat->rows, tmp, gdat->pdat.sel)) * tmp;
 }
