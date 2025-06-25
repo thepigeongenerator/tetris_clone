@@ -1,3 +1,4 @@
+// TODO: audio stores audio buffers at indicies that the user specifies. (array growth is the next power of two from the idx)
 #include "audio.h"
 
 #include <SDL_audio.h>

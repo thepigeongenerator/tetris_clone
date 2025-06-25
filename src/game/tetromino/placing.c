@@ -62,6 +62,7 @@ static void set_shape_i(row const* const row, u8 const id, int8_t const pos_x) {
 	colour8 const colour = colour_from_id(id);
 	for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
 		u8 const shape_row = shape_get_row(shape, y);
+// TODO: this is suboptimal, ditch the entire "representing shapes as binary-formatted data" and instead use a switch...case.
 
 		if (shape_row == 0)
 			continue;

@@ -5,6 +5,7 @@
 
 #include "window.h"
 
+// TODO: this'll likely be insufficient, due to no code delays being applied, or it registers *just* the keydown event
 __attribute__((const)) static int procscancode(SDL_Scancode code) {
 	switch (code) {
 	case SDL_SCANCODE_Q: return MOVRL;
