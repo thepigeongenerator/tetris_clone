@@ -8,6 +8,7 @@
 static void stop(void) {
 	debug("stopping...", );
 	window_close();
+	window_free();
 	SDL_Quit();
 }
 
@@ -17,7 +18,8 @@ int main(int argc, char** argv) {
 	// register stop as exit function
 	atexit(stop);
 
-	window_open(game_init());
+	window_init(game_init());
+	window_open();
 
 	return 0;
 }

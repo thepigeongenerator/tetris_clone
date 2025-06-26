@@ -6,5 +6,7 @@
 #define SCREEN_WIDTH  ((COLUMNS + 6) * PX_DENS)              // window width
 #define SCREEN_HEIGHT ((COLUMNS) * PX_DENS / COLUMNS * ROWS) // window height
 
-void window_open(struct gamedata const*);
+void window_init(struct gamedata const*);
+void window_open(void);
 void window_close(void);
+void window_free(void);

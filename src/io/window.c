@@ -18,7 +18,7 @@ static SDL_Window* win = NULL;
 static bool close = false;
 static audiodata music;
 
-static void window_init(struct gamedata const* gdat) {
+void window_init(struct gamedata const* gdat) {
 	assert(!win && !close);
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 		fatal(ERROR_SDL_INIT, "SDL could not initialize! SDL Error: %s", SDL_GetError());
@@ -32,7 +32,7 @@ static void window_init(struct gamedata const* gdat) {
 	music = audio_wav_load("korobeiniki.wav");
 }
 
-static void window_free(void) {
+void window_free(void) {
 	assert(win);
 	render_free();
 	SDL_DestroyWindow(win);
@@ -43,9 +43,7 @@ static void window_free(void) {
 	audio_device_free();
 }
 
-void window_open(struct gamedata const* gdat) {
-	window_init(gdat);
-
+void window_open(void) {
 	while (!close) {
 		game_update(input_getdat());
 		render_update();
@@ -54,8 +52,6 @@ void window_open(struct gamedata const* gdat) {
 		if (time_poll(time_pull(), music.ms, &timeout))
 			audio_play(&music);
 	}
-
-	window_free();
 }
 
 void window_close(void) {
