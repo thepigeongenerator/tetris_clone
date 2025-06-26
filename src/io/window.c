@@ -34,7 +34,7 @@ static void window_init(struct gamedata const* gdat) {
 
 static void window_free(void) {
 	assert(win);
-	// render_free();
+	render_free();
 	SDL_DestroyWindow(win);
 	win = NULL;
 	close = false;
