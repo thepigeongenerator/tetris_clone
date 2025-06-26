@@ -10,6 +10,7 @@
 #include "../error.h"
 #include "../game/game.h"
 #include "../game/time.h"
+#include "SDL_ttf.h"
 #include "audio.h"
 #include "input.h"
 #include "render.h"
@@ -22,6 +23,8 @@ void window_init(struct gamedata const* gdat) {
 	assert(!win && !close);
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
 		fatal(ERROR_SDL_INIT, "SDL could not initialize! SDL Error: %s", SDL_GetError());
+	if (TTF_Init() < 0)
+		fatal(ERROR_SDL_INIT, "TTF could not initialize! TTF Error: %s", TTF_GetError());
 
 	win = SDL_CreateWindow("tetris clone", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	if (win == NULL)
