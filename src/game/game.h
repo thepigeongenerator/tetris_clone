@@ -21,9 +21,9 @@
 
 /* contains the placement data */
 struct pdat {
-	u8 nxt[TETROMINO_COUNT];
-	i8vec2 sel;
-	u8 idx;
+	u8 nxt[TETROMINO_COUNT]; // shuffled data representing the next shapes
+	i8vec2 sel;              // position of the current shape
+	u8 idx;                  // the index of the current shape
 };
 
 /* contains game data that's commonly shared */
