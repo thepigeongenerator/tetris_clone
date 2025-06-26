@@ -95,24 +95,17 @@ void place_update(struct gamedata* gdat, int movdat) {
 	u8 idx = gdat->pdat.idx;
 	u8 id = gdat->pdat.nxt[idx];
 
-	// set the shape if we moved vertically and intersected
-	if (movdat & MOVD) {
-		i8 y = gdat->pdat.sel[VY] + 1;
-		if (shape_intersects(gdat->rows, id, gdat->pdat.sel)) {
-			set_shape(gdat->rows + gdat->pdat.sel[VY], id, gdat->pdat.sel[VX]); // if the shape intersects vertically, write the shape at the current position and return
-			clear_rows(gdat->rows, &gdat->pnts);                                // clear the rows that have been completed
-
-			// TODO: play place_sfx
-
-			next_shape();
-			if (shape_intersects(gdat->rows, gdat->pdat.idx, gdat->pdat.sel)) {
-				window_close();
-				return;
-			}
-
-			// otherwise, just set Y
-			gdat->pdat.sel[VY] = y;
-		}
+	// update Y axis
+	tmp = !!(movdat & MOVD);
+	gdat->pdat.sel[VY] += tmp;
+	tmp = tmp && shape_intersects(gdat->rows, id, gdat->pdat.sel);
+	if (tmp) {
+		gdat->pdat.sel[VY]--;
+		set_shape(gdat->rows + gdat->pdat.sel[VY], id, gdat->pdat.sel[VX]);
+		clear_rows(gdat->rows, &gdat->pnts); // clear the rows that have been completed
+		next_shape();
+		// TODO: play place_sfx
+		// return;
 	}
 
 	// update X axis
