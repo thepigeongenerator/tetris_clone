@@ -117,7 +117,7 @@ void place_update(struct gamedata* gdat, int movdat) {
 
 	// update X axis
 	tmp = !!(movdat & MOVR) - !!(movdat & MOVL);
-	gdat->pdat.sel[VX] += (tmp && !shape_intersects(gdat->rows, id, gdat->pdat.sel + (i8vec2){tmp, 0})) * tmp;
+	gdat->pdat.sel[VX] += (tmp && !shape_intersects(gdat->rows, id, (i8vec2){gdat->pdat.sel[VX] + tmp, gdat->pdat.sel[VY]})) * tmp;
 
 	// update roll
 	tmp = id ^ (((!!(movdat & MOVRR) - !!(movdat & MOVRL)) * 8 + id) & 31);
