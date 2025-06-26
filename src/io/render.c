@@ -85,7 +85,7 @@ static void draw_shape(u8 const id, i8vec2 pos) {
 
 		for (int8_t x = 0; x < SHAPE_WIDTH; x++)
 			if (shape_is_set(shape_row, x))
-				draw_block(rend, pos[0] + x, pos[1] + y);
+				draw_block(rend, pos[VX] + x, pos[VY] + y);
 	}
 }
 

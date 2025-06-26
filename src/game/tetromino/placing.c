@@ -78,8 +78,8 @@ static int shape_intersects(u8* restrict const* restrict const rows, u8 const id
 
 		for (int x0 = 0; x0 < SHAPE_WIDTH; x0++) {
 			if (shape_is_set(shape_row, x0) == false) continue; // if the bit isn't set at this index; continue
-			int x1 = pos[0] + x0;
-			int y1 = pos[1] + y0;
+			int x1 = pos[VX] + x0;
+			int y1 = pos[VY] + y0;
 
 			if (x1 < 0 || x1 >= COLUMNS) return 1; // if X is out of bounds
 			if (y1 < 0 || y1 >= ROWS) return 1;    // if Y is out of bounds
@@ -97,10 +97,10 @@ void place_update(struct gamedata* gdat, int movdat) {
 
 	// set the shape if we moved vertically and intersected
 	if (movdat & MOVD) {
-		i8 y = gdat->pdat.sel[1] + 1;
+		i8 y = gdat->pdat.sel[VY] + 1;
 		if (shape_intersects(gdat->rows, id, gdat->pdat.sel)) {
-			set_shape(gdat->rows + gdat->pdat.sel[1], id, gdat->pdat.sel[0]); // if the shape intersects vertically, write the shape at the current position and return
-			clear_rows(gdat->rows, &gdat->pnts);                              // clear the rows that have been completed
+			set_shape(gdat->rows + gdat->pdat.sel[VY], id, gdat->pdat.sel[VX]); // if the shape intersects vertically, write the shape at the current position and return
+			clear_rows(gdat->rows, &gdat->pnts);                                // clear the rows that have been completed
 
 			// TODO: play place_sfx
 
@@ -111,13 +111,13 @@ void place_update(struct gamedata* gdat, int movdat) {
 			}
 
 			// otherwise, just set Y
-			gdat->pdat.sel[1] = y;
+			gdat->pdat.sel[VY] = y;
 		}
 	}
 
 	// update X axis
 	tmp = !!(movdat & MOVR) - !!(movdat & MOVL);
-	gdat->pdat.sel[0] += (tmp && !shape_intersects(gdat->rows, id, gdat->pdat.sel + (i8vec2){tmp, 0})) * tmp;
+	gdat->pdat.sel[VX] += (tmp && !shape_intersects(gdat->rows, id, gdat->pdat.sel + (i8vec2){tmp, 0})) * tmp;
 
 	// update roll
 	tmp = id ^ (((!!(movdat & MOVRR) - !!(movdat & MOVRL)) * 8 + id) & 31);
