@@ -27,7 +27,7 @@ static void shuffle(void* restrict ptr, size_t nmemb, size_t membs) {
 		void* ptrj = (u8*)ptr + j * membs;
 		memcpy(dat, ptri, membs);
 		memcpy(ptri, ptrj, membs);
-		memcpy(ptrj, ptri, membs);
+		memcpy(ptrj, dat, membs);
 	}
 }
 
