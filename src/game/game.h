@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "../io/colour/colour8.h"
 #include "../util/types.h"
@@ -37,5 +38,5 @@ struct gamedata {
 void next_shape(void);
 
 struct gamedata* game_init(void);
-void game_update(int);
+void game_update(int movdat, size_t time);
 void game_free(void);

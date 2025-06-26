@@ -7,10 +7,12 @@
 #include <time.h>
 
 #include "../io/colour/colour8.h"
+#include "../io/input.h"
 #include "../util/types.h"
 #include "../util/vec.h"
 #include "./tetromino/shapes.h"
 #include "tetromino/placing.h"
+#include "time.h"
 
 static colour8 rowdat[COLUMNS * ROWS] = {0}; // contains the raw data of the rows, in no particular order
 static struct gamedata dat = {0};
@@ -63,7 +65,9 @@ struct gamedata* game_init(void) {
 }
 
 // called every time the game's state is updated
-void game_update(int movdat) {
+void game_update(int movdat, size_t time) {
+	static time_t drop_timeout = 0;
+	movdat |= !!time_poll(time, 200, &drop_timeout) * MOVD;
 	place_update(&dat, movdat);
 }
 

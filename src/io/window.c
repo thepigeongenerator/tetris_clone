@@ -48,11 +48,12 @@ void window_free(void) {
 
 void window_open(void) {
 	while (!close) {
-		game_update(input_getdat());
+		size_t time = time_pull();
+		game_update(input_getdat(), time);
 		render_update();
 
 		static time_t timeout = 0;
-		if (time_poll(time_pull(), music.ms, &timeout))
+		if (time_poll(time, music.ms, &timeout))
 			audio_play(&music);
 	}
 }
