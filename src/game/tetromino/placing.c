@@ -4,8 +4,8 @@
 #include <string.h>
 #include <sys/cdefs.h>
 
+#include "../../io/audio.h"
 #include "../../io/input.h"
-#include "../../io/window.h"
 #include "../../util/types.h"
 #include "../../util/vec.h"
 #include "../game.h"
@@ -103,8 +103,7 @@ void place_update(struct gamedata* gdat, int movdat) {
 		set_shape(gdat->rows + gdat->pdat.sel[VY], id, gdat->pdat.sel[VX]);
 		clear_rows(gdat->rows, &gdat->pnts); // clear the rows that have been completed
 		next_shape();
-		// TODO: play place_sfx
-		// return;
+		audio_play(AUDIO_ID_PLACE);
 	}
 
 	// update X axis
