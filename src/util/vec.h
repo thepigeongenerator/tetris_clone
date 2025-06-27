@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
+#include "types.h"
 
 #define VX 0
 #define VY 1
 
-typedef int8_t i8vec2 __attribute__((vector_size(4)));
+typedef i8 i8vec2 __attribute__((vector_size(2)));
