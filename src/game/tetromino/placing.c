@@ -92,8 +92,7 @@ static int shape_intersects(u8* restrict const* restrict const rows, u8 const id
 void place_update(struct gamedata* gdat, int movdat) {
 	// store the current index and ID, only changes when placed (which yields no movement) and rotation (which occurs last)
 	int tmp;
-	u8 idx = gdat->pdat.idx;
-	u8 id = gdat->pdat.nxt[idx];
+	u8 id = gdat->pdat.cur;
 
 	// update Y axis
 	tmp = !!(movdat & MOVD);
@@ -114,5 +113,5 @@ void place_update(struct gamedata* gdat, int movdat) {
 
 	// update roll
 	tmp = id ^ (((!!(movdat & MOVRR) - !!(movdat & MOVRL)) * 8 + id) & 31);
-	gdat->pdat.nxt[idx] ^= (tmp && !shape_intersects(gdat->rows, id ^ tmp, gdat->pdat.sel)) * tmp;
+	gdat->pdat.cur ^= (tmp && !shape_intersects(gdat->rows, id ^ tmp, gdat->pdat.sel)) * tmp;
 }

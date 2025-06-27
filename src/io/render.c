@@ -114,8 +114,8 @@ void render_update(void) {
 	if (font) draw_score_text();
 
 	render_level();
-	draw_shape(gdat->pdat.nxt[gdat->pdat.idx], gdat->pdat.sel);
-	draw_shape(gdat->pdat.nxt[gdat->pdat.idx + 1], (i8vec2){COLUMNS + 1, 3});
+	draw_shape(gdat->pdat.cur, gdat->pdat.sel);
+	draw_shape(gdat->pdat.nxt[gdat->pdat.idx], (i8vec2){COLUMNS + 1, 3});
 
 	SDL_RenderPresent(rend);
 }

@@ -36,17 +36,13 @@ static void shuffle(void* restrict ptr, size_t nmemb, size_t membs) {
 void next_shape(void) {
 	// as long as we're not at the last shape, we can just increment
 	dat.pdat.sel = (i8vec2){COLUMNS / 2 - SHAPE_WIDTH / 2, 0};
+	dat.pdat.cur = dat.pdat.nxt[dat.pdat.idx];
 	dat.pdat.idx++;
-	if (dat.pdat.idx < TETROMINO_COUNT - 1) return;
+	if (dat.pdat.idx < TETROMINO_COUNT) return;
 
 	// shuffle all next shapes, preserving the last
 	dat.pdat.idx = 0;
-	shuffle(dat.pdat.nxt, TETROMINO_COUNT - 1, sizeof(u8));
-
-	// swap the first and last shape, thus preserving what the shape would've been
-	u8 cache = dat.pdat.nxt[0];
-	dat.pdat.nxt[0] = dat.pdat.nxt[TETROMINO_COUNT - 1];
-	dat.pdat.nxt[TETROMINO_COUNT - 1] = cache;
+	shuffle(dat.pdat.nxt, TETROMINO_COUNT, sizeof(u8));
 }
 
 struct gamedata* game_init(void) {
@@ -61,6 +57,8 @@ struct gamedata* game_init(void) {
 	// initialise the placing data correctly
 	dat.pdat.sel = (i8vec2){COLUMNS / 2 - SHAPE_WIDTH / 2, 0};
 	shuffle(dat.pdat.nxt, TETROMINO_COUNT, sizeof(u8));
+	dat.pdat.cur = dat.pdat.nxt[dat.pdat.idx];
+	dat.pdat.idx++;
 	return &dat;
 }
 
