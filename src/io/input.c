@@ -2,10 +2,11 @@
 
 #include <SDL_events.h>
 #include <SDL_scancode.h>
+#include <time.h>
 
+#include "../game/time.h"
 #include "window.h"
 
-// TODO: this'll likely be insufficient, due to no code delays being applied, or it registers *just* the keydown event
 __attribute__((const)) static int procscancode(SDL_Scancode code) {
 	switch (code) {
 	case SDL_SCANCODE_Q:
@@ -37,15 +38,17 @@ __attribute__((const)) static int procscancode(SDL_Scancode code) {
 	}
 }
 
-int input_getdat(void) {
-	int movdat = 0;
+int input_getdat(time_t time) {
+	static int movdat = 0;
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
 		switch (e.type) {
 		case SDL_QUIT: window_close(); break;
 		case SDL_KEYDOWN: movdat |= procscancode(e.key.keysym.scancode); break;
+		case SDL_KEYUP: movdat &= ~procscancode(e.key.keysym.scancode); break;
 		}
 	}
 
-	return movdat;
+	static time_t timeout = 0;
+	return movdat & (-!!time_poll(time, 64, &timeout));
 }

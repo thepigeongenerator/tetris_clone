@@ -1,5 +1,7 @@
 #pragma once
 
+#include <time.h>
+
 /* 8 bit enumeration storing the movement data */
 enum movdat {
 	MOVL = 1,   // move left
@@ -12,4 +14,4 @@ enum movdat {
 
 /* returns an OR'd string from `enum movdat`, containing the movement data.
  * assumes that SDL has been initialized and a window has successfully been created. */
-__attribute__((__pure__)) int input_getdat(void);
+__attribute__((__pure__)) int input_getdat(time_t time);
