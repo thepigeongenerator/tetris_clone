@@ -65,7 +65,7 @@ struct gamedata* game_init(void) {
 // called every time the game's state is updated
 void game_update(int movdat, size_t time) {
 	static time_t drop_timeout = 0;
-	movdat |= !!time_poll(time, 200, &drop_timeout) * MOVD;
+	movdat |= MOVD & -!!time_poll(time, 200, &drop_timeout);
 	place_update(&dat, movdat);
 }
 
