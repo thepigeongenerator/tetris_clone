@@ -7,6 +7,7 @@
 #include "../game/time.h"
 #include "window.h"
 
+/* processes an incoming scancode, returns the associated movement data, or performs the close action directly */
 __attribute__((const)) static int procscancode(SDL_Scancode code) {
 	switch (code) {
 	case SDL_SCANCODE_Q:
@@ -39,16 +40,23 @@ __attribute__((const)) static int procscancode(SDL_Scancode code) {
 }
 
 int input_getdat(time_t time) {
-	static int movdat = 0;
+	static int movdat = 0, nmovdat = 0;
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
 		switch (e.type) {
 		case SDL_QUIT: window_close(); break;
 		case SDL_KEYDOWN: movdat |= procscancode(e.key.keysym.scancode); break;
-		case SDL_KEYUP: movdat &= ~procscancode(e.key.keysym.scancode); break;
+		case SDL_KEYUP: nmovdat |= procscancode(e.key.keysym.scancode); break;
 		}
 	}
 
 	static time_t timeout = 0, timeout_roll = 0;
-	return movdat & (((MOVR | MOVL | MOVD) & -!!time_poll(time, 64, &timeout)) | ((MOVRL | MOVRR) & -!!time_poll(time, 128, &timeout_roll)));
+	int mask = 0;
+	mask |= ((MOVR | MOVL | MOVD) & -!!time_poll(time, 64, &timeout));
+	mask |= ((MOVRL | MOVRR) & -!!time_poll(time, 164, &timeout_roll));
+
+	int cmov = movdat & mask;
+	nmovdat &= movdat;
+	movdat &= ~(nmovdat & mask);
+	return cmov;
 }
