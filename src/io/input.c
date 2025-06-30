@@ -49,6 +49,6 @@ int input_getdat(time_t time) {
 		}
 	}
 
-	static time_t timeout = 0;
-	return movdat & (-!!time_poll(time, 64, &timeout));
+	static time_t timeout = 0, timeout_roll = 0;
+	return movdat & (((MOVR | MOVL | MOVD) & -!!time_poll(time, 64, &timeout)) | ((MOVRL | MOVRR) & -!!time_poll(time, 128, &timeout_roll)));
 }
