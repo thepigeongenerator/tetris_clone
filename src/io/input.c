@@ -50,8 +50,8 @@ static int timeout_mask(time_t time) {
 
 // NOTE: if an action is mapped to multiple keys, pressing both and releasing one will cause the action to be disabled. Minor issue, Won't fix.
 int input_getdat(time_t time) {
-	static u8 movdat = 0, nmovdat = 0;
-	int mov = movdat, nmov = nmovdat;
+	static u8 movdat = 0, nmovdat = 0, lmovdat = 0;
+	int mov = movdat, nmov = nmovdat, lmov = lmovdat;
 
 	// process the event
 	SDL_Event e;
@@ -65,15 +65,16 @@ int input_getdat(time_t time) {
 
 	// compute the current movement
 	int mask = timeout_mask(time);
-	int cmov = movdat & mask;
 
 	// handle releasing of keys
-	nmovdat &= movdat;
-	movdat &= ~(nmovdat & mask);
+	mov &= ~(nmov & lmov & mask); // only remove the keys that have been pressed since lmov
+	lmov = mov;
+	nmov &= mov;
+	int cmov = mov & mask;
 
 	// write to static variables (shrinking the values, and memory usage)
 	movdat = mov;
+	lmovdat = lmov;
 	nmovdat = nmov;
-
 	return cmov;
 }
