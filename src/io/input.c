@@ -69,9 +69,9 @@ int input_getdat(time_t time) {
 	int mask = timeout_mask(time);
 
 	// handle releasing of keys
-	mov &= ~(nmov & lmov & mask); // only remove the keys that have been pressed since lmov
-	lmov = mov;                   // set the value of lmov to the new value mov
-	nmov &= mov;                  // set nmov to only those in mov
+	mov &= ~(nmov & lmov & mask);         // only remove the keys that have been pressed since lmov
+	lmov = (mov & mask) | (lmov & ~mask); // set the value of lmov to the new value mov
+	nmov &= mov;                          // set nmov to only those in mov
 	int cmov = mov & mask;
 
 	// write to static variables (shrinking the values, and memory usage)
