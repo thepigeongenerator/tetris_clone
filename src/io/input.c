@@ -8,7 +8,8 @@
 #include "../util/types.h"
 #include "window.h"
 
-/* processes an incoming scancode, returns the associated movement data, or performs the close action directly */
+/* processes an incoming scancode, returns the associated movement data, or performs the close action directly
+ * NOTE: if the action is mapped to multiple keys, pressing both and then releasing one, disables the action. Minor issue, won't fix. */
 __attribute__((const)) static int procscancode(SDL_Scancode code) {
 	switch (code) {
 	case SDL_SCANCODE_Q:
@@ -43,17 +44,18 @@ __attribute__((const)) static int procscancode(SDL_Scancode code) {
 static int timeout_mask(time_t time) {
 	static time_t timeout = 0, timeout_roll = 0;
 	int msk = 0;
+	// only add to the mask if time_poll returns `1`, negating becomes `-1`; 0b1111...
+	// this is masked with the desired movement action.
 	msk |= ((MOVR | MOVL | MOVD) & -!!time_poll(time, 64, &timeout));
 	msk |= ((MOVRL | MOVRR) & -!!time_poll(time, 100, &timeout_roll));
 	return msk;
 }
 
-// NOTE: if an action is mapped to multiple keys, pressing both and releasing one will cause the action to be disabled. Minor issue, Won't fix.
 int input_getdat(time_t time) {
-	static u8 movdat = 0, nmovdat = 0, lmovdat = 0;
-	int mov = movdat, nmov = nmovdat, lmov = lmovdat;
+	static u8 movdat = 0, nmovdat = 0, lmovdat = 0;   // stores the static movement data
+	int mov = movdat, nmov = nmovdat, lmov = lmovdat; // stores the runtime movement data for easy register access
 
-	// process the event
+	// process the events
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
 		switch (e.type) {
@@ -68,8 +70,8 @@ int input_getdat(time_t time) {
 
 	// handle releasing of keys
 	mov &= ~(nmov & lmov & mask); // only remove the keys that have been pressed since lmov
-	lmov = mov;
-	nmov &= mov;
+	lmov = mov;                   // set the value of lmov to the new value mov
+	nmov &= mov;                  // set nmov to only those in mov
 	int cmov = mov & mask;
 
 	// write to static variables (shrinking the values, and memory usage)
