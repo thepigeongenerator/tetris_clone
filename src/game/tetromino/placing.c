@@ -41,6 +41,7 @@ static void clear_rows(u8* restrict* restrict rows, u16* const score) {
 			continue;
 		}
 
+
 		cache[fillc] = rows[i]; // cache the current row address, since it's going to be overridden
 		fillc++;
 		checkc++;
@@ -69,24 +70,19 @@ static void set_shape(u8* restrict const* restrict row, u8 id, int pos_x) {
 	}
 }
 
+static inline int shape_is_valid_pos(u8* restrict const* restrict const rows, i8vec2 pos) {
+	return pos[VX] >= 0 && pos[VX] < COLUMNS &&
+		pos[VY] >= 0 && pos[VY] < ROWS &&
+		!rows[pos[VY]][pos[VX]];
+}
+
 static int shape_intersects(u8* restrict const* restrict const rows, u8 const id, i8vec2 pos) {
-	u16 const shape = shape_from_id(id);
-
-	for (int y0 = 0; y0 < SHAPE_HEIGHT; y0++) {
-		u8 const shape_row = shape_get_row(shape, y0); // get the shape row
-		if (shape_row == 0) continue;                  // if the row doesn't contain data; continue
-
-		for (int x0 = 0; x0 < SHAPE_WIDTH; x0++) {
-			if (shape_is_set(shape_row, x0) == false) continue; // if the bit isn't set at this index; continue
-			int x1 = pos[VX] + x0;
-			int y1 = pos[VY] + y0;
-
-			if (x1 < 0 || x1 >= COLUMNS) return 1; // if X is out of bounds
-			if (y1 < 0 || y1 >= ROWS) return 1;    // if Y is out of bounds
-			if (rows[y1][x1] != 0) return 1;       // if there is a block here
-		}
-	}
-	return 0;
+	i8vec2 bpos[4];
+	shape_getblocks(id, bpos);
+	return !(shape_is_valid_pos(rows, pos + bpos[0]) &&
+		shape_is_valid_pos(rows, pos + bpos[1]) &&
+		shape_is_valid_pos(rows, pos + bpos[2]) &&
+		shape_is_valid_pos(rows, pos + bpos[3]));
 }
 
 void place_update(struct gamedata* gdat, int movdat) {
