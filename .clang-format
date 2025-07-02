@@ -2,32 +2,34 @@
 # ---------------------------
 # general style settings
 # ---------------------------
-BasedOnStyle:  ''
+BasedOnStyle:  GNU
 Standard:      Auto
 ColumnLimit:   0
 LineEnding:    LF
 UseTab:        ForContinuationAndIndentation
-TabWidth:      4
-IndentWidth:   4
-ContinuationIndentWidth: 4
+TabWidth:      8
+IndentWidth:   8
+ContinuationIndentWidth: 8
+AccessModifierOffset: -4
 
 # ---------------------------
 # alignment options
 # ---------------------------
 AlignAfterOpenBracket:        DontAlign
-AlignArrayOfStructures:       Left
-AlignConsecutiveMacros:       AcrossEmptyLines
-AlignConsecutiveAssignments:  None
+AlignOperands:                DontAlign
+AlignTrailingComments:        true
+AlignEscapedNewlines:         Right
+AlignArrayOfStructures:       None
 AlignConsecutiveBitFields:    AcrossEmptyLines
 AlignConsecutiveDeclarations: None
-AlignEscapedNewlines:         Left
-AlignOperands:                DontAlign
-AlignTrailingComments:        Always
+AlignConsecutiveMacros:       AcrossEmptyLines
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
 
 # ---------------------------
 # short constructs on a single line
 # ---------------------------
-AllowShortBlocksOnASingleLine:       Always
+AllowShortBlocksOnASingleLine:       Empty
 AllowShortFunctionsOnASingleLine:    All
 AllowShortLambdasOnASingleLine:      All
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
@@ -38,55 +40,54 @@ AllowShortLoopsOnASingleLine:        true
 # ---------------------------
 # break and wrapping options
 # ---------------------------
-AlwaysBreakBeforeMultilineStrings: true
-BreakAfterReturnType:           Automatic
-BreakTemplateDeclarations:      MultiLine
-BreakBeforeBinaryOperators:     None
-BreakBeforeConceptDeclarations: Never
-BreakBeforeBraces:              Attach
-BreakInheritanceList:           BeforeColon
-BreakConstructorInitializers:   BeforeColon
-BreakBeforeTernaryOperators:    true
-BreakStringLiterals:            true
+AlwaysBreakAfterReturnType:        Automatic
+AlwaysBreakBeforeMultilineStrings: false
+BreakTemplateDeclarations:         false
+BreakBeforeBinaryOperators:        None
+BreakBeforeBraces:                 Custom
+BreakBeforeTernaryOperators:       false
+BreakStringLiterals:               false
+BreakConstructorInitializers:      BeforeComma
+BreakBeforeConceptDeclarations:    Never
 
 # ---------------------------
 # brace wrapping configuration
 # ---------------------------
 BraceWrapping:
-  AfterControlStatement: Never
-  AfterCaseLabel:        false
   AfterClass:            false
+  AfterControlStatement: Never
   AfterEnum:             false
   AfterFunction:         false
   AfterNamespace:        false
-  AfterObjCDeclaration:  false
   AfterStruct:           false
   AfterUnion:            false
-  AfterExternBlock:      false
-  BeforeCatch:           false
   BeforeElse:            false
+  BeforeCatch:           false
+  SplitEmptyFunction:    true
+  SplitEmptyRecord:      true
+  SplitEmptyNamespace:   true
+  AfterCaseLabel:        false
+  AfterObjCDeclaration:  false
+  AfterExternBlock:      false
   BeforeLambdaBody:      false
   BeforeWhile:           false
   IndentBraces:          false
-  SplitEmptyFunction:    false
-  SplitEmptyRecord:      false
-  SplitEmptyNamespace:   false
 
 # ---------------------------
 # constructor initializer and parameter packing options
 # ---------------------------
-ConstructorInitializerIndentWidth: 4
-PackConstructorInitializers: BinPack
+ConstructorInitializerIndentWidth: 8
+PackConstructorInitializers: NextLine
 BinPackParameters: true
-BinPackArguments:  false
+BinPackArguments:  true
 
 # ---------------------------
 # pointer alignment
 # ---------------------------
 DerivePointerAlignment: false
-PointerAlignment:       Left
-ReferenceAlignment:     Pointer
-QualifierAlignment:     Right
+PointerAlignment: Left
+ReferenceAlignment: Pointer
+QualifierAlignment: Right
 
 # ---------------------------
 # include settings and sorting
@@ -105,107 +106,75 @@ IncludeCategories:
     CaseSensitive: true
 
 # ---------------------------
-# macro and language-specific settings
-# ---------------------------
-AttributeMacros:
-  - __capability
-ForEachMacros:
-  - foreach
-  - Q_FOREACH
-  - BOOST_FOREACH
-IfMacros:
-  - KJ_IF_MAYBE
-StatementAttributeLikeMacros:
-  - Q_EMIT
-StatementMacros:
-  - Q_UNUSED
-  - QT_REQUIRE_VERSION
-WhitespaceSensitiveMacros:
-  - STRINGIZE
-  - PP_STRINGIZE
-  - BOOST_PP_STRINGIZE
-  - NS_SWIFT_NAME
-  - CF_SWIFT_NAME
-
-# ---------------------------
 # additional formatting and sorting details
 # ---------------------------
+FixNamespaceComments:  false
+MaxEmptyLinesToKeep:   2
+ReflowComments:        false
+SortIncludes:          Never
+SortUsingDeclarations: false
+IndentCaseLabels:      false
+IndentGotoLabels:      false
 AllowAllArgumentsOnNextLine:      false
 AllowAllParametersOfDeclarationOnNextLine: false
 EmptyLineAfterAccessModifier:     Never
 EmptyLineBeforeAccessModifier:    LogicalBlock
 ExperimentalAutoDetectBinPacking: false
-FixNamespaceComments:             true
-MaxEmptyLinesToKeep:              4
-ReflowComments:                   true
-RemoveBracesLLVM:                 false
 SeparateDefinitionBlocks:         Leave
 ShortNamespaceLines:              1
-SortIncludes:                     CaseSensitive
 SortJavaStaticImport:             Before
-SortUsingDeclarations:            LexicographicNumeric
 
 # ---------------------------
 # spacing options
 # ---------------------------
-SpaceAfterCStyleCast:             false
-SpaceAfterLogicalNot:             false
-SpaceAfterTemplateKeyword:        false
-SpaceBeforeAssignmentOperators:   true
-SpaceBeforeCaseColon:             false
-SpaceBeforeCpp11BracedList:       false
-SpaceBeforeCtorInitializerColon:  true
-SpaceBeforeInheritanceColon:      true
-SpaceBeforeParens:                ControlStatements
-SpaceBeforeParensOptions:
-  AfterControlStatements:       true
-  AfterForeachMacros:           true
-  AfterFunctionDefinitionName:  false
-  AfterFunctionDeclarationName: false
-  AfterIfMacros:                true
-  AfterOverloadedOperator:      false
-  BeforeNonEmptyParentheses:    false
-SpaceAroundPointerQualifiers:     Default
-SpaceBeforeRangeBasedForLoopColon: true
-SpaceInEmptyBlock:                 true
+SpaceAfterCStyleCast:              false
+SpaceAfterTemplateKeyword:         true
+SpaceBeforeAssignmentOperators:    true
+SpaceBeforeCtorInitializerColon:   true
+SpaceBeforeInheritanceColon:       true
+SpaceBeforeParens:                 ControlStatements
 SpacesInParens:            Custom
 SpacesInParensOptions:
   ExceptDoubleParentheses: false
   InConditionalStatements: false
   InCStyleCasts:           false
   Other:                   false
-SpacesBeforeTrailingComments: 1
-SpacesInAngles:               Never
-SpacesInConditionalStatement: false
-SpacesInContainerLiterals:    true
+SpaceBeforeRangeBasedForLoopColon: true
+SpacesInAngles:                    Never
+SpacesInContainerLiterals:         false
+SpacesInCStyleCastParentheses:     false
+SpacesInParentheses:               false
+SpacesInSquareBrackets:            false
+SpacesBeforeTrailingComments:      1
+SpaceAfterLogicalNot:              false
+SpaceBeforeCaseColon:              false
+Cpp11BracedListStyle:              true
+SpaceBeforeCpp11BracedList:        false
+SpaceInEmptyBlock:                 true
 SpacesInLineCommentPrefix:
   Minimum: 1
   Maximum: 1
-SpacesInParentheses:       false
-SpacesInSquareBrackets:    false
 SpaceBeforeSquareBrackets: false
 BitFieldColonSpacing:      Both
+
+# ---------------------------
+# penalty settings
+# ---------------------------
+PenaltyBreakAssignment: 10
+PenaltyBreakBeforeFirstCallParameter: 30
+PenaltyBreakComment: 10
+PenaltyBreakFirstLessLess: 0
+PenaltyBreakString: 10
+PenaltyExcessCharacter: 100
+PenaltyReturnTypeOnItsOwnLine: 60
 
 # ---------------------------
 # indentation details
 # ---------------------------
 IndentAccessModifiers: false
-IndentCaseLabels:      false
 IndentCaseBlocks:      false
-IndentGotoLabels:      true
 IndentExternBlock:     AfterExternBlock
 IndentRequiresClause:  false
 IndentPPDirectives:    None
 PPIndentWidth:         1
-
----
-# ---------------------------
-# Objective-C specific settings
-# ---------------------------
-Language:                        ObjC
-ObjCBinPackProtocolList:         Never
-ObjCBlockIndentWidth:            4
-ObjCBreakBeforeNestedBlockParam: true
-ObjCSpaceAfterProperty:          false
-ObjCSpaceBeforeProtocolList:     true
 ...
