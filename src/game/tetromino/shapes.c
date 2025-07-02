@@ -1,7 +1,10 @@
 #include "shapes.h"
 
+#include <string.h>
+
 #include "../../io/colour/colour8.h"
 #include "../../util/types.h"
+#include "../../util/vec.h"
 
 /*                                   0    1    2    3         */
 #define SHAPE_O     ((u16)0x0660) // 0000 0110 0110 0000      the O tetromino with no rotation
@@ -36,10 +39,62 @@
 #define SHAPE_J_180 ((u16)0x6440) // 0110 0100 0100 0000      the J tetromino with a 180° rotation
 #define SHAPE_J_270 ((u16)0x0E20) // 0000 1110 0010 0000      the J tetromino with a 270° rotation
 
+void shape_getblocks(u8 id, i8vec2* restrict out) {
+	struct blockdat {
+		i8vec2 memb[4];
+	};
+	struct blockdat dat;
+	switch (id) {
+	// O tetromino
+	case TETROMINO_O | TETROMINO_ROTATED_0:
+	case TETROMINO_O | TETROMINO_ROTATED_90:
+	case TETROMINO_O | TETROMINO_ROTATED_180:
+	case TETROMINO_O | TETROMINO_ROTATED_270: dat = (struct blockdat){{{1, 1}, {2, 1}, {1, 2}, {2, 2}}}; break;
+
+	// I tetromino
+	case TETROMINO_I | TETROMINO_ROTATED_0:   dat = (struct blockdat){{{0, 1}, {1, 1}, {2, 1}, {3, 1}}}; break;
+	case TETROMINO_I | TETROMINO_ROTATED_90:  dat = (struct blockdat){{{2, 0}, {2, 1}, {2, 2}, {2, 3}}}; break;
+	case TETROMINO_I | TETROMINO_ROTATED_180: dat = (struct blockdat){{{0, 2}, {1, 2}, {2, 2}, {3, 2}}}; break;
+	case TETROMINO_I | TETROMINO_ROTATED_270: dat = (struct blockdat){{{1, 0}, {1, 1}, {1, 2}, {1, 3}}}; break;
+
+	// S tetromino
+	case TETROMINO_S | TETROMINO_ROTATED_0:   dat = (struct blockdat){{{1, 0}, {2, 0}, {0, 1}, {1, 1}}}; break;
+	case TETROMINO_S | TETROMINO_ROTATED_90:  dat = (struct blockdat){{{1, 0}, {1, 1}, {2, 1}, {2, 2}}}; break;
+	case TETROMINO_S | TETROMINO_ROTATED_180: dat = (struct blockdat){{{1, 1}, {2, 1}, {0, 2}, {1, 2}}}; break;
+	case TETROMINO_S | TETROMINO_ROTATED_270: dat = (struct blockdat){{{0, 0}, {0, 1}, {1, 1}, {1, 2}}}; break;
+
+	// Z tetromino
+	case TETROMINO_Z | TETROMINO_ROTATED_0:   dat = (struct blockdat){{{0, 0}, {1, 0}, {1, 1}, {2, 1}}}; break;
+	case TETROMINO_Z | TETROMINO_ROTATED_90:  dat = (struct blockdat){{{2, 0}, {1, 1}, {2, 1}, {1, 2}}}; break;
+	case TETROMINO_Z | TETROMINO_ROTATED_180: dat = (struct blockdat){{{0, 1}, {1, 1}, {1, 2}, {2, 2}}}; break;
+	case TETROMINO_Z | TETROMINO_ROTATED_270: dat = (struct blockdat){{{1, 0}, {0, 1}, {1, 1}, {0, 2}}}; break;
+
+	// T tetromino
+	case TETROMINO_T | TETROMINO_ROTATED_0:   dat = (struct blockdat){{{0, 1}, {1, 1}, {2, 1}, {1, 2}}}; break;
+	case TETROMINO_T | TETROMINO_ROTATED_90:  dat = (struct blockdat){{{1, 0}, {0, 1}, {1, 1}, {1, 2}}}; break;
+	case TETROMINO_T | TETROMINO_ROTATED_180: dat = (struct blockdat){{{1, 0}, {0, 1}, {1, 1}, {2, 1}}}; break;
+	case TETROMINO_T | TETROMINO_ROTATED_270: dat = (struct blockdat){{{1, 0}, {1, 1}, {2, 1}, {1, 2}}}; break;
+
+	// L tetromino
+	case TETROMINO_L | TETROMINO_ROTATED_0:   dat = (struct blockdat){{{1, 0}, {1, 1}, {1, 2}, {2, 2}}}; break;
+	case TETROMINO_L | TETROMINO_ROTATED_90:  dat = (struct blockdat){{{0, 1}, {1, 1}, {2, 1}, {0, 2}}}; break;
+	case TETROMINO_L | TETROMINO_ROTATED_180: dat = (struct blockdat){{{0, 0}, {1, 0}, {1, 1}, {1, 2}}}; break;
+	case TETROMINO_L | TETROMINO_ROTATED_270: dat = (struct blockdat){{{2, 0}, {0, 1}, {1, 1}, {2, 1}}}; break;
+
+	// J tetromino
+	case TETROMINO_J | TETROMINO_ROTATED_0:   dat = (struct blockdat){{{1, 0}, {1, 1}, {0, 2}, {1, 2}}}; break;
+	case TETROMINO_J | TETROMINO_ROTATED_90:  dat = (struct blockdat){{{0, 0}, {0, 1}, {1, 1}, {2, 1}}}; break;
+	case TETROMINO_J | TETROMINO_ROTATED_180: dat = (struct blockdat){{{1, 0}, {2, 0}, {1, 1}, {1, 2}}}; break;
+	case TETROMINO_J | TETROMINO_ROTATED_270: dat = (struct blockdat){{{0, 1}, {1, 1}, {2, 1}, {2, 2}}}; break;
+	}
+
+	memcpy(out, dat.memb, sizeof(i8vec2[4]));
+}
+
 u16 shape_from_id(u8 id) {
 	static u16 const shapes[TETROMINO_COUNT][4] = {
 		// 0°       90°         180°         170°
-		{SHAPE_O, SHAPE_O,    SHAPE_O,     SHAPE_O    },
+		{SHAPE_O, SHAPE_O, SHAPE_O, SHAPE_O},
 		{SHAPE_I, SHAPE_I_90, SHAPE_I_180, SHAPE_I_270},
 		{SHAPE_S, SHAPE_S_90, SHAPE_S_180, SHAPE_S_270},
 		{SHAPE_Z, SHAPE_Z_90, SHAPE_Z_180, SHAPE_Z_270},
@@ -61,6 +116,6 @@ colour8 colour_from_id(u8 id) {
 	case TETROMINO_T: return COLOUR8_MAGENTA;
 	case TETROMINO_L: return COLOUR8_ORANGE;
 	case TETROMINO_J: return COLOUR8_BLUE;
-	default: return COLOUR8_BLACK;
+	default:          return COLOUR8_BLACK;
 	}
 }

@@ -1,9 +1,11 @@
 #pragma once
 #include <stdbool.h>
 #include <stdint.h>
+#include <sys/cdefs.h>
 
 #include "../../io/colour/colour8.h"
 #include "../../util/types.h"
+#include "../../util/vec.h"
 
 enum {
 	TETROMINO_O = 0,
@@ -13,6 +15,7 @@ enum {
 	TETROMINO_T = 4,
 	TETROMINO_L = 5,
 	TETROMINO_J = 6,
+	TETROMINO_ROTATED_0 = 0,
 	TETROMINO_ROTATED_90 = 8,
 	TETROMINO_ROTATED_180 = 16,
 	TETROMINO_ROTATED_270 = 24,
@@ -22,15 +25,14 @@ enum {
 #define SHAPE_HEIGHT    4
 #define TETROMINO_COUNT 7
 
-
-
-static inline u8 shape_get_row(u16 shape, u8 index) {
+static inline u8 shape_get_row(u16 shape, u8 index) __attribute_deprecated_msg__("switching to a logic-based tetromino storage") {
 	return shape >> (((SHAPE_HEIGHT - 1) - index) * SHAPE_WIDTH) & 0xF;
 }
 
-static inline bool shape_is_set(u8 row, u8 index) {
+static inline bool shape_is_set(u8 row, u8 index) __attribute_deprecated_msg__("switching to a logic-based tetromino storage") {
 	return (row >> ((SHAPE_WIDTH - 1) - index) & 1) != 0;
 }
 
-u16 shape_from_id(u8 id);
+void shape_getblocks(u8 id, i8vec2* out);
+u16 shape_from_id(u8 id) __attribute_deprecated_msg__("switching to a logic-based tetromino storage");
 colour8 colour_from_id(u8 id);
