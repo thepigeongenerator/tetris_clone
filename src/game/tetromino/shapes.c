@@ -3,6 +3,7 @@
 #include "../../io/colour/colour8.h"
 #include "../../util/types.h"
 #include "../../util/vec.h"
+#include "../../error.h"
 
 void shape_getblocks(u8 id, i8vec2* restrict out) {
 	struct blockdat {
@@ -54,6 +55,12 @@ void shape_getblocks(u8 id, i8vec2* restrict out) {
 	case TETROMINO_J | TETROMINO_ROTATED_90:  dat = (struct blockdat){0, 0, 0, 1, 1, 1, 2, 1}; break;
 	case TETROMINO_J | TETROMINO_ROTATED_180: dat = (struct blockdat){1, 0, 2, 0, 1, 1, 1, 2}; break;
 	case TETROMINO_J | TETROMINO_ROTATED_270: dat = (struct blockdat){0, 1, 1, 1, 2, 1, 2, 2}; break;
+
+	default:
+#ifndef NDEBUG
+		fatal(1, "something went wrong; couldn't reconise the ID.", );
+#endif
+		break;
 	}
 
 	out[0] = (i8vec2){dat.ax, dat.ay};
