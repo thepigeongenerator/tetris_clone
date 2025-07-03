@@ -59,9 +59,9 @@ int input_getdat(time_t time) {
 	SDL_Event e;
 	while (SDL_PollEvent(&e)) {
 		switch (e.type) {
-		case SDL_QUIT: window_close(); break;
+		case SDL_QUIT:    window_close(); break;
 		case SDL_KEYDOWN: mov |= procscancode(e.key.keysym.scancode); break;
-		case SDL_KEYUP: nmov |= procscancode(e.key.keysym.scancode); break;
+		case SDL_KEYUP:   nmov |= procscancode(e.key.keysym.scancode); break;
 		}
 	}
 
