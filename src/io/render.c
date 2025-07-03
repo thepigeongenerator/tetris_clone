@@ -68,25 +68,20 @@ static void draw_score_text(void) {
 
 // TODO: this is suboptimal, since each block will be 2 triangles, wasting perf. Consider using switch...case hard-coded drawing
 // draws a block at the specified position
-static inline int draw_block(SDL_Renderer* const renderer, int8_t const x, int8_t const y) {
-	SDL_Rect const block = {get_column_pos(x), get_row_pos(y), BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1};
+static inline int draw_block(SDL_Renderer* const renderer, i8vec2 pos) {
+	SDL_Rect const block = {get_column_pos(pos[VX]), get_row_pos(pos[VY]), BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1};
 	return SDL_RenderFillRect(renderer, &block);
 }
 
 // draws a shape at the specified position
 static void draw_shape(u8 const id, i8vec2 pos) {
-	u16 shape = shape_from_id(id);
 	set_colour8(rend, colour_from_id(id));
-
-	for (int8_t y = 0; y < SHAPE_HEIGHT; y++) {
-		u8 shape_row = shape_get_row(shape, y);
-
-		if (shape_row == 0) continue;
-
-		for (int8_t x = 0; x < SHAPE_WIDTH; x++)
-			if (shape_is_set(shape_row, x))
-				draw_block(rend, pos[VX] + x, pos[VY] + y);
-	}
+	i8vec2 bpos[4];
+	shape_getblocks(id, bpos);
+	draw_block(rend, pos + bpos[0]);
+	draw_block(rend, pos + bpos[1]);
+	draw_block(rend, pos + bpos[2]);
+	draw_block(rend, pos + bpos[3]);
 }
 
 // draw the block data in the level
@@ -97,7 +92,7 @@ static void render_level(void) {
 		for (int x = 0; x < COLUMNS; x++) {
 			if (row[x] != 0) {
 				set_colour8(rend, row[x]);
-				draw_block(rend, x, y);
+				draw_block(rend, (i8vec2){x, y});
 			}
 		}
 	}
