@@ -38,11 +38,11 @@ void next_shape(void) {
 	dat.pdat.sel = (i8vec2){COLUMNS / 2 - SHAPE_WIDTH / 2, 0};
 	dat.pdat.cur = dat.pdat.nxt[dat.pdat.idx];
 	dat.pdat.idx++;
-	if (dat.pdat.idx < TETROMINO_COUNT) return;
+	if (dat.pdat.idx < TETC) return;
 
 	// shuffle all next shapes, preserving the last
 	dat.pdat.idx = 0;
-	shuffle(dat.pdat.nxt, TETROMINO_COUNT, sizeof(u8));
+	shuffle(dat.pdat.nxt, TETC, sizeof(u8));
 }
 
 struct gamedata* game_init(void) {
@@ -51,12 +51,12 @@ struct gamedata* game_init(void) {
 	// populate the data arrays
 	for (int i = 0; i < ROWS; i++)
 		dat.rows[i] = rowdat + i * COLUMNS;
-	for (int i = 0; i < TETROMINO_COUNT; i++)
+	for (int i = 0; i < TETC; i++)
 		dat.pdat.nxt[i] = i;
 
 	// initialise the placing data correctly
 	dat.pdat.sel = (i8vec2){COLUMNS / 2 - SHAPE_WIDTH / 2, 0};
-	shuffle(dat.pdat.nxt, TETROMINO_COUNT, sizeof(u8));
+	shuffle(dat.pdat.nxt, TETC, sizeof(u8));
 	dat.pdat.cur = dat.pdat.nxt[dat.pdat.idx];
 	dat.pdat.idx++;
 	return &dat;
