@@ -8,6 +8,7 @@
 
 #include "../io/colour/colour8.h"
 #include "../io/input.h"
+#include "../io/window.h"
 #include "../util/types.h"
 #include "../util/vec.h"
 #include "./tetromino/shapes.h"
@@ -66,7 +67,9 @@ struct gamedata* game_init(void) {
 void game_update(int movdat, size_t time) {
 	static time_t drop_timeout = 0;
 	movdat |= MOVD & -!!time_poll(time, 200, &drop_timeout);
-	place_update(&dat, movdat);
+
+	if (place_update(&dat, movdat))
+		window_close();
 }
 
 void game_free(void) {

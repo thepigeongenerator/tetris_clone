@@ -88,7 +88,7 @@ static int plcmnt_intersect(u8* restrict const* restrict const rows, u8 const id
 		plcmnt_valid(rows, pos + bpos[3]));
 }
 
-void place_update(struct gamedata* gdat, int movdat) {
+int place_update(struct gamedata* gdat, int movdat) {
 	// store the current index and ID, only changes when placed (which yields no movement) and rotation (which occurs last)
 	int tmp;
 	u8 id = gdat->pdat.cur;
@@ -103,6 +103,9 @@ void place_update(struct gamedata* gdat, int movdat) {
 		clear_rows(gdat->rows, &gdat->pnts); // clear the rows that have been completed
 		next_shape();
 		audio_play(AUDIO_ID_PLACE);
+
+		if (plcmnt_intersect(gdat->rows, gdat->pdat.cur, gdat->pdat.sel))
+			return 1;
 	}
 
 	// update X axis
@@ -112,4 +115,5 @@ void place_update(struct gamedata* gdat, int movdat) {
 	// update roll
 	tmp = id ^ (((!!(movdat & MOVRR) - !!(movdat & MOVRL)) * 8 + id) & 31);
 	gdat->pdat.cur ^= (tmp && !plcmnt_intersect(gdat->rows, id ^ tmp, gdat->pdat.sel)) * tmp;
+	return 0;
 }
