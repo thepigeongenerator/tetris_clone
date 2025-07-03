@@ -39,7 +39,7 @@ void render_init(SDL_Window* win, struct gamedata const* game_data) {
 	gdat = game_data;
 }
 
-static inline int32_t get_column_pos(uint column) {
+static inline i32 colpos(uint column) {
 	return column * BLOCK_WIDTH + 1 + TET_PADDING;
 }
 
@@ -62,14 +62,14 @@ static void draw_score_text(void) {
 	}
 
 	assert(score_surface && score_texture);
-	SDL_Rect text_rect = {get_column_pos(COLUMNS + 1), get_row_pos(0), score_surface->w, score_surface->h};
+	SDL_Rect text_rect = {colpos(COLUMNS + 1), rowpos(0), score_surface->w, score_surface->h};
 	SDL_RenderCopy(rend, score_texture, NULL, &text_rect);
 }
 
 // TODO: this is suboptimal, since each block will be 2 triangles, wasting perf. Consider using switch...case hard-coded drawing
 // draws a block at the specified position
 static inline int draw_block(SDL_Renderer* const renderer, i8vec2 pos) {
-	SDL_Rect const block = {get_column_pos(pos[VX]), get_row_pos(pos[VY]), BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1};
+	SDL_Rect const block = {colpos(pos[VX]), rowpos(pos[VY]), BLOCK_WIDTH - 1, BLOCK_HEIGHT - 1};
 	return SDL_RenderFillRect(renderer, &block);
 }
 
