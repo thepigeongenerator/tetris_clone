@@ -57,17 +57,20 @@ static void clear_rows(u8* restrict* restrict rows, u16* const score) {
 
 // TODO: this is suboptimal, ditch the entire "representing shapes as binary-formatted data" and instead use a switch...case.
 /* writes a shape to the screen */
-static void set_shape(u8* restrict const* restrict row, u8 id, int pos_x) {
-	u16 shape = shape_from_id(id);
+static void set_shape(u8* restrict const* restrict row, u8 id, i8vec2 pos) {
 	u8 colour = colour_from_id(id);
 
-	for (uint y = 0; y < SHAPE_HEIGHT; y++) {
-		u8 const shape_row = shape_get_row(shape, y);
+	i8vec2 bpos[4];
+	shape_getblocks(id, bpos);
+	bpos[0] += pos;
+	bpos[1] += pos;
+	bpos[2] += pos;
+	bpos[3] += pos;
 
-		for (int8_t x = 0; x < SHAPE_WIDTH; x++)
-			if (shape_is_set(shape_row, x))
-				row[y][x + pos_x] = colour;
-	}
+	row[bpos[0][VY]][bpos[0][VX]] = colour;
+	row[bpos[1][VY]][bpos[1][VX]] = colour;
+	row[bpos[2][VY]][bpos[2][VX]] = colour;
+	row[bpos[3][VY]][bpos[3][VX]] = colour;
 }
 
 static inline int shape_is_valid_pos(u8* restrict const* restrict const rows, i8vec2 pos) {
@@ -96,7 +99,7 @@ void place_update(struct gamedata* gdat, int movdat) {
 	tmp = tmp && shape_intersects(gdat->rows, id, gdat->pdat.sel);
 	if (tmp) {
 		gdat->pdat.sel[VY]--;
-		set_shape(gdat->rows + gdat->pdat.sel[VY], id, gdat->pdat.sel[VX]);
+		set_shape(gdat->rows, id, gdat->pdat.sel);
 		clear_rows(gdat->rows, &gdat->pnts); // clear the rows that have been completed
 		next_shape();
 		audio_play(AUDIO_ID_PLACE);
